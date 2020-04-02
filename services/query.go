@@ -16,6 +16,12 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	OUTPUT_COLUMNS = "column"
+	OUTPUT_RAW     = "raw"
+	OUTPUT_JSON    = "json"
+)
+
 type QueryDebug struct {
 	IdMap          map[string]int
 	Count          int
@@ -38,17 +44,16 @@ func (q *QueryDebug) Strings() string {
 }
 
 func Query(c *cli.Context, config *cfg.Config, applications []string, keyWords string, qType string) {
-
 	startTime := c.String("st")
 	endTime := c.String("et")
-	debug := c.String("debug")
+	debug := c.Bool("debug")
+	tail := c.Bool("tail")
 	filters := c.String("filter")
+	output := c.String("output")
+
 	filterValuesMap := getFilters(filters)
 
-	isDebug := false
-	if debug == "true" {
-		isDebug = true
-	}
+	isDebug := debug
 
 	ctx := context.Background()
 	conn, err := grpc.Dial(config.Cluster, grpc.WithInsecure())
@@ -102,7 +107,6 @@ func Query(c *cli.Context, config *cfg.Config, applications []string, keyWords s
 		QueryId: qId,
 	}
 
-	time.Sleep(5 * time.Second)
 	errorCount := 0
 	retry := true
 	for {
@@ -130,18 +134,27 @@ func Query(c *cli.Context, config *cfg.Config, applications []string, keyWords s
 		data := dataResponse.GetData()
 		if len(data) == 0 {
 			if isDebug {
-				fmt.Println("Got No Data ")
+				fmt.Printf("Got No Data , Remaining : %d Status : %s\n", dataResponse.Remaining, dataResponse.Status)
 			}
-			time.Sleep(5 * time.Second)
+			time.Sleep(time.Millisecond)
+			//if dataResponse.Remaining > 0 && dataResponse.Status != "COMPLETE" {
 			continue
+			//}
 		}
-		printData(dataResponse)
-		retry = false
+		printData(dataResponse, tail, output)
+		if !tail || (tail && dataResponse.Remaining <= 0) {
+			retry = false
+		} else {
+			retry = true
+		}
 	}
 }
 
 func GetNext(c *cli.Context, config *cfg.Config) {
+	output := c.String("output")
+
 	qId, err := db.GetLastQuery()
+
 	if err != nil {
 
 	}
@@ -167,24 +180,22 @@ func GetNext(c *cli.Context, config *cfg.Config) {
 		handleError(config, err)
 		return
 	}
-	printData(dataResponse)
+	printData(dataResponse, false, output)
 }
 
-func printData(dataResponse *query.GetDataResponse) {
+func printData(dataResponse *query.GetDataResponse, modeTail bool, output string) {
 	data := dataResponse.GetData()
 	for _, d := range data {
-		printSyslogMessageForType(d)
-		time.Sleep(150 * time.Millisecond)
+		printSyslogMessageForType(d, output)
 	}
-	if "COMPLETE" != dataResponse.Status && dataResponse.Remaining == 0 {
-		fmt.Println("Enter `n` or `next' to continue.")
-	} else if "COMPLETE" != dataResponse.Status {
-		fmt.Printf("\nAtleast %d records remaining... Enter `n` or `next' to continue.\n", dataResponse.Remaining)
-	} else {
-		fmt.Println("No more records available for this query.")
+	if !modeTail {
+		if dataResponse.Status != "COMPLETE" {
+			fmt.Printf("\nAtleast %d records remaining... Enter `n` or `next' to continue.\n", dataResponse.Remaining)
+		} else {
+			fmt.Println("No more records available for this query.")
+			db.HandleGetDataStatus(dataResponse.Status)
+		}
 	}
-	//TODO handle retry status MS6
-	db.HandleGetDataStatus(dataResponse.Status)
 }
 
 func getFilters(filters string) map[string]*query.FilterValues {

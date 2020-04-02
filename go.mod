@@ -21,7 +21,7 @@ require (
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
 	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
 	golang.org/x/tools v0.0.0-20190621195816-6e04913cbbac // indirect
-	google.golang.org/genproto v0.0.0-20200331122359-1ee6d9798940
+	google.golang.org/genproto v0.0.0-20200402124713-8ff61da6d932
 	google.golang.org/grpc v1.27.1
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect

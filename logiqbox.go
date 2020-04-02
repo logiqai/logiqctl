@@ -111,6 +111,15 @@ func commands() {
 			Aliases:     []string{"n"},
 			Usage:       "query n",
 			Description: "Get the next 'n' values for the last query or search",
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:    "output",
+					Value:   "column",
+					Usage:   "Set output format to be column|json|raw",
+					Hidden:  false,
+					Aliases: []string{"o"},
+				},
+			},
 			Action: func(context *cli.Context) error {
 				config, _ := getConfig()
 				services.GetNext(context, config)
@@ -123,26 +132,43 @@ func commands() {
 			Usage:     `query "sudo cron" 2h`,
 			ArgsUsage: "[application names, relative time]",
 			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:  "st",
-					Value: "10h",
-					Usage: "Relative start time.",
-				},
-
-				&cli.StringFlag{
-					Name:  "et",
-					Value: "10h",
-					Usage: "Relative end time.",
+				&cli.BoolFlag{
+					Name:        "debug",
+					Usage:       "-debug true",
+					Hidden:      true,
+					DefaultText: "false",
+					Aliases:     []string{"-debug", "-d", "--debug"},
 				},
 				&cli.StringFlag{
-					Name:   "debug",
-					Value:  "false",
-					Usage:  "--debug true",
-					Hidden: true,
+					Name:    "end_time",
+					Value:   "10h",
+					Usage:   "Relative end time.",
+					Aliases: []string{"et"},
 				},
 				&cli.StringFlag{
-					Name:  "filter",
-					Usage: "--filter 'Hostname=127.0.0.1,10.231.253.255;Message=tito*'",
+					Name:    "filter",
+					Usage:   "-filter 'Hostname=127.0.0.1,10.231.253.255;Message=tito*'",
+					Aliases: []string{"f"},
+				},
+				&cli.StringFlag{
+					Name:    "output",
+					Value:   "column",
+					Usage:   "Set output format to be column|json|raw",
+					Hidden:  false,
+					Aliases: []string{"o"},
+				},
+				&cli.StringFlag{
+					Name:    "start_time",
+					Value:   "10h",
+					Usage:   "Relative start time.",
+					Aliases: []string{"st"},
+				},
+				&cli.BoolFlag{
+					Name:        "tail",
+					Usage:       "Tail the data without paginating",
+					Hidden:      false,
+					DefaultText: "false",
+					Aliases:     []string{"t"},
 				},
 			},
 			Action: func(c *cli.Context) error {

@@ -1,8 +1,10 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/logiqai/logiqbox/api/v1/query"
 	"github.com/logiqai/logiqbox/cfg"
@@ -46,14 +48,34 @@ func printSyslogMessage(logMap map[string]interface{}) {
 	)
 }
 
-func printSyslogMessageForType(log *query.SysLogMessage) {
-	fmt.Printf("%-28s|%-6s|%s|%s|%-5s|%s|%s\n",
-		log.Timestamp,
-		log.SeverityString,
-		log.Hostname,
-		log.ProcID,
-		log.AppName,
-		log.FacilityString,
-		log.Message,
-	)
+func printSyslogMessageForType(log *query.SysLogMessage, output string) {
+	if output == OUTPUT_COLUMNS {
+		fmt.Printf("%-28s|%-6s|%s|%s|%-5s|%s|%s\n",
+			log.Timestamp,
+			log.SeverityString,
+			log.Hostname,
+			log.ProcID,
+			log.AppName,
+			log.FacilityString,
+			log.Message,
+		)
+	} else if output == OUTPUT_RAW {
+		fmt.Printf("%s %s %s %s %s %s %s\n",
+			log.Timestamp,
+			log.SeverityString,
+			log.FacilityString,
+			log.Hostname,
+			log.AppName,
+			log.ProcID,
+			log.Message,
+		)
+	} else if output == OUTPUT_JSON {
+		v, err := json.Marshal(log)
+		if err == nil {
+			fmt.Printf("%s\n", v)
+		} else {
+			fmt.Printf("Error marshalling JSON %v", *log)
+			os.Exit(-1)
+		}
+	}
 }
