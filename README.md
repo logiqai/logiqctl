@@ -30,8 +30,8 @@ sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
 rm -f $PROTOC_ZIP
 
 ```
-- run `mkdir -p $GOHOME/src/go/src/github.com/logiqai`
-- run `cd $GOHOME/src/go/src/github.com/logiqai`
+- run `mkdir -p $GOPATH/src/github.com/logiqai`
+- run `cd $GOPATH/src/github.com/logiqai`
 - run `git clone git@github.com:logiqai/logiqbox.git`
 - run `cd logiqbox`
 - run `./generate_grpc.sh `
