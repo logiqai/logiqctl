@@ -7,17 +7,17 @@ RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
 
-WORKDIR /go/src/bitbucket.org/logiqcloud/logiq-box
+WORKDIR /go/src/github.com/logiqai/logiqbox
 ADD . .
 RUN ./generate_grpc.sh
-RUN go build -o logiqbox logiqbox.go
+RUN go build
 
 #
 FROM alpine:3.11
 EXPOSE 8080
 RUN apk update
 RUN apk add bash
-COPY --from=0 /go/src/bitbucket.org/logiqcloud/logiq-box/logiqbox /bin/logiqbox
+COPY --from=0 /go/src/github.com/logiqai/logiqbox/logiqbox /bin/logiqbox
 COPY --from=0 /go/bin/gotty /bin/gotty
 COPY demo.config /root/.logiqbox/config.toml
 CMD ["/bin/gotty","-w","/bin/bash"]
