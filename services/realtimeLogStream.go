@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/urfave/cli/v2"
 	"io"
 	"log"
 	"os"
@@ -89,10 +90,11 @@ func isMatch(logMap map[string]interface{}) bool {
 	return match
 }
 
-func Tail(config *cfg.Config, tA, tL, tN bool, apps []string) {
+func Tail(c *cli.Context, config *cfg.Config, tA, tL, tN bool, apps []string) {
 	tailApps = tA
 	tailNamespaces = tN
 	tailLabels = tL
+	output := c.String("output")
 	if !tA && !tL && !tN {
 		allowAll = true
 	} else {
@@ -128,7 +130,9 @@ func Tail(config *cfg.Config, tA, tL, tN bool, apps []string) {
 		handleError(config, err)
 		return
 	}
-	printSyslogHeader()
+	if output == OUTPUT_COLUMNS {
+		printSyslogHeader()
+	}
 	for {
 		response, err := stream.Recv()
 		if err == io.EOF {
@@ -151,7 +155,7 @@ func Tail(config *cfg.Config, tA, tL, tN bool, apps []string) {
 		}
 		logMap["namespace"] = ns
 		if isMatch(logMap) {
-			printSyslogMessage(logMap)
+			printSyslogMessage(logMap, output)
 		}
 
 	}

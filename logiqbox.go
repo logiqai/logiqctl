@@ -95,13 +95,20 @@ func commands() {
 					Hidden:      false,
 					Destination: &tailProcs,
 				},
+				&cli.StringFlag{
+					Name:    "output",
+					Value:   "column",
+					Usage:   "Set output format to be column|json|raw",
+					Hidden:  false,
+					Aliases: []string{"o"},
+				},
 			},
 			Action: func(c *cli.Context) error {
 				args := c.Args()
 				config, err := getConfig()
 				if err == nil {
 					fmt.Println("Crunching data for you...")
-					services.Tail(config, tailApps, tailLabels, tailNamespaces, args.Slice())
+					services.Tail(c, config, tailApps, tailLabels, tailNamespaces, args.Slice())
 				}
 				return nil
 			},

@@ -35,17 +35,38 @@ func printSyslogHeader() {
 	fmt.Println("timestamp|severity_string|hostname|source_ip|proc_id|app_name|facility_string|message")
 }
 
-func printSyslogMessage(logMap map[string]interface{}) {
-	fmt.Printf("%-33s|%-6s|%s|%s|%-5s|%s|%s|%s\n",
-		logMap["timestamp"],
-		logMap["severity_string"],
-		logMap["hostname"],
-		logMap["source_ip"],
-		logMap["proc_id"],
-		logMap["app_name"],
-		logMap["facility_string"],
-		logMap["message"],
-	)
+func printSyslogMessage(logMap map[string]interface{}, output string) {
+	if output == OUTPUT_COLUMNS {
+		fmt.Printf("%-33s|%-6s|%s|%s|%-5s|%s|%s|%s\n",
+			logMap["timestamp"],
+			logMap["severity_string"],
+			logMap["hostname"],
+			logMap["source_ip"],
+			logMap["proc_id"],
+			logMap["app_name"],
+			logMap["facility_string"],
+			logMap["message"],
+		)
+	} else if output == OUTPUT_RAW {
+		fmt.Printf("%s %s %s %s %s %s %s %s\n",
+			logMap["timestamp"],
+			logMap["severity_string"],
+			logMap["hostname"],
+			logMap["source_ip"],
+			logMap["proc_id"],
+			logMap["app_name"],
+			logMap["facility_string"],
+			logMap["message"],
+		)
+	} else if output == OUTPUT_JSON {
+		v, err := json.Marshal(logMap)
+		if err == nil {
+			fmt.Printf("%s\n", v)
+		} else {
+			fmt.Printf("Error marshalling JSON %v", logMap)
+			os.Exit(-1)
+		}
+	}
 }
 
 func printSyslogMessageForType(log *query.SysLogMessage, output string) {
