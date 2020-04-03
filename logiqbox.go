@@ -73,25 +73,25 @@ func commands() {
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:        "namespaces",
-					Usage:       "-namespaces",
+					Usage:       "Namespace from which we tail the data",
 					Hidden:      false,
 					Destination: &tailNamespaces,
 				},
 				&cli.BoolFlag{
 					Name:        "labels",
-					Usage:       "-labels",
+					Usage:       "K8S labels to match",
 					Hidden:      false,
 					Destination: &tailLabels,
 				},
 				&cli.BoolFlag{
 					Name:        "apps",
-					Usage:       "-apps",
+					Usage:       "Application filter",
 					Hidden:      false,
 					Destination: &tailApps,
 				},
 				&cli.BoolFlag{
 					Name:        "process",
-					Usage:       "-procs",
+					Usage:       "Process/Pod filter",
 					Hidden:      false,
 					Destination: &tailProcs,
 				},
@@ -154,7 +154,7 @@ func commands() {
 				},
 				&cli.StringFlag{
 					Name:    "filter",
-					Usage:   "-filter 'Hostname=127.0.0.1,10.231.253.255;Message=tito*'",
+					Usage:   "Filter expression e.g. 'Hostname=127.0.0.1,10.231.253.255;Message=tito*'",
 					Aliases: []string{"f"},
 				},
 				&cli.StringFlag{
