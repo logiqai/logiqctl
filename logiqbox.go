@@ -30,7 +30,7 @@ func info() {
 			Email: "cli@logiq.ai",
 		},
 	}
-	app.Version = "1.0.0"
+	app.Version = "1.0.0-rc"
 }
 
 func commands() {
