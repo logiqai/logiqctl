@@ -12,57 +12,108 @@ option go_package = "github.com/logiqai/logiqbox/api/v1/applications;application
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info : {
         title : "Applications";
-        version : "1.0";
-    };
+version
+:
+"1.0"
+;
+}
+;
 
 
-    schemes : HTTP;
-    schemes : HTTPS;
-    consumes : "application/json";
-    produces : "application/json";
+schemes
+:
+HTTP
+;
+schemes
+:
+HTTPS
+;
+consumes
+:
+"application/json"
+;
+produces
+:
+"application/json"
+;
 
-    responses : {
-        key: "400";
-        value : {
-            description: "Invalid Request."
-        }
-    }
-    responses : {
-        key: "403";
-        value : {
-            description: "Token Expired."
-        }
-    }
-    responses : {
-        key: "404";
-        value : {
-            description: "Returned when the resource does not exist."
-        }
-    }
-};
+responses
+:
+{
+key
+:
+"400"
+;
+value
+:
+{
+description
+:
+"Invalid Request."
+}
+}
+responses
+:
+{
+key
+:
+"401"
+value
+:
+{
+description
+:
+"Token Expired."
+}
+}
+}
+;
 
 message Application {
     string OrgID = 1;
     string Name = 2;
-    string CreatedTime =3;
-    string Host=4;
-    string Namespace=5;
-    string Procid=6;
+    string CreatedTime = 3;
+    string Host = 4;
+    string Namespace = 5;
+    string Procid = 6;
+}
+
+// V2 in the new normalized version of V1 table.
+message ApplicationV2 {
+    string destination = 1;
+    string namespace = 2;
+    string name = 3;
+    int64 lastSeen = 4;
+    int64 firstSeen = 5;
+}
+
+message GetApplicationsRequest {
+    string namespace = 1;
+    uint64 page = 2;
+    uint64 size = 3;
+}
+
+message GetApplicationsResponseV2 {
+    repeated ApplicationV2 applications = 2;
 }
 
 message ApplicationsResponse {
-    repeated string applications = 2 [deprecated=true];
+    repeated string applications = 2 [deprecated = true];
     repeated Application applications_list = 3;
     uint64 total_count = 4;
 }
 
-message GetApplicationsRequest {};
-
-message GetApplicationsResponse { ApplicationsResponse response = 1; }
-
+message GetApplicationsResponse {
+    ApplicationsResponse response = 1;
+}
 
 service ApplicationsService {
-    rpc GetApplications(google.protobuf.Empty) returns (GetApplicationsResponse) {
+    rpc GetApplicationsV2 (GetApplicationsRequest) returns (GetApplicationsResponseV2) {
+        option (google.api.http) = {
+            get : "/v2/applications",
+        };
+    };
+    rpc GetApplications (google.protobuf.Empty) returns (GetApplicationsResponse) {
         option (google.api.http) = {
             get : "/v1/applications",
         };

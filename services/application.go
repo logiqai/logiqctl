@@ -31,14 +31,14 @@ func GetApplications(config *cfg.Config, listNamespaces bool, namespaces []strin
 	}
 
 	if response != nil && response.Response != nil && response.Response.ApplicationsList != nil {
-		fmt.Printf("%-16s | %-16s| %-16s | %-16s\n", "Host", "Namespace", "Application", "ProcId")
+		fmt.Printf("%-16s| %-16s | %-16s\n", "Namespace", "Application", "ProcId")
 		for _, app := range response.Response.ApplicationsList {
 			if listNamespaces {
 				if _, ok := namespaceMap[app.Namespace]; ok {
-					fmt.Printf("%-16s | %-16s | %-16s | %-16s\n", app.Host, app.Namespace, app.Name, app.Procid)
+					fmt.Printf("%-16s | %-16s | %-16s\n", app.Namespace, app.Name, app.Procid)
 				}
 			} else {
-				fmt.Printf("%-16s | %-16s | %-16s | %-16s\n", app.Host, app.Namespace, app.Name, app.Procid)
+				fmt.Printf("%-16s | %-16s | %-16s\n", app.Namespace, app.Name, app.Procid)
 			}
 		}
 	}
