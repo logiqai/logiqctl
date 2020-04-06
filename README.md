@@ -1,5 +1,5 @@
 # Logiqbox 
-### CLI for Logiq Platform
+### CLI for Logiq Log Insights
 
 - Tail logs in realtime
 - Query historic data
@@ -10,7 +10,30 @@
 
 **Requirements**
 - Install Go [https://golang.org/dl/]
-- Install protoc [https://github.com/protocolbuffers/protobuf/releases] 
+- Install protoc [https://github.com/protocolbuffers/protobuf/releases]
+    
+```bash
+# For MAC
+PROTOC_ZIP=protoc-3.7.1-osx-x86_64.zip
+curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/$PROTOC_ZIP
+sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+rm -f $PROTOC_ZIP
+```
+   
+```bash
+# For Linux
+PROTOC_ZIP=protoc-3.7.1-linux-x86_64.zip
+curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/$PROTOC_ZIP
+sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+rm -f $PROTOC_ZIP
+
+```
+- run `mkdir -p $GOPATH/src/github.com/logiqai`
+- run `cd $GOPATH/src/github.com/logiqai`
+- run `git clone git@github.com:logiqai/logiqbox.git`
+- run `cd logiqbox`
 - run `./generate_grpc.sh `
 - run `go build logiqbox.go`
 
