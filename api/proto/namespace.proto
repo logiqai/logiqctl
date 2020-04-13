@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package namespace;
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+option go_package = "github.com/logiqai/logiqbox/api/v1/namespace;namespace";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info : {
+        title : "Namespaces";
+version
+:
+"1.0"
+;
+}
+;
+
+schemes
+:
+HTTP
+;
+schemes
+:
+HTTPS
+;
+consumes
+:
+"application/json"
+;
+produces
+:
+"application/json"
+;
+
+responses
+:
+{
+key
+:
+"400"
+;
+value
+:
+{
+description
+:
+"Invalid Request."
+}
+}
+responses
+:
+{
+key
+:
+"403"
+;
+value
+:
+{
+description
+:
+"Token Expired."
+}
+}
+responses
+:
+{
+key
+:
+"404"
+;
+value
+:
+{
+description
+:
+"Returned when the resource does not exist."
+}
+}
+}
+;
+
+message Namespace {
+    string destination = 1;
+    string namespace = 2;
+    string type = 3;
+    int64 lastSeen = 4;
+    int64 firstSeen = 5;
+}
+
+message NamespaceResponse {
+    repeated Namespace namespaces = 1;
+}
+
+message NamespaceRequest {
+    uint64 page = 1;
+    uint64 size = 2;
+}
+
+
+service NamespaceService {
+    rpc GetNamespaces (NamespaceRequest) returns (NamespaceResponse) {
+        option (google.api.http) = {
+            get : "/v1/namespaces",
+        };
+    };
+}

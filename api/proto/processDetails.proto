@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package processdetails;
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+option go_package = "github.com/logiqai/logiqbox/api/v1/processes;processes";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info : {
+        title : "Processes";
+version
+:
+"1.0"
+;
+}
+;
+
+schemes
+:
+HTTP
+;
+schemes
+:
+HTTPS
+;
+consumes
+:
+"application/json"
+;
+produces
+:
+"application/json"
+;
+
+responses
+:
+{
+key
+:
+"400"
+;
+value
+:
+{
+description
+:
+"Invalid Request."
+}
+}
+responses
+:
+{
+key
+:
+"403"
+;
+value
+:
+{
+description
+:
+"Token Expired."
+}
+}
+responses
+:
+{
+key
+:
+"404"
+;
+value
+:
+{
+description
+:
+"Returned when the resource does not exist."
+}
+}
+}
+;
+
+message Process {
+    string procID = 1;
+    int64 lastSeen = 2;
+    int64 firstSeen = 3;
+}
+
+message ProcessesResponse {
+    repeated Process processes = 1;
+}
+
+message ProcessesRequest {
+    string namespace = 1;
+    string applicationName = 2;
+    uint64 page = 3;
+    uint64 size = 4;
+}
+
+
+service ProcessDetailsService {
+    rpc GetProcesses (ProcessesRequest) returns (ProcessesResponse) {
+        option (google.api.http) = {
+            get : "/v1/processes",
+        };
+    };
+}

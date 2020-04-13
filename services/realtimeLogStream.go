@@ -126,7 +126,6 @@ func setupMatchAttributeMaps(matches []string, m map[string]bool) {
 	}
 }
 
-
 func setupMatchAttributeValueMaps(matches []string, sep string, m map[string]string) {
 	log.Debugln(matches)
 	for _, v := range matches {
