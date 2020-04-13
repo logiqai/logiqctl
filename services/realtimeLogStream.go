@@ -3,44 +3,58 @@ package services
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/urfave/cli/v2"
 	"io"
-	"log"
-	"os"
 	"strings"
 
 	"github.com/logiqai/easymap"
 	"github.com/logiqai/logiqbox/api/v1/realtimeLogStream"
 	"github.com/logiqai/logiqbox/cfg"
 	"google.golang.org/grpc"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
-	matchMap       = map[string]interface{}{}
+	matchAppMap    = map[string]bool{}
+	matchNamespaceMap = map[string]bool{}
+	matchLabelsMap = map[string]string{}
+	matchProcessMap = map[string]bool{}
+
 	allowAll       = false
 	tailApps       = false
 	tailNamespaces = false
 	tailLabels     = false
 	tailProcs      = false
+	tailDefault    = false
 )
 
 func isMatch(logMap map[string]interface{}) bool {
 	match := false
+
+	log.Debugln("isMatch:",tailApps, tailNamespaces, tailProcs, tailLabels)
+	log.Debugln("isMatch:",logMap["app_name"],logMap["proc_id"])
+	log.Debugln("")
+
 	if allowAll {
 		return true
 	}
+
 	if tailApps {
-		if _, found := matchMap[logMap["app_name"].(string)]; !found {
-			return false
+		if mApp, ok := logMap["app_name"]; ok {
+			if _, found := matchAppMap[mApp.(string)]; !found {
+				return false
+			} else {
+				log.Debugln("Matched app_name ", mApp)
+				match = true
+			}
 		} else {
-			match = true
+			log.Debugln("No app_name is data", logMap)
 		}
 	}
 
 	if tailNamespaces {
 		if ns, ok := logMap["namespace"]; ok {
-			if _, matchOk := matchMap[ns.(string)]; !matchOk {
+			if _, matchOk := matchNamespaceMap[ns.(string)]; !matchOk {
 				return false
 			} else {
 				match = true
@@ -51,9 +65,10 @@ func isMatch(logMap map[string]interface{}) bool {
 				if jErr := json.Unmarshal(([]byte)(mRaw.(string)), &v); jErr == nil {
 					nsDetails := v.Get("namespace_name")
 					if nsName, nsOk := nsDetails["kubernetes.namespace_name"]; nsOk {
-						if _, matchOk := matchMap[nsName.(string)]; !matchOk {
+						if _, matchOk := matchNamespaceMap[nsName.(string)]; !matchOk {
 							return false
 						} else {
+							log.Debugln("Matched namespace ", ns)
 							match = true
 						}
 					}
@@ -71,8 +86,9 @@ func isMatch(logMap map[string]interface{}) bool {
 				labelsLookup := v.Get("labels")
 				if labels, nsOk := labelsLookup["kubernetes.labels"]; nsOk {
 					for k, v := range labels.(map[string]interface{}) {
-						if matchValue, found := matchMap[k]; found {
-							if matchValue.(string) == v.(string) {
+						if matchValue, found := matchLabelsMap[k]; found {
+							if matchValue == v.(string) {
+								log.Debugln("Matched label k:", k," v:",v)
 								match = true
 							}
 						} else {
@@ -87,34 +103,61 @@ func isMatch(logMap map[string]interface{}) bool {
 			return false
 		}
 	}
+
+	if tailProcs {
+		if mProc, ok := logMap["proc_id"]; ok {
+			if _, found := matchProcessMap[mProc.(string)]; !found {
+				return false
+			} else {
+				log.Debugln("Matched process ", mProc)
+				match = true
+			}
+		} else {
+			log.Debugln("No proc_id in data", logMap)
+		}
+	}
+
 	return match
 }
 
-func Tail(c *cli.Context, config *cfg.Config, tA, tL, tN bool, apps []string) {
-	tailApps = tA
-	tailNamespaces = tN
-	tailLabels = tL
-	output := c.String("output")
-	if !tA && !tL && !tN {
-		allowAll = true
-	} else {
-
-		for _, match := range apps {
-			if tailLabels {
-				if len(strings.Split(match, ":")) != 2 {
-					fmt.Println("label matches must use key:value format")
-					os.Exit(-1)
-				}
-				lKey, lValue := strings.Split(match, ":")[0], strings.Split(match, ":")[1]
-				matchMap[lKey] = lValue
-			} else {
-				matchMap[match] = true
-			}
-			if match == "*" {
-				allowAll = true
-			}
-		}
+func setupMatchAttributeMaps(matches []string, m map[string]bool) {
+	for _, v := range matches {
+		m[v]=true
 	}
+}
+
+
+func setupMatchAttributeValueMaps(matches []string, sep string, m map[string]string) {
+	log.Debugln(matches)
+	for _, v := range matches {
+		sp := strings.Split(v, sep)
+		if len(sp) != 2 {
+			log.Fatal("Labels matches must include key and value with a : or = separator")
+		}
+		m[sp[0]]=sp[1]
+	}
+}
+
+func Tail(c *cli.Context, config *cfg.Config, tN, tL, tA, tP, def []string) {
+	log.Debugln(len(tA),len(tN),len(tL),len(tP), len(def))
+	tailApps = len(tA) > 0
+	tailNamespaces = len(tN) > 0
+	tailLabels = len(tL) > 0
+	tailProcs = len(tP) > 0
+	tailDefault = len(def) > 0
+	output := c.String("output")
+	log.Debugln(tN,tL,tA,tP,def)
+	log.Debugln("A:", tailApps, "N:", tailNamespaces, "L:",tailLabels, "P:",tailProcs, "D:",tailDefault)
+	if !tailApps && !tailLabels && !tailNamespaces && !tailProcs && !tailDefault {
+		allowAll = true
+	}
+	setupMatchAttributeMaps(tA,matchAppMap)
+	setupMatchAttributeMaps(tN,matchNamespaceMap)
+	setupMatchAttributeMaps(tP,matchProcessMap)
+	setupMatchAttributeValueMaps(tL,":=", matchLabelsMap)
+
+	log.Debugln(matchNamespaceMap, matchLabelsMap, matchProcessMap, matchAppMap)
+
 	conn, err := grpc.Dial(config.Cluster, grpc.WithInsecure())
 	if err != nil {
 		handleError(config, err)
@@ -123,7 +166,7 @@ func Tail(c *cli.Context, config *cfg.Config, tA, tL, tN bool, apps []string) {
 	defer conn.Close()
 	client := realtimeLogStream.NewLogStreamerServiceClient(conn)
 	sub := &realtimeLogStream.Subscription{
-		Applications: apps,
+		Applications: tA,
 	}
 	stream, err := client.StreamLog(context.Background(), sub)
 	if err != nil {

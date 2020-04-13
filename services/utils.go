@@ -3,7 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 
 	"github.com/logiqai/logiqbox/api/v1/query"
@@ -31,30 +31,27 @@ func handleError(config *cfg.Config, err error) {
 	}
 }
 
+const (
+	FMT = "%-24s | %-16s | %-16s | %-16s | %s\n"
+)
 func printSyslogHeader() {
-	fmt.Println("timestamp|severity_string|hostname|source_ip|proc_id|app_name|facility_string|message")
+	fmt.Printf(FMT, "Timestamp","Application","Process/Pod","Facility","Log message")
 }
 
 func printSyslogMessage(logMap map[string]interface{}, output string) {
 	if output == OUTPUT_COLUMNS {
-		fmt.Printf("%-33s|%-6s|%s|%s|%-5s|%s|%s|%s\n",
+		fmt.Printf(FMT,
 			logMap["timestamp"],
-			logMap["severity_string"],
-			logMap["hostname"],
-			logMap["source_ip"],
-			logMap["proc_id"],
 			logMap["app_name"],
+			logMap["proc_id"],
 			logMap["facility_string"],
 			logMap["message"],
 		)
 	} else if output == OUTPUT_RAW {
-		fmt.Printf("%s %s %s %s %s %s %s %s\n",
+		fmt.Printf("%s %s %s %s %s\n",
 			logMap["timestamp"],
-			logMap["severity_string"],
-			logMap["hostname"],
-			logMap["source_ip"],
-			logMap["proc_id"],
 			logMap["app_name"],
+			logMap["proc_id"],
 			logMap["facility_string"],
 			logMap["message"],
 		)

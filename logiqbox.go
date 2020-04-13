@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -10,14 +9,15 @@ import (
 
 	"github.com/logiqai/logiqbox/cfg"
 	"github.com/urfave/cli/v2"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
 	app            = cli.NewApp()
-	tailNamespaces = false
-	tailLabels     = false
-	tailApps       = false
-	tailProcs      = false
+	tailNamespaces = []string{}
+	tailLabels     = []string{}
+	tailApps       = []string{}
+	tailProcs      = []string{}
 	listNamespaces = false
 )
 
@@ -69,31 +69,26 @@ func commands() {
 			Name:      "tail",
 			Aliases:   []string{"t"},
 			Usage:     "tail logs filtered by namespace, application, labels or process / pod name",
-			ArgsUsage: "[-apps application names and/or -namespaces K8S namespace names and/or -labels K8S labels - procs process id / pod name]",
 			Flags: []cli.Flag{
-				&cli.BoolFlag{
+				&cli.StringFlag{
 					Name:        "namespaces",
-					Usage:       "Namespace from which we tail the data",
+					Usage:       "Comma separated namespaces from which we tail the data e.g. -namespace foo,bar",
 					Hidden:      false,
-					Destination: &tailNamespaces,
 				},
-				&cli.BoolFlag{
+				&cli.StringFlag{
 					Name:        "labels",
-					Usage:       "K8S labels to match",
+					Usage:       "Comma separated K8S labels to match. Allowed label K/V separator \":\" OR \"=\". e.g. -labels app:some-app",
 					Hidden:      false,
-					Destination: &tailLabels,
 				},
-				&cli.BoolFlag{
+				&cli.StringFlag{
 					Name:        "apps",
-					Usage:       "Application filter",
+					Usage:       "Comma separated application names",
 					Hidden:      false,
-					Destination: &tailApps,
 				},
-				&cli.BoolFlag{
+				&cli.StringFlag{
 					Name:        "process",
-					Usage:       "Process/Pod filter",
+					Usage:       "Command separated Process/Pod names",
 					Hidden:      false,
-					Destination: &tailProcs,
 				},
 				&cli.StringFlag{
 					Name:    "output",
@@ -104,11 +99,28 @@ func commands() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				args := c.Args()
+				var namespaces, applications, procs, labels = []string{}, []string{}, []string{}, []string{}
+				if v := c.Value("namespaces").(string); v != "" {
+					namespaces = strings.Split(v,",")
+				}
+				if v := c.Value("apps").(string); v != "" {
+					applications = strings.Split(v,",")
+				}
+				if v := c.Value("labels").(string); v != "" {
+					labels = strings.Split(v,",")
+				}
+				if v := c.Value("process").(string); v != "" {
+					procs = strings.Split(v,",")
+				}
+				
 				config, err := getConfig()
+				args := c.Args()
+				
+				log.Debugln(namespaces, labels, applications, procs, args.Slice())
+				log.Debugln(len(namespaces), len(labels), len(applications), len(procs), len(args.Slice()))
 				if err == nil {
 					fmt.Println("Crunching data for you...")
-					services.Tail(c, config, tailApps, tailLabels, tailNamespaces, args.Slice())
+					services.Tail(c, config, namespaces, labels, applications, procs, args.Slice())
 				}
 				return nil
 			},
@@ -280,6 +292,7 @@ func getConfig() (*cfg.Config, error) {
 }
 
 func main() {
+	log.SetLevel(log.ErrorLevel)
 	info()
 	commands()
 	app.Flags = []cli.Flag{
