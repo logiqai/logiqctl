@@ -97,13 +97,6 @@ func commands() {
 					Hidden:  false,
 					Aliases: []string{"o"},
 				},
-				&cli.StringFlag{
-					Name:    "output",
-					Value:   "column",
-					Usage:   "Set output format to be column|json|raw",
-					Hidden:  false,
-					Aliases: []string{"o"},
-				},
 			},
 			Action: func(c *cli.Context) error {
 				var namespaces, applications, procs, labels = []string{}, []string{}, []string{}, []string{}
