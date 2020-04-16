@@ -103,6 +103,7 @@ func Query(c *cli.Context, config *cfg.Config, applications []string, keyWords s
 	if isDebug {
 		fmt.Printf("Query id is : %s\n", qId)
 	}
+	fmt.Println(qId)
 	nextRequest := &query.GetDataRequest{
 		QueryId: qId,
 	}
@@ -131,15 +132,21 @@ func Query(c *cli.Context, config *cfg.Config, applications []string, keyWords s
 			fmt.Print("\n")
 			continue
 		}
+		if dataResponse.Status == "NO_DATA" {
+			fmt.Println("No data available for this query, \n\tMake sure that words are spelled correctly.\n\tTry changing the time range")
+			return
+		}
+		if dataResponse.Status == "COMPLETE" {
+			fmt.Println("No more records available for this query.")
+			return
+		}
 		data := dataResponse.GetData()
 		if len(data) == 0 {
 			if isDebug {
 				fmt.Printf("Got No Data , Remaining : %d Status : %s\n", dataResponse.Remaining, dataResponse.Status)
 			}
-			time.Sleep(time.Millisecond)
-			//if dataResponse.Remaining > 0 && dataResponse.Status != "COMPLETE" {
+			time.Sleep(time.Second)
 			continue
-			//}
 		}
 		printData(dataResponse, tail, output)
 		if !tail || (tail && dataResponse.Remaining <= 0) {

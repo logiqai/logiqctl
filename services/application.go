@@ -3,6 +3,8 @@ package services
 import (
 	"context"
 	"fmt"
+	"github.com/tatsushid/go-prettytable"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/logiqai/logiqbox/api/v1/applications"
@@ -31,15 +33,41 @@ func GetApplications(config *cfg.Config, listNamespaces bool, namespaces []strin
 	}
 
 	if response != nil && response.Response != nil && response.Response.ApplicationsList != nil {
-		fmt.Printf("%-16s| %-16s | %-16s\n", "Namespace", "Application", "ProcId")
+		tbl, err := prettytable.NewTable([]prettytable.Column{
+			{Header: "Namespace"},
+			{Header: "Application"},
+			{Header: "ProcId"},
+			{Header: "Last Seen"},
+			{Header: "First Seen"},
+		}...)
+		if err != nil {
+			panic(err)
+		}
+		tbl.Separator = " | "
 		for _, app := range response.Response.ApplicationsList {
 			if listNamespaces {
 				if _, ok := namespaceMap[app.Namespace]; ok {
-					fmt.Printf("%-16s | %-16s | %-16s\n", app.Namespace, app.Name, app.Procid)
+					fs := time.Unix(app.FirstSeen, 0)
+					ls := time.Unix(app.LastSeen, 0)
+					tbl.AddRow(app.Namespace, app.Name, app.Procid, fmtDuration(time.Since(fs)), fmtDuration(time.Since(ls)))
 				}
 			} else {
-				fmt.Printf("%-16s | %-16s | %-16s\n", app.Namespace, app.Name, app.Procid)
+				fs := time.Unix(app.FirstSeen, 0)
+				ls := time.Unix(app.LastSeen, 0)
+				tbl.AddRow(app.Namespace, app.Name, app.Procid, fmtDuration(time.Since(fs)), fmtDuration(time.Since(ls)))
 			}
 		}
+		tbl.Print()
 	}
+}
+
+func fmtDuration(d time.Duration) string {
+	d = d.Round(time.Minute)
+	h := d / time.Hour
+	d -= h * time.Hour
+	m := d / time.Minute
+	if h == 0 {
+		return fmt.Sprintf("%02dm ago", m)
+	}
+	return fmt.Sprintf("%02dh:%02dm ago", h, m)
 }

@@ -76,7 +76,10 @@ message Application {
     string Host = 4;
     string Namespace = 5;
     string Procid = 6;
+    int64 lastSeen = 7;
+    int64 firstSeen = 8;
 }
+
 
 // V2 in the new normalized version of V1 table.
 message ApplicationV2 {
