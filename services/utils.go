@@ -44,17 +44,18 @@ func handleError(config *cfg.Config, err error) {
 }
 
 const (
-	FMT = "%-24s | %-16s | %-16s | %-16s | %s\n"
+	FMT = "%-24s | %-16s | %-16s | %-16s | %-16s | %s\n"
 )
 
 func printSyslogHeader() {
-	fmt.Printf(FMT, "Timestamp", "Application", "Process/Pod", "Facility", "Log message")
+	fmt.Printf(FMT, "Timestamp", "Namespace", "Application", "Process/Pod", "Facility", "Log message")
 }
 
 func printSyslogMessage(logMap map[string]interface{}, output string) {
 	if output == OUTPUT_COLUMNS {
 		fmt.Printf(FMT,
 			logMap["timestamp"],
+			logMap["namespace"],
 			logMap["app_name"],
 			logMap["proc_id"],
 			logMap["facility_string"],
@@ -63,6 +64,7 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 	} else if output == OUTPUT_RAW {
 		fmt.Printf("%s %s %s %s %s\n",
 			logMap["timestamp"],
+			logMap["namespace"],
 			logMap["app_name"],
 			logMap["proc_id"],
 			logMap["facility_string"],
