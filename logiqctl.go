@@ -38,7 +38,7 @@ func commands() {
 		{
 			Name:    "configure",
 			Aliases: []string{"c"},
-			Usage:   "Configure Logiq-ctl",
+			Usage:   "Configure logiqctl",
 			Action: func(c *cli.Context) error {
 				cfg.Configure()
 				return nil
@@ -273,7 +273,7 @@ func commands() {
 func getConfig() (*cfg.Config, error) {
 	profiles, err := cfg.LoadConfig()
 	if err != nil {
-		fmt.Println("Logiq-ctl is not configured! Loading interactive configuration.")
+		fmt.Println("logiqctl is not configured! Loading interactive configuration.")
 		profiles, err = cfg.Configure()
 		if err != nil {
 			fmt.Println("Could not run interactive configuration")
