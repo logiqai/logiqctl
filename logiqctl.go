@@ -23,7 +23,7 @@ var (
 
 func info() {
 	app.Name = "Logiqctl"
-	app.Usage = "Logiq command line toolkit"
+	app.Usage = "LOGIQ command line toolkit"
 	app.Authors = []*cli.Author{
 		{
 			Name:  "logiq.ai",
