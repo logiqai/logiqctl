@@ -165,6 +165,10 @@ func Tail(c *cli.Context, config *cfg.Config, tN, tL, tA, tP, def []string) {
 	}
 	defer conn.Close()
 	client := realtimeLogStream.NewLogStreamerServiceClient(conn)
+	if tA == nil || len(tA) == 0 {
+		//always default to all logs
+		tA = []string{"*"}
+	}
 	sub := &realtimeLogStream.Subscription{
 		Applications: tA,
 	}
