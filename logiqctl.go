@@ -22,15 +22,15 @@ var (
 )
 
 func info() {
-	app.Name = "Logiq-ctl"
-	app.Usage = "Logiq CLI Tool"
+	app.Name = "Logiqctl"
+	app.Usage = "Logiq command line toolkit"
 	app.Authors = []*cli.Author{
 		{
 			Name:  "logiq.ai",
 			Email: "cli@logiq.ai",
 		},
 	}
-	app.Version = "1.0.0-rc"
+	app.Version = "1.0.0"
 }
 
 func commands() {
