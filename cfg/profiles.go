@@ -22,6 +22,7 @@ type Profiles struct {
 func (p *Profiles) GetDefaultProfile() (*Config, error) {
 	for _, c := range p.Configs {
 		if c.Default {
+			CONFIG = &c
 			return &c, nil
 		}
 	}

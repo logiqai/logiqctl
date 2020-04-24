@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/logiqai/logiqctl/discover"
+
 	"github.com/logiqai/logiqctl/services"
 
 	"github.com/logiqai/logiqctl/cfg"
@@ -36,18 +38,31 @@ func info() {
 func commands() {
 	app.Commands = []*cli.Command{
 		{
-			Name:    "configure",
-			Aliases: []string{"c"},
-			Usage:   "Configure logiqctl",
+			Name:        "discover",
+			Aliases:     []string{"d"},
+			Description: "Browse Logs",
+			Usage:       "logiqctl d",
+			Action: func(c *cli.Context) error {
+				_, _ = getConfig()
+				discover.RunDiscovery()
+				return nil
+			},
+		},
+		{
+			Name:        "configure",
+			Aliases:     []string{"c"},
+			Description: "Configure logiqctl",
+			Usage:       "logiqctl c",
 			Action: func(c *cli.Context) error {
 				cfg.Configure()
 				return nil
 			},
 		},
 		{
-			Name:    "list",
-			Aliases: []string{"ls"},
-			Usage:   "List of applications that you can tail",
+			Name:        "list",
+			Aliases:     []string{"ls"},
+			Usage:       "logiqctl ls",
+			Description: "List of applications that you can tail",
 			Action: func(c *cli.Context) error {
 				args := c.Args()
 				config, err := getConfig()

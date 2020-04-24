@@ -3,8 +3,9 @@ package services
 import (
 	"context"
 	"fmt"
-	"github.com/tatsushid/go-prettytable"
 	"time"
+
+	"github.com/tatsushid/go-prettytable"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/logiqai/logiqctl/api/v1/applications"
@@ -70,4 +71,23 @@ func fmtDuration(d time.Duration) string {
 		return fmt.Sprintf("%02dm ago", m)
 	}
 	return fmt.Sprintf("%02dh:%02dm ago", h, m)
+}
+
+func GetApplicationsV2(namespace string) []*applications.ApplicationV2 {
+	config := cfg.CONFIG
+	conn, err := grpc.Dial(config.Cluster, grpc.WithInsecure())
+	if err != nil {
+		handleError(config, err)
+		return nil
+	}
+	defer conn.Close()
+	client := applications.NewApplicationsServiceClient(conn)
+	response, err := client.GetApplicationsV2(context.Background(), &applications.GetApplicationsRequest{
+		Namespace: namespace,
+	})
+	if err != nil {
+		handleError(config, err)
+		return nil
+	}
+	return response.Applications
 }

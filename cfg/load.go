@@ -2,11 +2,14 @@ package cfg
 
 import (
 	"fmt"
+	"path"
+
 	"github.com/BurntSushi/toml"
 	"github.com/mitchellh/go-homedir"
 	"github.com/prologic/bitcask"
-	"path"
 )
+
+var CONFIG *Config
 
 func LoadConfig() (*Profiles, error) {
 
