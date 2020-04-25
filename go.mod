@@ -7,6 +7,7 @@ go 1.12
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/alecthomas/gometalinter v3.0.0+incompatible // indirect
+	github.com/dustin/go-humanize v1.0.0
 	github.com/gdamore/tcell v1.3.0
 	github.com/golang/protobuf v1.4.0
 	github.com/gordonklaus/ineffassign v0.0.0-20190601041439-ed7b1b5ee0f8 // indirect

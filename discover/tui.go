@@ -1,7 +1,13 @@
 package discover
 
 import (
+	"fmt"
+	"time"
+
+	"github.com/logiqai/logiqctl/services"
+
 	"github.com/gdamore/tcell"
+	"github.com/logiqai/logiqctl/api/v1/query"
 
 	"github.com/rivo/tview"
 )
@@ -16,6 +22,64 @@ var currentState *State
 
 // TODO 1. shortcut key be first char of name (second for repeated ones)
 // TODO 2. Tab should switch focus to next box
+
+var aLine = []query.SysLogMessage{{
+	AppName:        "AppName",
+	FacilityString: "info",
+	Message:        "shortcut key be first char of name (second for repeated ones), shortcut key be first char of name (second for repeated ones)",
+	ProcID:         "283838",
+	Timestamp:      time.RFC3339,
+	Namespace:      "tito-home",
+},
+	{
+		AppName:        "AppName",
+		FacilityString: "info",
+		Message:        "shortcut key be first char of name (second for repeated ones), shortcut key be first char of name (second for repeated ones)",
+		ProcID:         "283838",
+		Timestamp:      time.RFC3339,
+		Namespace:      "tito-home",
+	},
+	{
+		AppName:        "AppName",
+		FacilityString: "info",
+		Message:        "shortcut key be first char of name (second for repeated ones), shortcut key be first char of name (second for repeated ones)",
+		ProcID:         "283838",
+		Timestamp:      time.RFC3339,
+		Namespace:      "tito-home",
+	},
+	{
+		AppName:        "AppName",
+		FacilityString: "info",
+		Message:        "shortcut key be first char of name (second for repeated ones), shortcut key be first char of name (second for repeated ones)",
+		ProcID:         "283838",
+		Timestamp:      time.RFC3339,
+		Namespace:      "tito-home",
+	},
+	{
+		AppName:        "AppName",
+		FacilityString: "info",
+		Message:        "shortcut key be first char of name (second for repeated ones), shortcut key be first char of name (second for repeated ones)",
+		ProcID:         "283838",
+		Timestamp:      time.RFC3339,
+		Namespace:      "tito-home",
+	},
+	{
+		AppName:        "AppName",
+		FacilityString: "info",
+		Message:        "shortcut key be first char of name (second for repeated ones), shortcut key be first char of name (second for repeated ones)",
+		ProcID:         "283838",
+		Timestamp:      time.RFC3339,
+		Namespace:      "tito-home",
+	},
+	{
+		AppName:        "AppName",
+		FacilityString: "info",
+		Message:        "shortcut key be first char of name (second for repeated ones), shortcut key be first char of name (second for repeated ones), \n shortcut key be first char of name , shortcut key be first char of name , shortcut key be first char of name ",
+		ProcID:         "283838",
+		Timestamp:      time.RFC3339,
+		Namespace:      "tito-home",
+	},
+}
 
 func RunDiscovery() {
 	currentState := &State{}
@@ -49,9 +113,10 @@ func RunDiscovery() {
 		procView.Clear()
 	})
 
-	logsView := tview.NewTextView()
-	logsView.SetBorder(true)
-	logsView.SetTitle(" Logs ")
+	logsFlex := tview.NewGrid()
+	//logsFlex.SetBorder(true)
+	//logsFlex.SetTitle(" Logs ")
+	//logsFlex1 := tview.NewFlex().SetDirection(tview.FlexRow)
 
 	grid := tview.NewGrid().
 		//SetRows(0).
@@ -72,7 +137,32 @@ func RunDiscovery() {
 	procView.SetSelectedFunc(func(i int, selectProc string, des string, r rune) {
 		currentState.Process = selectProc
 		//focus to shift to logs view
-		grid.SetRows(20, 0).AddItem(logsView, 1, 0, 1, 3, 0, 0, true)
+		grid.SetRows(20, 0).AddItem(logsFlex, 1, 0, 1, 3, 0, 0, true)
+
+		data := services.QueryAndGetData(currentState.Namespace, currentState.Application, currentState.Process)
+
+		aTable := tview.NewTable()
+		aTable.SetSelectable(true, false)
+		aTable.SetTitle(fmt.Sprintf(" Log for %s (Namespace), %s (Application) and %s (Process) ", currentState.Namespace, currentState.Application, currentState.Process)).SetBorder(true)
+		for i, log := range data {
+			var color = defaultBorderColor
+			switch log.SeverityString {
+			case "warning":
+				color = tcell.ColorYellow
+				break
+			case "critical":
+				color = tcell.ColorOrange
+			case "emergency":
+				color = tcell.ColorIndianRed
+			}
+			aTable.SetCell(i, 0, tview.NewTableCell(log.Timestamp).SetTextColor(color))
+			aTable.SetCell(i, 1, tview.NewTableCell(log.SeverityString).SetTextColor(color))
+			aTable.SetCell(i, 2, tview.NewTableCell(log.FacilityString).SetTextColor(color))
+			aTable.SetCell(i, 3, tview.NewTableCell(log.Message).SetMaxWidth(0).SetTextColor(color))
+
+		}
+		app.SetFocus(aTable)
+		logsFlex.AddItem(aTable, 0, 0, 1, 1, 0, 0, false)
 	})
 
 	//Used to rotate Focus

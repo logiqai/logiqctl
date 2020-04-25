@@ -256,3 +256,46 @@ func parseTime(t string) (time.Duration, error) {
 		return 0, errors.New("invalid Duration")
 	}
 }
+
+func QueryAndGetData(ns, appName, procId string) []*query.SysLogMessage {
+	config := cfg.CONFIG
+	ctx := context.Background()
+	conn, err := grpc.Dial(config.Cluster, grpc.WithInsecure())
+	if err != nil {
+		handleError(config, err)
+	}
+	client := query.NewQueryServiceClient(conn)
+	in := &query.QueryProperties{
+		Filters: map[string]*query.FilterValues{
+			"ProcId": {
+				Values: []string{procId},
+			},
+		},
+		PageSize:  100,
+		StartTime: time.Now().Add(-1 * time.Hour).Format(time.RFC3339),
+	}
+
+	in.ApplicationNames = []string{appName}
+
+	response, err := client.Query(ctx, in)
+	if err != nil {
+		handleError(config, err)
+	}
+	qId := response.GetQueryId()
+	time.Sleep(5)
+	for {
+		res, err := client.GetData(ctx, &query.GetDataRequest{
+			QueryId: qId,
+		})
+		if err != nil {
+			handleError(config, err)
+		}
+		if len(res.Data) == 0 && res.Status == "RETRY" {
+			time.Sleep(2)
+			continue
+		}
+		if len(res.Data) > 0 {
+			return res.Data
+		}
+	}
+}
