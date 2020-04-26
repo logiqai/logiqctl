@@ -91,3 +91,14 @@ func GetApplicationsV2(namespace string) []*applications.ApplicationV2 {
 	}
 	return response.Applications
 }
+
+func GetApplicationsV2Mock(namespace string) []*applications.ApplicationV2 {
+	return []*applications.ApplicationV2{
+		{
+			Namespace: namespace,
+			Name:      "app one",
+			LastSeen:  time.Now().Unix() - 60,
+			FirstSeen: time.Now().Unix() - 1000,
+		},
+	}
+}

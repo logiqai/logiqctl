@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"time"
 
 	"github.com/logiqai/logiqctl/api/v1/processes"
 	"github.com/logiqai/logiqctl/cfg"
@@ -30,4 +31,19 @@ func GetProcesses(ns, appName string) []*processes.Process {
 	}
 	return response.Processes
 
+}
+
+func GetProcessesMock(ns, appName string) []*processes.Process {
+	time.Sleep(3 * time.Second)
+	return []*processes.Process{
+		{
+			ProcID:    "45682",
+			LastSeen:  time.Now().Unix() - 60,
+			FirstSeen: time.Now().Unix() - 1000,
+		}, {
+			ProcID:    "45688",
+			LastSeen:  time.Now().Unix() - 60,
+			FirstSeen: time.Now().Unix() - 1000,
+		},
+	}
 }

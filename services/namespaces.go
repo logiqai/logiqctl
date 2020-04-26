@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"time"
 
 	"github.com/logiqai/logiqctl/cfg"
 
@@ -26,4 +27,15 @@ func GetNamespaces() []*namespace.Namespace {
 	}
 	return response.Namespaces
 
+}
+
+func GetNamespacesMock() []*namespace.Namespace {
+	return []*namespace.Namespace{
+		{
+			Namespace: "ns1",
+			Type:      "H",
+			LastSeen:  time.Now().Unix() - 100,
+			FirstSeen: time.Now().Unix() - 1000,
+		},
+	}
 }

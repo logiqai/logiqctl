@@ -299,3 +299,46 @@ func QueryAndGetData(ns, appName, procId string) []*query.SysLogMessage {
 		}
 	}
 }
+
+func QueryAndGetDataMock(ns, appName, procId string) []*query.SysLogMessage {
+	return []*query.SysLogMessage{
+		{
+			ID:             1,
+			AppName:        appName,
+			Facility:       0,
+			FacilityString: "",
+			Hostname:       "",
+			Message:        "this is a mock data, this is a mock data, this is a mock data",
+			MsgID:          "",
+			PartitionID:    0,
+			Priority:       0,
+			ProcID:         procId,
+			Sender:         "ddd",
+			Severity:       0,
+			SeverityString: "emergency",
+			StructuredData: "ddd",
+			Tag:            "ddd",
+			Timestamp:      time.Now().Format(time.RFC3339),
+			Namespace:      ns,
+		},
+		{
+			ID:             1,
+			AppName:        appName,
+			Facility:       0,
+			FacilityString: "",
+			Hostname:       "",
+			Message:        "this is a mock data, this is a mock data, this is a mock data",
+			MsgID:          "",
+			PartitionID:    0,
+			Priority:       0,
+			ProcID:         procId,
+			Sender:         "ddd",
+			Severity:       0,
+			SeverityString: "emergency",
+			StructuredData: "ddd",
+			Tag:            "ddd",
+			Timestamp:      time.Now().Format(time.RFC3339),
+			Namespace:      ns,
+		},
+	}
+}

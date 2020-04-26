@@ -84,10 +84,23 @@ var aLine = []query.SysLogMessage{{
 func RunDiscovery() {
 	currentState := &State{}
 	app := tview.NewApplication()
-	//newPrimitive := func() tview.Primitive {
-	//	return tview.NewTextView().SetText("logiqctl dfgd dsgfdf s sdf").SetBorder(true).SetTitle(" logiqctl ")
-	//}
 
+	statusView := tview.NewTextView()
+	statusView.SetBorder(true)
+	statusView.SetText("Select a Namespace")
+
+	text := make(chan string)
+
+	go func() {
+		for {
+			select {
+			case message := <-text:
+				statusView.SetText(message)
+			}
+		}
+	}()
+
+	logsTable := tview.NewTable()
 	nsView := getNamespacesList()
 	nsView.SetBorder(true)
 	nsView.SetTitle(" NameSpaces ")
@@ -106,29 +119,35 @@ func RunDiscovery() {
 		currentState.Namespace = ns
 		currentState.Application = ""
 		currentState.Process = ""
+		text <- "Fetching Applications"
 		updateApplicationsList(ns, appsView)
 		app.SetFocus(appsView)
 		appsView.SetBorderColor(tcell.ColorIndianRed)
 		nsView.SetBorderColor(defaultBorderColor)
+		text <- "Select a Application"
 		procView.Clear()
 	})
 
-	logsFlex := tview.NewGrid()
-	//logsFlex.SetBorder(true)
-	//logsFlex.SetTitle(" Logs ")
+	logsGrid := tview.NewGrid()
+	//logsGrid.SetBorder(true)
+	//logsGrid.SetTitle(" Logs ")
 	//logsFlex1 := tview.NewFlex().SetDirection(tview.FlexRow)
 
 	grid := tview.NewGrid().
 		//SetRows(0).
 		//SetColumns(0, 0, 0).
+		SetRows(0, 3).
 		AddItem(nsView, 0, 0, 1, 1, 0, 0, true).
 		AddItem(appsView, 0, 1, 1, 1, 0, 0, false).
-		AddItem(procView, 0, 2, 1, 1, 0, 0, false)
+		AddItem(procView, 0, 2, 1, 1, 0, 0, false).
+		AddItem(statusView, 1, 0, 1, 3, 0, 0, false)
 
 	appsView.SetSelectedFunc(func(i int, selectApp string, des string, r rune) {
 		currentState.Application = selectApp
 		currentState.Process = ""
+		text <- "Fetching Processes"
 		updateProcessList(currentState.Namespace, selectApp, procView)
+		text <- "Select a process to display logs"
 		app.SetFocus(procView)
 		procView.SetBorderColor(tcell.ColorIndianRed)
 		appsView.SetBorderColor(defaultBorderColor)
@@ -137,13 +156,13 @@ func RunDiscovery() {
 	procView.SetSelectedFunc(func(i int, selectProc string, des string, r rune) {
 		currentState.Process = selectProc
 		//focus to shift to logs view
-		grid.SetRows(20, 0).AddItem(logsFlex, 1, 0, 1, 3, 0, 0, true)
 
-		data := services.QueryAndGetData(currentState.Namespace, currentState.Application, currentState.Process)
+		grid.SetRows(18, 3, 0).AddItem(logsGrid, 2, 0, 1, 3, 0, 0, true)
 
-		aTable := tview.NewTable()
-		aTable.SetSelectable(true, false)
-		aTable.SetTitle(fmt.Sprintf(" Log for %s (Namespace), %s (Application) and %s (Process) ", currentState.Namespace, currentState.Application, currentState.Process)).SetBorder(true)
+		data := services.QueryAndGetDataMock(currentState.Namespace, currentState.Application, currentState.Process)
+
+		logsTable.SetSelectable(true, false)
+		logsTable.SetTitle(fmt.Sprintf(" Log for %s (Namespace), %s (Application) and %s (Process) ", currentState.Namespace, currentState.Application, currentState.Process)).SetBorder(true)
 		for i, log := range data {
 			var color = defaultBorderColor
 			switch log.SeverityString {
@@ -155,14 +174,16 @@ func RunDiscovery() {
 			case "emergency":
 				color = tcell.ColorIndianRed
 			}
-			aTable.SetCell(i, 0, tview.NewTableCell(log.Timestamp).SetTextColor(color))
-			aTable.SetCell(i, 1, tview.NewTableCell(log.SeverityString).SetTextColor(color))
-			aTable.SetCell(i, 2, tview.NewTableCell(log.FacilityString).SetTextColor(color))
-			aTable.SetCell(i, 3, tview.NewTableCell(log.Message).SetMaxWidth(0).SetTextColor(color))
+			logsTable.SetCell(i, 0, tview.NewTableCell(log.Timestamp).SetTextColor(color))
+			logsTable.SetCell(i, 1, tview.NewTableCell(log.SeverityString).SetTextColor(color))
+			logsTable.SetCell(i, 2, tview.NewTableCell(log.FacilityString).SetTextColor(color))
+			logsTable.SetCell(i, 3, tview.NewTableCell(log.Message).SetMaxWidth(0).SetTextColor(color))
 
 		}
-		app.SetFocus(aTable)
-		logsFlex.AddItem(aTable, 0, 0, 1, 1, 0, 0, false)
+		app.SetFocus(logsTable)
+		logsGrid.AddItem(logsTable, 0, 0, 1, 1, 0, 0, false)
+		logsTable.SetBorderColor(tcell.ColorIndianRed)
+		procView.SetBorderColor(defaultBorderColor)
 	})
 
 	//Used to rotate Focus
@@ -211,6 +232,25 @@ func RunDiscovery() {
 			app.SetFocus(nsView)
 			nsView.SetBorderColor(tcell.ColorIndianRed)
 			procView.SetBorderColor(defaultBorderColor)
+			break
+		default:
+			return event
+		}
+		return nil
+	})
+
+	logsGrid.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyTab:
+
+			//Move focus only if app is populated
+			app.SetFocus(nsView)
+			nsView.SetBorderColor(tcell.ColorIndianRed)
+			logsTable.SetBorderColor(defaultBorderColor)
+			//TODO rotate focus even if no select app
+			//Ideally populate app for the highlighted ns even if not selected
+			//TODO handle mouse focus
+
 			break
 		default:
 			return event

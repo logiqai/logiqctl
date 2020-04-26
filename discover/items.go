@@ -12,7 +12,7 @@ import (
 
 func getNamespacesList() *tview.List {
 	nsView := tview.NewList()
-	nameSpaces := services.GetNamespaces()
+	nameSpaces := services.GetNamespacesMock()
 
 	for i, ns := range nameSpaces {
 		lastSeen := humanize.Time(time.Unix(ns.LastSeen, 0))
@@ -25,7 +25,7 @@ func getNamespacesList() *tview.List {
 
 func updateApplicationsList(namespace string, appView *tview.List) {
 	appView.Clear()
-	applications := services.GetApplicationsV2(namespace)
+	applications := services.GetApplicationsV2Mock(namespace)
 	for i, app := range applications {
 		lastSeen := humanize.Time(time.Unix(app.LastSeen, 0))
 		description := fmt.Sprintf("Updated %s", lastSeen)
@@ -35,7 +35,7 @@ func updateApplicationsList(namespace string, appView *tview.List) {
 
 func updateProcessList(namespace string, appName string, processView *tview.List) {
 	processView.Clear()
-	processes := services.GetProcesses(namespace, appName)
+	processes := services.GetProcessesMock(namespace, appName)
 	for i, process := range processes {
 		lastSeen := humanize.Time(time.Unix(process.LastSeen, 0))
 		description := fmt.Sprintf("Updated %s", lastSeen)
