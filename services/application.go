@@ -3,8 +3,11 @@ package services
 import (
 	"context"
 	"fmt"
-	"github.com/tatsushid/go-prettytable"
 	"time"
+
+	"github.com/dustin/go-humanize"
+
+	"github.com/tatsushid/go-prettytable"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/logiqai/logiqctl/api/v1/applications"
@@ -49,12 +52,12 @@ func GetApplications(config *cfg.Config, listNamespaces bool, namespaces []strin
 				if _, ok := namespaceMap[app.Namespace]; ok {
 					fs := time.Unix(app.FirstSeen, 0)
 					ls := time.Unix(app.LastSeen, 0)
-					tbl.AddRow(app.Namespace, app.Name, app.Procid, fmtDuration(time.Since(fs)), fmtDuration(time.Since(ls)))
+					tbl.AddRow(app.Namespace, app.Name, app.Procid, humanize.Time(ls), humanize.Time(fs))
 				}
 			} else {
 				fs := time.Unix(app.FirstSeen, 0)
 				ls := time.Unix(app.LastSeen, 0)
-				tbl.AddRow(app.Namespace, app.Name, app.Procid, fmtDuration(time.Since(fs)), fmtDuration(time.Since(ls)))
+				tbl.AddRow(app.Namespace, app.Name, app.Procid, humanize.Time(ls), humanize.Time(fs))
 			}
 		}
 		tbl.Print()
