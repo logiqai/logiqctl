@@ -5,8 +5,11 @@
 - Query historic data
 - Do Text Search on data 
 
+### Quick start
+The simplest way to try logiqctl is to download a pre-built binary from our release page:
+https://github.com/logiqai/logiqctl/releases
 
-#### How to run
+#### How to build from source
 
 **Requirements**
 - Install Go [https://golang.org/dl/]

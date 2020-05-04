@@ -11,6 +11,8 @@ github.com/client9/misspell
 github.com/client9/misspell/cmd/misspell
 # github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
 github.com/cpuguy83/go-md2man/v2/md2man
+# github.com/dustin/go-humanize v1.0.0
+github.com/dustin/go-humanize
 # github.com/gofrs/flock v0.7.1
 github.com/gofrs/flock
 # github.com/golang/lint v0.0.0-20181026193005-c67002cb31c3

@@ -2,7 +2,6 @@ package cfg
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -95,28 +94,11 @@ func createConfig(fileName string, profiles *Profiles) {
 }
 
 func getNewConfig() (*Config, error) {
-	namePrompt := promptui.Prompt{
-		Label: "Enter name for the new config ",
-		Validate: func(s string) error {
-			if len(s) == 0 {
-				return errors.New("this field is Mandatory")
-			}
-			return nil
-		},
-		//Validate: validateFile, /TODO validate unique names
-		//Default:  DefaultPrivateKeyFile,
-	}
-	name, err := namePrompt.Run()
-
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return nil, err
-	}
 
 	clusterPrompt := promptui.Prompt{
-		Label: "Enter URL of the cluster ",
+		Label: "Enter the Logiq cluster URL: ",
 		//Validate: validateFile,
-		Default: "localhost:50054",
+		Default: "logiq.mydomain.com",
 	}
 	cluster, err := clusterPrompt.Run()
 
@@ -125,33 +107,9 @@ func getNewConfig() (*Config, error) {
 		return nil, err
 	}
 
-	//apiPrompt := promptui.Prompt{
-	//	Label: "Enter API key ",
-	//	//Validate: validateFile,
-	//	Default: "XXX-TODO",
-	//}
-	//apiKey, err := apiPrompt.Run()
+	defaultConfig := true
 
-	defaultPrompt := promptui.Select{
-		Label: "Is this your default config? ",
-		Items: []string{
-			"Yes",
-			"No",
-		},
-	}
-	d, _, err := defaultPrompt.Run()
-
-	defaultConfig := false
-	if d == 0 {
-		defaultConfig = true
-	}
-
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return nil, err
-	}
-
-	return &Config{Name: name, Cluster: cluster, ApiKey: "N/A", Default: defaultConfig}, nil
+	return &Config{Name: cluster, Cluster: cluster + ":8081", ApiKey: "N/A", Default: defaultConfig}, nil
 }
 
 func exists(name string) (bool, error) {
