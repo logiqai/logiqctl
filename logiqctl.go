@@ -146,10 +146,10 @@ func commands() {
 			},
 		},
 		{
-			Name:      "query",
-			Aliases:   []string{"q"},
-			Usage:     `query "sudo cron" 2h`,
-			ArgsUsage: "[application names, relative time]",
+			Name:        "query",
+			Aliases:     []string{"q"},
+			Usage:       `logiqctl query`,
+			Description: "Query application logs",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:        "debug",
@@ -157,12 +157,6 @@ func commands() {
 					Hidden:      true,
 					DefaultText: "false",
 					Aliases:     []string{"-debug", "-d", "--debug"},
-				},
-				&cli.StringFlag{
-					Name:    "end_time",
-					Value:   "10h",
-					Usage:   "Relative end time.",
-					Aliases: []string{"et"},
 				},
 				&cli.StringFlag{
 					Name:    "filter",
@@ -191,65 +185,12 @@ func commands() {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				args := c.Args()
-				if !args.Present() && args.Len() != 1 {
-					fmt.Println("Incorrect Usage")
-				} else {
-					config, err := getConfig()
-					apps := strings.Split(args.Get(0), " ")
-					if err == nil {
-						services.Query(c, config, apps, "", "QUERY")
-					}
-				}
-				return nil
-			},
-			Subcommands: []*cli.Command{
-				{
-					Name:        "next",
-					Aliases:     []string{"n"},
-					Usage:       "query n",
-					UsageText:   "",
-					Description: "Get the next 'n' values for the last query or search",
-					Action: func(context *cli.Context) error {
-						config, _ := getConfig()
-						services.GetNext(context, config)
-						return nil
-					},
-				},
-			},
-		},
-		{
-			Name:      "search",
-			Aliases:   []string{"s"},
-			Usage:     `search sudo`,
-			ArgsUsage: "[search_term, relative time]",
-			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:  "st",
-					Value: "10h",
-					Usage: "Relative start time.",
-				},
 
-				&cli.StringFlag{
-					Name:  "et",
-					Value: "10h",
-					Usage: "Relative end time.",
-				},
-				&cli.StringFlag{
-					Name:  "filter",
-					Usage: "--filter 'Hostname=127.0.0.1,10.231.253.255;Message=tito*'",
-				},
-			},
-			Action: func(c *cli.Context) error {
-				args := c.Args()
-				if !args.Present() && args.Len() != 1 {
-					fmt.Println("Incorrect Usage")
-				} else {
-					config, err := getConfig()
-					if err == nil {
-						services.Query(c, config, nil, args.Get(0), "SEARCH")
-					}
+				config, err := getConfig()
+				if err == nil {
+					services.Query(c, config, "QUERY")
 				}
+
 				return nil
 			},
 			Subcommands: []*cli.Command{
@@ -267,6 +208,55 @@ func commands() {
 				},
 			},
 		},
+		//{
+		//	Name:      "search",
+		//	Aliases:   []string{"s"},
+		//	Usage:     `search sudo`,
+		//	ArgsUsage: "[search_term, relative time]",
+		//	Flags: []cli.Flag{
+		//		&cli.StringFlag{
+		//			Name:  "st",
+		//			Value: "10h",
+		//			Usage: "Relative start time.",
+		//		},
+		//
+		//		&cli.StringFlag{
+		//			Name:  "et",
+		//			Value: "10h",
+		//			Usage: "Relative end time.",
+		//		},
+		//		&cli.StringFlag{
+		//			Name:  "filter",
+		//			Usage: "--filter 'Hostname=127.0.0.1,10.231.253.255;Message=tito*'",
+		//		},
+		//	},
+		//	Action: func(c *cli.Context) error {
+		//		args := c.Args()
+		//		if !args.Present() && args.Len() != 1 {
+		//			fmt.Println("Incorrect Usage")
+		//		} else {
+		//			config, err := getConfig()
+		//			if err == nil {
+		//				services.Query(c, config, nil, args.Get(0), "SEARCH")
+		//			}
+		//		}
+		//		return nil
+		//	},
+		//	Subcommands: []*cli.Command{
+		//		{
+		//			Name:        "next",
+		//			Aliases:     []string{"n"},
+		//			Usage:       "query n",
+		//			UsageText:   "",
+		//			Description: "Get the next 'n' values for the last query or search",
+		//			Action: func(context *cli.Context) error {
+		//				config, _ := getConfig()
+		//				services.GetNext(context, config)
+		//				return nil
+		//			},
+		//		},
+		//	},
+		//},
 	}
 }
 
