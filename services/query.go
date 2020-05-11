@@ -8,6 +8,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/logiqai/logiqctl/api/v1/applications"
+
+	"github.com/logiqai/logiqctl/api/v1/namespace"
+
+	"github.com/dustin/go-humanize"
+	"github.com/manifoldco/promptui"
+
 	"github.com/logiqai/logiqctl/api/v1/query"
 	"github.com/logiqai/logiqctl/db"
 
@@ -43,7 +50,7 @@ func (q *QueryDebug) Strings() string {
 	return fmt.Sprintf("Count : %d \n Duplicate Count : %d\n", q.Count, q.DuplicateCount)
 }
 
-func Query(c *cli.Context, config *cfg.Config, applications []string, keyWords string, qType string) {
+func Query(c *cli.Context, config *cfg.Config, qType string) {
 	startTime := c.String("st")
 	endTime := c.String("et")
 	debug := c.Bool("debug")
@@ -81,17 +88,17 @@ func Query(c *cli.Context, config *cfg.Config, applications []string, keyWords s
 		}
 	}
 
+	ns, app, lastSeen, _ := RunSelectApplicationForNamespacePrompt(config)
+
 	in := &query.QueryProperties{
 		Filters:   filterValuesMap,
+		Namespace: ns,
 		PageSize:  30,
-		StartTime: time.Now().Add(-1 * st).Format(time.RFC3339),
-		EndTime:   time.Now().Add(-1 * et).Format(time.RFC3339),
+		StartTime: time.Unix(lastSeen, 0).Add(-1 * st).Format(time.RFC3339),
 	}
 
 	if qType == "QUERY" {
-		in.ApplicationNames = applications
-	} else if qType == "SEARCH" {
-		in.KeyWord = keyWords
+		in.ApplicationNames = []string{app}
 	}
 
 	response, err := client.Query(ctx, in)
@@ -114,7 +121,7 @@ func Query(c *cli.Context, config *cfg.Config, applications []string, keyWords s
 		if !retry {
 			break
 		}
-		dataResponse, err := client.GetData(ctx, nextRequest)
+		dataResponse, err := client.GetDataNext(ctx, nextRequest)
 		if err != nil {
 			errorCount++
 			if errorCount > 5 {
@@ -136,11 +143,12 @@ func Query(c *cli.Context, config *cfg.Config, applications []string, keyWords s
 			fmt.Println("No data available for this query, \n\tMake sure that words are spelled correctly.\n\tTry changing the time range")
 			return
 		}
-		if dataResponse.Status == "COMPLETE" {
+		data := dataResponse.GetData()
+		if dataResponse.Status == "COMPLETE" && len(data) == 0 {
 			fmt.Println("No more records available for this query.")
 			return
 		}
-		data := dataResponse.GetData()
+
 		if len(data) == 0 {
 			if isDebug {
 				fmt.Printf("Got No Data , Remaining : %d Status : %s\n", dataResponse.Remaining, dataResponse.Status)
@@ -182,7 +190,7 @@ func GetNext(c *cli.Context, config *cfg.Config) {
 		QueryId: qId,
 	}
 
-	dataResponse, err := client.GetData(ctx, nextRequest)
+	dataResponse, err := client.GetDataNext(ctx, nextRequest)
 	if err != nil {
 		handleError(config, err)
 		return
@@ -196,7 +204,7 @@ func printData(dataResponse *query.GetDataResponse, modeTail bool, output string
 		printSyslogMessageForType(d, output)
 	}
 	if !modeTail {
-		if dataResponse.Status != "COMPLETE" {
+		if dataResponse.Status != "COMPLETE" || dataResponse.Remaining != 0 {
 			fmt.Printf("\nAtleast %d records remaining... Enter `n` or `next' to continue.\n", dataResponse.Remaining)
 		} else {
 			fmt.Println("No more records available for this query.")
@@ -255,4 +263,109 @@ func parseTime(t string) (time.Duration, error) {
 	default:
 		return 0, errors.New("invalid Duration")
 	}
+}
+
+func RunSelectApplicationForNamespacePrompt(config *cfg.Config) (string, string, int64, int64) {
+
+	conn, err := grpc.Dial(config.Cluster, grpc.WithInsecure())
+	if err != nil {
+		handleError(config, err)
+	}
+
+	nsClient := namespace.NewNamespaceServiceClient(conn)
+
+	nsResponse, err := nsClient.GetNamespaces(context.Background(), &namespace.NamespaceRequest{})
+
+	if err != nil {
+		handleError(config, err)
+	}
+
+	templates := &promptui.SelectTemplates{
+		Label:    "{{ . }}?",
+		Active:   "\U000000BB {{ .Name | green }} ({{ .Details | red }})",
+		Inactive: "  {{ .Name | cyan }} ({{ .Details | red }})",
+		Selected: "Selected namespace: {{ .Name | red }}",
+	}
+	var nameSpace string
+	if len(nsResponse.Namespaces) > 0 {
+		var nss []struct {
+			Name    string
+			Details string
+		}
+		for _, ns := range nsResponse.Namespaces {
+			ls := time.Unix(ns.LastSeen, 0)
+			nss = append(nss, struct {
+				Name    string
+				Details string
+			}{
+				Name:    ns.Namespace,
+				Details: fmt.Sprintf("Last Seen %s", humanize.Time(ls)),
+			})
+		}
+
+		nsPrompt := promptui.Select{
+			Label:     fmt.Sprintf("Select a namespace"),
+			Items:     nss,
+			Templates: templates,
+			Size:      6,
+		}
+		what, _, err := nsPrompt.Run()
+		if err != nil {
+			handleError(config, err)
+		}
+		nameSpace = nss[what].Name
+	}
+	appsClient := applications.NewApplicationsServiceClient(conn)
+	appsResponse, err := appsClient.GetApplicationsV2(context.Background(), &applications.GetApplicationsRequest{
+		Namespace: nameSpace,
+	})
+	if err != nil {
+		handleError(config, err)
+	}
+
+	if len(appsResponse.Applications) > 0 {
+		var apps []struct {
+			Name      string
+			Details   string
+			LastSeen  int64
+			FirstSeen int64
+		}
+		for _, app := range appsResponse.Applications {
+			ls := time.Unix(app.LastSeen, 0)
+			apps = append(apps, struct {
+				Name      string
+				Details   string
+				LastSeen  int64
+				FirstSeen int64
+			}{
+				Name:      app.Name,
+				Details:   fmt.Sprintf("Last Seen %s", humanize.Time(ls)),
+				LastSeen:  app.LastSeen,
+				FirstSeen: app.LastSeen,
+			})
+		}
+
+		templates := &promptui.SelectTemplates{
+			Label:    "{{ . }}?",
+			Active:   "\U000000BB {{ .Name | green }} ({{ .Details | red }})",
+			Inactive: "  {{ .Name | cyan }} ({{ .Details | red }})",
+			Selected: "Select application: {{ .Name | red }}",
+		}
+
+		whatPrompt := promptui.Select{
+			Label:     fmt.Sprintf("Select an application to run query"),
+			Items:     apps,
+			Templates: templates,
+			Size:      6,
+		}
+
+		what, _, err := whatPrompt.Run()
+		if err != nil {
+			handleError(config, err)
+		}
+
+		return nameSpace, apps[what].Name, apps[what].LastSeen, apps[what].FirstSeen
+	}
+	handleError(config, errors.New("Cannot find applications"))
+	return "", "", 0, 0
 }
