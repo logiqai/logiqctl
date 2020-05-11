@@ -20,6 +20,8 @@ require (
 	github.com/nicksnyder/go-i18n v1.10.1 // indirect
 	github.com/prologic/bitcask v0.3.5
 	github.com/sirupsen/logrus v1.4.2
+	github.com/spf13/cobra v0.0.5
+	github.com/spf13/viper v1.4.0
 	github.com/tatsushid/go-prettytable v0.0.0-20141013043238-ed2d14c29939
 	github.com/urfave/cli/v2 v2.1.1
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
