@@ -50,14 +50,15 @@ var configCmd = &cobra.Command{
 func NewSetClusterCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set-cluster",
-		Example: "set-cluster END-POINT",
+		Example: "logiqctl set-cluster END-POINT",
 		Short:   "Sets a logiq cluster entry point",
 		Long: `
 Sets the cluster, a valid logiq cluster end point is required for all the operations
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 1 {
-				fmt.Printf("Please provide end point")
+				fmt.Println("Incorrect Usage")
+				fmt.Println(cmd.Example)
 				return
 			}
 			viper.Set(utils.KeyCluster, args[0])
@@ -114,7 +115,7 @@ This will the default context for all the operations.
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) > 1 {
 				fmt.Printf("Incorrect usage")
-				fmt.Println(cmd.Use)
+				fmt.Println(cmd.Example)
 				return
 			}
 			if len(args) == 1 {
@@ -125,7 +126,7 @@ This will the default context for all the operations.
 			selectedNs, err := services.RunSelectNamespacePrompt()
 			if err != nil {
 				fmt.Printf("Incorrect usage")
-				fmt.Println(cmd.Use)
+				fmt.Println(cmd.Example)
 				return
 			}
 			setContext(selectedNs)

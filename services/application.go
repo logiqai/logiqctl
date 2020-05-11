@@ -146,7 +146,7 @@ func RunSelectApplicationForNamespacePrompt() (string, error) {
 			Label:    "{{ . }}?",
 			Active:   "\U000000BB {{ .Name | green }} ({{ .Details | red }})",
 			Inactive: "  {{ .Name | cyan }} ({{ .Details | red }})",
-			Selected: "Showing processes for {{ .Name | red }}",
+			Selected: "Listing processes for {{ .Name | red }}",
 		}
 
 		whatPrompt := promptui.Select{

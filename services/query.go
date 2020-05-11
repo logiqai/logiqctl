@@ -88,7 +88,7 @@ func Query(c *cli.Context, config *cfg.Config, qType string) {
 		}
 	}
 
-	ns, app, lastSeen, _ := RunSelectApplicationForNamespacePrompt(config)
+	ns, app, lastSeen, _ := RunSelectApplicationForNamespacePromptForQuery(config)
 
 	in := &query.QueryProperties{
 		Filters:   filterValuesMap,
@@ -265,7 +265,7 @@ func parseTime(t string) (time.Duration, error) {
 	}
 }
 
-func RunSelectApplicationForNamespacePrompt(config *cfg.Config) (string, string, int64, int64) {
+func RunSelectApplicationForNamespacePromptForQuery(config *cfg.Config) (string, string, int64, int64) {
 
 	conn, err := grpc.Dial(config.Cluster, grpc.WithInsecure())
 	if err != nil {
