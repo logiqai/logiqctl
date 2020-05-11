@@ -257,64 +257,97 @@ func parseTime(t string) (time.Duration, error) {
 	}
 }
 
-func QueryAndGetData(ns, appName, procId string) []*query.SysLogMessage {
+func QueryV2(ns, appName, procId string, startTime time.Time) (string, error) {
 	config := cfg.CONFIG
 	ctx := context.Background()
 	conn, err := grpc.Dial(config.Cluster, grpc.WithInsecure())
 	if err != nil {
-		handleError(config, err)
+		return "", err
 	}
 	client := query.NewQueryServiceClient(conn)
 	in := &query.QueryProperties{
+		ApplicationNames: []string{appName},
+		Namespace:        ns,
 		Filters: map[string]*query.FilterValues{
 			"ProcId": {
 				Values: []string{procId},
 			},
 		},
 		PageSize:  100,
-		StartTime: time.Now().Add(-1 * time.Hour).Format(time.RFC3339),
+		StartTime: startTime.Format(time.RFC3339),
 	}
 
 	in.ApplicationNames = []string{appName}
-
 	response, err := client.Query(ctx, in)
 	if err != nil {
-		handleError(config, err)
+		return "", err
 	}
-	qId := response.GetQueryId()
-	time.Sleep(5)
+	return response.GetQueryId(), nil
+}
+
+func GetData(queryId string, messageChan chan query.SysLogMessage) error {
+	config := cfg.CONFIG
+	ctx := context.Background()
+	conn, err := grpc.Dial(config.Cluster, grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	client := query.NewQueryServiceClient(conn)
 	for {
 		res, err := client.GetData(ctx, &query.GetDataRequest{
-			QueryId: qId,
+			QueryId: queryId,
 		})
 		if err != nil {
-			handleError(config, err)
+			return err
 		}
 		if len(res.Data) == 0 && res.Status == "RETRY" {
 			time.Sleep(2)
 			continue
 		}
 		if len(res.Data) > 0 {
-			return res.Data
+			for _, data := range res.Data {
+				messageChan <- *data
+			}
+			break
 		}
 	}
+	return nil
 }
 
-func QueryAndGetDataMock(ns, appName, procId string) []*query.SysLogMessage {
-	return []*query.SysLogMessage{
+func QueryAndGetDataMock(ns, appName, procId string, messageChan chan query.SysLogMessage) {
+	data := []*query.SysLogMessage{
 		{
-			ID:             1,
+			ID:             "1",
 			AppName:        appName,
-			Facility:       0,
+			Facility:       "0",
 			FacilityString: "",
 			Hostname:       "",
 			Message:        "this is a mock data, this is a mock data, this is a mock data",
 			MsgID:          "",
-			PartitionID:    0,
-			Priority:       0,
+			PartitionID:    "0",
+			Priority:       "0",
 			ProcID:         procId,
 			Sender:         "ddd",
-			Severity:       0,
+			Severity:       "0",
+			SeverityString: "critical",
+			StructuredData: "ddd",
+			Tag:            "ddd",
+			Timestamp:      time.Now().Format(time.RFC3339),
+			Namespace:      ns,
+		},
+		{
+			ID:             "1",
+			AppName:        appName,
+			Facility:       "0",
+			FacilityString: "",
+			Hostname:       "",
+			Message:        "this is a mock data, this is a mock data, this is a mock data",
+			MsgID:          "",
+			PartitionID:    "0",
+			Priority:       "0",
+			ProcID:         procId,
+			Sender:         "ddd",
+			Severity:       "0",
 			SeverityString: "emergency",
 			StructuredData: "ddd",
 			Tag:            "ddd",
@@ -322,23 +355,44 @@ func QueryAndGetDataMock(ns, appName, procId string) []*query.SysLogMessage {
 			Namespace:      ns,
 		},
 		{
-			ID:             1,
+			ID:             "1",
 			AppName:        appName,
-			Facility:       0,
+			Facility:       "0",
 			FacilityString: "",
 			Hostname:       "",
 			Message:        "this is a mock data, this is a mock data, this is a mock data",
 			MsgID:          "",
-			PartitionID:    0,
-			Priority:       0,
+			PartitionID:    "0",
+			Priority:       "0",
 			ProcID:         procId,
 			Sender:         "ddd",
-			Severity:       0,
-			SeverityString: "emergency",
+			Severity:       "0",
+			SeverityString: "info",
+			StructuredData: "ddd",
+			Tag:            "ddd",
+			Timestamp:      time.Now().Format(time.RFC3339),
+			Namespace:      ns,
+		}, {
+			ID:             "1",
+			AppName:        appName,
+			Facility:       "0",
+			FacilityString: "",
+			Hostname:       "",
+			Message:        "this is a mock data, this is a mock data, <br> this is a mock data",
+			MsgID:          "",
+			PartitionID:    "0",
+			Priority:       "0",
+			ProcID:         procId,
+			Sender:         "ddd",
+			Severity:       "0",
+			SeverityString: "warning",
 			StructuredData: "ddd",
 			Tag:            "ddd",
 			Timestamp:      time.Now().Format(time.RFC3339),
 			Namespace:      ns,
 		},
+	}
+	for _, d := range data {
+		messageChan <- *d
 	}
 }

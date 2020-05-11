@@ -8,7 +8,8 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/alecthomas/gometalinter v3.0.0+incompatible // indirect
 	github.com/dustin/go-humanize v1.0.0
-	github.com/golang/protobuf v1.4.0
+	github.com/gdamore/tcell v1.3.0
+	github.com/golang/protobuf v1.4.1
 	github.com/gordonklaus/ineffassign v0.0.0-20190601041439-ed7b1b5ee0f8 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.14.4
 	github.com/logiqai/easymap v0.0.0-20200227180046-a881ae643345
@@ -19,6 +20,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nicksnyder/go-i18n v1.10.1 // indirect
 	github.com/prologic/bitcask v0.3.5
+	github.com/rivo/tview v0.0.0-20200414130344-8e06c826b3a5
 	github.com/sirupsen/logrus v1.4.2
 	github.com/tatsushid/go-prettytable v0.0.0-20141013043238-ed2d14c29939
 	github.com/urfave/cli/v2 v2.1.1
@@ -27,7 +29,7 @@ require (
 	golang.org/x/tools v0.0.0-20190621195816-6e04913cbbac // indirect
 	google.golang.org/genproto v0.0.0-20200430143042-b979b6f78d84
 	google.golang.org/grpc v1.27.1
-	google.golang.org/protobuf v1.21.0
+	google.golang.org/protobuf v1.22.0
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )

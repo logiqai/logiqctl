@@ -34,7 +34,7 @@ func GetProcesses(ns, appName string) []*processes.Process {
 }
 
 func GetProcessesMock(ns, appName string) []*processes.Process {
-	time.Sleep(3 * time.Second)
+	//time.Sleep(3 * time.Second)
 	return []*processes.Process{
 		{
 			ProcID:    "45682",

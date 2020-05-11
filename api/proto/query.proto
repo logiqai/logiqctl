@@ -11,53 +11,58 @@ option go_package = "github.com/logiqai/logiqctl/api/v1/query;query";
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info : {
         title : "Query";
-version : "1.0";
+    version:"1.0";
 };
 
 
-schemes : HTTP;
-schemes : HTTPS;
-consumes : "application/json";
-produces : "application/json";
+schemes:HTTP;
+schemes:HTTPS;
+consumes:"application/json";
+produces:"application/json";
 
-responses : {
-key: "400";
-value : {
-description: "Invalid Request."
+responses:{
+key:"400";
+value:{
+description:"Invalid Request."
 }
 }
-responses : {
-key: "403";
-value : {
-description: "Token Expired."
+responses:{
+key:"403";
+value:{
+description:"Token Expired."
 }
 }
-responses : {
-key: "404";
-value : {
-description: "Returned when the resource does not exist."
+responses:{
+key:"404";
+value:{
+description:"Returned when the resource does not exist."
 }
 }
 };
 
-enum RequestType {
-    QUERY = 0;
-    STATS = 1;
+enum OrderBy {
+    ASC = 0;
+    DESC = 1;
+}
+
+enum MapQueryType {
+    DataMap = 0;
+    TextMap = 1;
 }
 
 message SysLogMessage {
-    double ID = 1;
+    string ID = 1;
     string AppName = 2;
-    double Facility = 3;
+    string Facility = 3;
     string FacilityString = 4;
     string Hostname = 5;
     string Message = 6;
     string MsgID = 7;
-    double PartitionID = 8;
-    double Priority = 9;
+    string PartitionID = 8;
+    string Priority = 9;
     string ProcID = 10;
     string Sender = 11;
-    double Severity = 12;
+    string Severity = 12;
     string SeverityString = 13;
     string StructuredData = 14;
     string Tag = 15;
@@ -72,6 +77,8 @@ message FilterValues {
 message QueryProperties {
     repeated string applicationNames = 1; //What is a good name for this when we do schemaless???
     map<string, FilterValues> filters = 2;
+    string namespace = 3;
+    OrderBy order = 4;
     uint32 pageSize = 6;
     string startTime = 7;
     string endTime = 8;
@@ -80,6 +87,7 @@ message QueryProperties {
 
 message GetDataRequest {
     string queryId = 1;
+    bool _internal = 2;
 }
 
 message GetDataResponse {
@@ -102,8 +110,34 @@ message GetQueryResponse {
     string queryId = 1;
     repeated QueryInfo info = 3;
     repeated QueryErrors errors = 4;
+    map<string, string> meta = 5;
 }
 
+message HasQueryRequest {
+    string queryId = 1;
+}
+
+message HasQueryResponse {
+    bool avail = 1;
+}
+
+message GetMapsByQueryRequest {
+    string query = 1;
+    MapQueryType type = 2;
+}
+
+message MapsForQueryResponse {
+    string Keyword = 1;
+    string Stem = 2;
+    string ApplicationName = 3;
+    string Destination = 4;
+    string DataLocation = 5;
+    int64 CreatedTime = 6;
+}
+
+message GetMapsByQueryResponse {
+    repeated MapsForQueryResponse dataMaps = 1;
+}
 
 service QueryService {
     rpc Query (QueryProperties) returns (GetQueryResponse) {
@@ -113,9 +147,21 @@ service QueryService {
         };
     };
 
-    rpc GetData (GetDataRequest) returns (GetDataResponse) {
+    rpc GetDataNext (GetDataRequest) returns (GetDataResponse) {
         option (google.api.http) = {
             get : "/v1/data/{queryId}/next",
         };
     };
+
+    rpc GetDataPrevious (GetDataRequest) returns (GetDataResponse) {
+        option (google.api.http) = {
+            get : "/v1/data/{queryId}/previous",
+        };
+    };
+
+    rpc HasQuery (HasQueryRequest) returns (HasQueryResponse) {
+    }
+
+    rpc GetMapsByQuery (GetMapsByQueryRequest) returns (GetMapsByQueryResponse) {
+    }
 }
