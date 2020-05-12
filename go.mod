@@ -31,5 +31,5 @@ require (
 	google.golang.org/grpc v1.27.1
 	google.golang.org/protobuf v1.22.0
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect
-	gopkg.in/yaml.v2 v2.2.8 // indirect
+	gopkg.in/yaml.v2 v2.2.8
 )

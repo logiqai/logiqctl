@@ -72,23 +72,22 @@ func GetApplications(config *cfg.Config, listNamespaces bool, namespaces []strin
 func printResponse(response []*applications.ApplicationV2) {
 	fmt.Println()
 	if len(response) > 0 {
-		tbl, err := prettytable.NewTable([]prettytable.Column{
-			{Header: "Namespace"},
-			{Header: "Application"},
-			{Header: "Last Seen"},
-			{Header: "First Seen"},
-		}...)
-		if err != nil {
-			panic(err)
+		if !utils.PrintResponse(response) {
+			tbl, err := prettytable.NewTable([]prettytable.Column{
+				{Header: "Namespace"},
+				{Header: "Application"},
+				{Header: "Last Seen"},
+				{Header: "First Seen"},
+			}...)
+			if err != nil {
+				panic(err)
+			}
+			tbl.Separator = " | "
+			for _, app := range response {
+				tbl.AddRow(app.Namespace, app.Name, utils.GetTimeAsString(app.LastSeen), utils.GetTimeAsString(app.FirstSeen))
+			}
+			tbl.Print()
 		}
-		tbl.Separator = " | "
-		for _, app := range response {
-			fs := time.Unix(app.FirstSeen, 0)
-			ls := time.Unix(app.LastSeen, 0)
-			tbl.AddRow(app.Namespace, app.Name, humanize.Time(ls), humanize.Time(fs))
-
-		}
-		tbl.Print()
 	}
 }
 
@@ -132,13 +131,12 @@ func RunSelectApplicationForNamespacePrompt() (string, error) {
 			Details string
 		}
 		for _, app := range response.Applications {
-			ls := time.Unix(app.LastSeen, 0)
 			apps = append(apps, struct {
 				Name    string
 				Details string
 			}{
 				Name:    app.Name,
-				Details: fmt.Sprintf("Last Seen %s", humanize.Time(ls)),
+				Details: fmt.Sprintf("Last Seen %s", utils.GetTimeAsString(app.LastSeen)),
 			})
 		}
 

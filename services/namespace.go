@@ -2,11 +2,9 @@ package services
 
 import (
 	"context"
-	"time"
 
 	"github.com/manifoldco/promptui"
 
-	"github.com/dustin/go-humanize"
 	"github.com/tatsushid/go-prettytable"
 
 	"github.com/logiqai/logiqctl/api/v1/namespace"
@@ -45,26 +43,26 @@ func ListNamespaces() {
 		return
 	}
 	if response != nil && len(response.Namespaces) > 0 {
-		tbl, err := prettytable.NewTable([]prettytable.Column{
-			{Header: "Namespace"},
-			{Header: "Type"},
-			{Header: "Last Seen"},
-			{Header: "First Seen"},
-		}...)
-		if err != nil {
-			panic(err)
-		}
-		tbl.Separator = " | "
-		for _, ns := range response.Namespaces {
-			fs := time.Unix(ns.FirstSeen, 0)
-			ls := time.Unix(ns.LastSeen, 0)
-			readableType := "Namespace"
-			if ns.Type == "H" {
-				readableType = "Host"
+		if !utils.PrintResponse(response) {
+			tbl, err := prettytable.NewTable([]prettytable.Column{
+				{Header: "Namespace"},
+				{Header: "Type"},
+				{Header: "Last Seen"},
+				{Header: "First Seen"},
+			}...)
+			if err != nil {
+				panic(err)
 			}
-			tbl.AddRow(ns.Namespace, readableType, humanize.Time(ls), humanize.Time(fs))
+			tbl.Separator = " | "
+			for _, ns := range response.Namespaces {
+				readableType := "Namespace"
+				if ns.Type == "H" {
+					readableType = "Host"
+				}
+				tbl.AddRow(ns.Namespace, readableType, utils.GetTimeAsString(ns.LastSeen), utils.GetTimeAsString(ns.FirstSeen))
+			}
+			tbl.Print()
 		}
-		tbl.Print()
 	}
 }
 

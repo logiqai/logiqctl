@@ -3,9 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
-	"time"
 
-	"github.com/dustin/go-humanize"
 	"github.com/tatsushid/go-prettytable"
 
 	"github.com/logiqai/logiqctl/api/v1/processes"
@@ -37,22 +35,21 @@ func ListProcesses() {
 func printProcessesResponse(response []*processes.Process) {
 	fmt.Println()
 	if len(response) > 0 {
-		tbl, err := prettytable.NewTable([]prettytable.Column{
-			{Header: "Namespace"},
-			{Header: "ProcID"},
-			{Header: "Last Seen"},
-			{Header: "First Seen"},
-		}...)
-		if err != nil {
-			panic(err)
+		if !utils.PrintResponse(response) {
+			tbl, err := prettytable.NewTable([]prettytable.Column{
+				{Header: "Namespace"},
+				{Header: "ProcID"},
+				{Header: "Last Seen"},
+				{Header: "First Seen"},
+			}...)
+			if err != nil {
+				panic(err)
+			}
+			tbl.Separator = " | "
+			for _, app := range response {
+				tbl.AddRow(utils.GetDefaultNamespace(), app.ProcID, utils.GetTimeAsString(app.LastSeen), utils.GetTimeAsString(app.FirstSeen))
+			}
+			tbl.Print()
 		}
-		tbl.Separator = " | "
-		for _, app := range response {
-			fs := time.Unix(app.FirstSeen, 0)
-			ls := time.Unix(app.LastSeen, 0)
-			tbl.AddRow(utils.GetDefaultNamespace(), app.ProcID, humanize.Time(ls), humanize.Time(fs))
-
-		}
-		tbl.Print()
 	}
 }
