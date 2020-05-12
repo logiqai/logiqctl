@@ -18,7 +18,10 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
+
+	"github.com/manifoldco/promptui"
 
 	"github.com/tatsushid/go-prettytable"
 
@@ -27,21 +30,25 @@ import (
 	"google.golang.org/grpc"
 )
 
-func ListProcesses() {
+func getProcessesResponse(application string) (*processes.ProcessesResponse, error) {
 	conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
 	if err != nil {
-		return
+		return nil, err
 	}
-
+	defer conn.Close()
 	client := processes.NewProcessDetailsServiceClient(conn)
+	return client.GetProcesses(context.Background(), &processes.ProcessesRequest{
+		Namespace:       utils.GetDefaultNamespace(),
+		ApplicationName: application,
+	})
+}
+
+func ListProcesses() {
 	application, err := RunSelectApplicationForNamespacePrompt()
 	if err != nil {
 		return
 	}
-	response, err := client.GetProcesses(context.Background(), &processes.ProcessesRequest{
-		Namespace:       utils.GetDefaultNamespace(),
-		ApplicationName: application,
-	})
+	response, err := getProcessesResponse(application.Name)
 	if err != nil {
 		return
 	}
@@ -68,4 +75,59 @@ func printProcessesResponse(response []*processes.Process) {
 			tbl.Print()
 		}
 	}
+}
+
+func GetProcessByApplicationAndProc(application, procId string) (*processes.Process, error) {
+	response, err := getProcessesResponse(application)
+	if err != nil {
+		return nil, err
+	}
+	if len(response.Processes) > 0 {
+		for _, proc := range response.Processes {
+			if proc.ProcID == procId {
+				return proc, nil
+			}
+		}
+	}
+	return nil, errors.New("NOT_FOUND")
+}
+
+func RunSelectProcessesForNamespaceAndAppPrompt(application string) (*processes.Process, error) {
+	response, err := getProcessesResponse(application)
+	if err != nil {
+		return nil, err
+	}
+	//if len(response.Processes) == 1 {
+	//	return response.Processes[0], nil
+	//}
+	if len(response.Processes) > 0 {
+		//TODO clean this up
+		var apps []struct {
+			Name    string
+			Details string
+		}
+		for _, proc := range response.Processes {
+			apps = append(apps, struct {
+				Name    string
+				Details string
+			}{
+				Name:    proc.ProcID,
+				Details: fmt.Sprintf("Last Seen %s", utils.GetTimeAsString(proc.LastSeen)),
+			})
+		}
+
+		whatPrompt := promptui.Select{
+			Label:     fmt.Sprintf("Select an process (showing '%s' namespace and '%s' application", utils.GetDefaultNamespace(), application),
+			Items:     apps,
+			Templates: templates,
+			Size:      6,
+		}
+
+		what, _, err := whatPrompt.Run()
+		if err != nil {
+			return nil, err
+		}
+		return response.Processes[what], nil
+	}
+	return nil, errors.New("NOT_FOUND")
 }

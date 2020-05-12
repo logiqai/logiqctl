@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/viper"
+
 	"gopkg.in/yaml.v2"
 
 	"github.com/dustin/go-humanize"
@@ -28,6 +30,14 @@ import (
 
 var FlagOut string
 var FlagTimeFormat string
+var FlagNamespace string
+var FlagCluster string
+var FlagLogsSince string
+var FlagLogsPageSize int
+var FlagLogsFollow bool
+var FlagProcId string
+
+const LineBreaksKey = "lineBreaksAfterEachLogEntry"
 
 func GetTimeAsString(s int64) string {
 	t := time.Unix(s, 0)
@@ -56,6 +66,19 @@ func PrintResponse(data interface{}) bool {
 		}
 		fmt.Println(string(b))
 		return true
+	}
+	return false
+}
+
+func GetStartTime(lastSeen int64) time.Time {
+	t := time.Unix(lastSeen, 0)
+	duration, _ := time.ParseDuration(FlagLogsSince)
+	return t.Add(-duration)
+}
+
+func GetLineBreak() bool {
+	if val, ok := viper.Get(LineBreaksKey).(bool); ok {
+		return val
 	}
 	return false
 }

@@ -5,11 +5,22 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/logiqai/logiqctl/utils"
+
+	"github.com/manifoldco/promptui"
+
 	"github.com/logiqai/logiqctl/api/v1/query"
 	"github.com/logiqai/logiqctl/cfg"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+var templates = &promptui.SelectTemplates{
+	Label:    "{{ . }}?",
+	Active:   "\U000000BB {{ .Name | green }} ({{ .Details | red }})",
+	Inactive: "  {{ .Name | cyan }} ({{ .Details | red }})",
+	Selected: "Application {{ .Name | red }} selected",
+}
 
 func handleError(config *cfg.Config, err error) {
 	//fmt.Printf("%v\n",err)
@@ -91,7 +102,7 @@ func printSyslogMessageForType(log *query.SysLogMessage, output string) {
 			log.Message,
 		)
 	} else if output == OUTPUT_RAW {
-		fmt.Printf("%s %s %s %s %s %s %s\n\n",
+		fmt.Printf("%s %s %s %s %s %s %s\n",
 			log.Timestamp,
 			log.SeverityString,
 			log.FacilityString,
@@ -100,6 +111,9 @@ func printSyslogMessageForType(log *query.SysLogMessage, output string) {
 			log.ProcID,
 			log.Message,
 		)
+		if utils.GetLineBreak() {
+			fmt.Println()
+		}
 	} else if output == OUTPUT_JSON {
 		v, err := json.Marshal(log)
 		if err == nil {

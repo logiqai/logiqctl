@@ -31,7 +31,7 @@ import (
 // configCmd represents the config command
 var configCmd = &cobra.Command{
 	Use:   "config SUBCOMMAND",
-	Short: "Modify or View logiqctl configuration options",
+	Short: "Modify logiqctl configuration options",
 	Long: `
 # View current context
 	logiqctl config view

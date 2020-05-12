@@ -30,12 +30,20 @@ const (
 )
 
 func GetClusterUrl() string {
-	cluster := viper.GetString(KeyCluster)
+	var cluster string
+	if FlagCluster != "" {
+		cluster = FlagCluster
+	} else {
+		cluster = viper.GetString(KeyCluster)
+	}
 	port := viper.GetString(KeyPort)
 	return fmt.Sprintf("%s:%s", cluster, port)
 }
 
 func GetDefaultNamespace() string {
+	if FlagNamespace != "" {
+		return FlagNamespace
+	}
 	ns := viper.GetString(KeyNamespace)
 	return ns
 }

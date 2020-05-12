@@ -132,15 +132,31 @@ func GetApplicationsV2(all bool) {
 		return
 	}
 	printResponse(response.Applications)
-
 }
 
-func RunSelectApplicationForNamespacePrompt() (string, error) {
+func GetApplicationByName(application string) (*applications.ApplicationV2, error) {
 	response, err := getApplicationsV2Response(false)
 	if err != nil {
-		//handleError(config, err)
-		return "", err
+		return nil, err
 	}
+	if len(response.Applications) > 0 {
+		for _, app := range response.Applications {
+			if app.Name == application {
+				return app, nil
+			}
+		}
+	}
+	return nil, errors.New("Cannot find application ")
+}
+
+func RunSelectApplicationForNamespacePrompt() (*applications.ApplicationV2, error) {
+	response, err := getApplicationsV2Response(false)
+	if err != nil {
+		return nil, err
+	}
+	//if len(response.Applications) == 1 {
+	//	return response.Applications[0], nil
+	//}
 	if len(response.Applications) > 0 {
 		var apps []struct {
 			Name    string
@@ -156,15 +172,8 @@ func RunSelectApplicationForNamespacePrompt() (string, error) {
 			})
 		}
 
-		templates := &promptui.SelectTemplates{
-			Label:    "{{ . }}?",
-			Active:   "\U000000BB {{ .Name | green }} ({{ .Details | red }})",
-			Inactive: "  {{ .Name | cyan }} ({{ .Details | red }})",
-			Selected: "Listing processes for {{ .Name | red }}",
-		}
-
 		whatPrompt := promptui.Select{
-			Label:     fmt.Sprintf("Select an application to see its processes (showing '%s' namespace)", utils.GetDefaultNamespace()),
+			Label:     fmt.Sprintf("Select an application (showing '%s' namespace)", utils.GetDefaultNamespace()),
 			Items:     apps,
 			Templates: templates,
 			Size:      6,
@@ -172,9 +181,9 @@ func RunSelectApplicationForNamespacePrompt() (string, error) {
 
 		what, _, err := whatPrompt.Run()
 		if err != nil {
-			return "", err
+			return nil, err
 		}
-		return apps[what].Name, nil
+		return response.Applications[what], nil
 	}
-	return "", errors.New("Cannot find processes ")
+	return nil, errors.New("Cannot find application ")
 }

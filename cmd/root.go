@@ -30,19 +30,17 @@ import (
 
 var cfgFile string
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "logiqctl",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short:   "Logiqctl - CLI for Logiq Observability stack",
+	Use:     "logiqctl [flags] [options]",
+	Version: "1.0.2",
+	Long: `
+The LOGIQ command line toolkit, logiqctl, allows you to run commands against LOGIQ clusters. 
+You can tail logs from your applications and servers, query historical data and search your log data.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+Find more information at: https://docs.logiq.ai/logiqctl/logiq-box
+
+`,
 }
 
 func Execute() {
@@ -59,7 +57,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagTimeFormat, "time-format", "t", "relative", `Time formatting options. One of: relative|epoch|RFC3339. 
 This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds.
 json output is not indented, use '| jq' for advanced json operations`)
-
+	rootCmd.PersistentFlags().StringVarP(&utils.FlagNamespace, "namespace", "n", "", "Override the default context set by `logiqctl set-context' command")
+	rootCmd.PersistentFlags().StringVarP(&utils.FlagCluster, "cluster", "c", "", "Override the default cluster set by `logiqctl set-cluster' command")
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
@@ -89,6 +88,7 @@ func initConfig() {
 		}
 		viper.SetConfigFile(cfgFile)
 		viper.Set("logiqctl", "v.1.0")
+		viper.Set(utils.LineBreaksKey, false)
 		viper.WriteConfig()
 	} else {
 		viper.SetConfigFile(cfgFile)

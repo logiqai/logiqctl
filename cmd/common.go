@@ -49,3 +49,10 @@ func preRunWithNs(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 }
+
+func handleError(err error) {
+	if err != nil {
+		fmt.Printf("Error Occured: %s", err.Error())
+		os.Exit(-1)
+	}
+}
