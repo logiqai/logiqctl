@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/tatsushid/go-prettytable"
 
@@ -11,7 +12,6 @@ import (
 )
 
 func GetEvents(applicationName, process string) error {
-	//l := fmt.Sprintf("Displaying events for ")
 	conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
 	if err != nil {
 		return err
@@ -59,6 +59,15 @@ func GetEvents(applicationName, process string) error {
 			tbl.Print()
 		}
 
+	} else {
+		display := fmt.Sprintf("No events found for %s (namespace)", utils.GetDefaultNamespace())
+		if applicationName != "" {
+			display = fmt.Sprintf("%s, %s (application)", display, applicationName)
+		}
+		if process != "" {
+			display = fmt.Sprintf("%s, and %s (process)", display, process)
+		}
+		fmt.Println(display)
 	}
 	return nil
 }

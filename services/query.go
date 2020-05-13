@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2020 Logiq.ai <logiqctl@logiq.ai>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ func GetDataNext(queryId string) (bool, error) {
 		}
 		for _, entry := range dataResponse.Data {
 			printSyslogMessageForType(entry, "raw")
-			time.Sleep(50 * time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 		}
 		if dataResponse.Remaining <= 0 && dataResponse.Status == "COMPLETE" {
 			return false, err

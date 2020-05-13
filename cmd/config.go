@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2020 Logiq.ai <logiqctl@logiq.ai>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -42,10 +42,17 @@ var configCmd = &cobra.Command{
 # Set default context
 	logiqctl set-context namespace
 
-# Set default context with the help of an interactive prompt
-	logiqctl set-context
+# Runs an interactive prompt and let user select namespace from the list
+	logiqctl set-context i
 
 `,
+}
+
+func init() {
+	rootCmd.AddCommand(configCmd)
+	configCmd.AddCommand(NewSetClusterCommand())
+	configCmd.AddCommand(NewSetContextCommand())
+	configCmd.AddCommand(NewViewCommand())
 }
 
 func NewSetClusterCommand() *cobra.Command {
@@ -75,24 +82,6 @@ Sets the cluster, a valid logiq cluster end point is required for all the operat
 	return cmd
 }
 
-func printCluster() {
-	cluster := viper.GetString(utils.KeyCluster)
-	if cluster != "" {
-		fmt.Printf("Cluster Endpoint set to: %s\n", cluster)
-	} else {
-		fmt.Println("Default Cluster not set")
-	}
-}
-
-func printNamespace() {
-	ns := viper.GetString(utils.KeyNamespace)
-	if ns != "" {
-		fmt.Printf("Default Context set to: %s\n", ns)
-	} else {
-		fmt.Println("Default Context not set")
-	}
-}
-
 func NewViewCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "view",
@@ -114,7 +103,7 @@ This will the default context for all the operations.
 		`,
 		PreRun: preRun,
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) > 1 {
+			if len(args) != 1 {
 				fmt.Printf("Incorrect usage")
 				fmt.Println(cmd.Example)
 				return
@@ -124,6 +113,18 @@ This will the default context for all the operations.
 				printNamespace()
 				return
 			}
+		},
+	}
+	cmd.AddCommand(NewInteractiveSetContextCommand())
+	return cmd
+}
+
+func NewInteractiveSetContextCommand() *cobra.Command {
+	var interactiveCmd = &cobra.Command{
+		Use:     "interactive",
+		Aliases: []string{"i"},
+		Short:   `Runs an interactive prompt and let user select namespace from the list`,
+		Run: func(cmd *cobra.Command, args []string) {
 			selectedNs, err := services.RunSelectNamespacePrompt()
 			if err != nil {
 				fmt.Printf("Incorrect usage")
@@ -134,7 +135,7 @@ This will the default context for all the operations.
 			printNamespace()
 		},
 	}
-	return cmd
+	return interactiveCmd
 }
 
 func setContext(arg string) {
@@ -146,10 +147,20 @@ func setContext(arg string) {
 	}
 }
 
-func init() {
-	rootCmd.AddCommand(configCmd)
-	configCmd.AddCommand(NewSetClusterCommand())
-	configCmd.AddCommand(NewSetContextCommand())
-	configCmd.AddCommand(NewViewCommand())
+func printCluster() {
+	cluster := viper.GetString(utils.KeyCluster)
+	if cluster != "" {
+		fmt.Printf("Cluster Endpoint set to: %s\n", cluster)
+	} else {
+		fmt.Println("Default Cluster not set")
+	}
+}
 
+func printNamespace() {
+	ns := viper.GetString(utils.KeyNamespace)
+	if ns != "" {
+		fmt.Printf("Default Context set to: %s\n", ns)
+	} else {
+		fmt.Println("Default Context not set")
+	}
 }

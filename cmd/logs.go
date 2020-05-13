@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+Copyright © 2020 Logiq.ai <logiqctl@logiq.ai>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ var interactiveCmd = &cobra.Command{
 		handleError(err)
 		proc, err := services.RunSelectProcessesForNamespaceAndAppPrompt(app.Name)
 		handleError(err)
-		fmt.Printf("You could also run this directly `logctl logs -p=%s %s`\n", proc.ProcID, app.Name)
+		fmt.Printf("You could also run this directly `logiqctl logs -p=%s %s`\n", proc.ProcID, app.Name)
 		fmt.Printf("Fetching logs for %s (application) and %s (process)\n\n", app.Name, proc.ProcID)
 		query(app.Name, proc.ProcID, proc.LastSeen)
 	},
