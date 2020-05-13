@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <logiqctl@logiq.ai>
+Copyright © 2020 Logiq.ai <cli@logiq.ai>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
-
-var cfgFile string
 
 var rootCmd = &cobra.Command{
 	Short:   "Logiqctl - CLI for Logiq Observability stack",
@@ -84,12 +82,14 @@ func initConfig() {
 	exists, err := exists(configDir)
 	cfgFile := path.Join(configDir, "logiqctl.toml")
 	if err != nil {
-		fmt.Errorf("Cannot create config: %s ", err.Error())
+		fmt.Println(fmt.Errorf("Cannot create config: %s ", err.Error()))
+		return
 	}
 	if !exists {
 		err = os.MkdirAll(configDir, os.ModePerm)
 		if err != nil {
-			fmt.Errorf("Cannot create config: %s ", err.Error())
+			fmt.Println(fmt.Errorf("Cannot create config: %s ", err.Error()))
+			return
 		}
 		viper.SetConfigFile(cfgFile)
 		viper.Set("logiqctl", "v.1.0")

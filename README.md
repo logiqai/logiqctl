@@ -1,10 +1,10 @@
 # Logiqctl 
 
-### CLI for Logiq Log Insights
+### CLI for Logiq Observability stack
 
 ```bash
 
-> ./logiqctl 
+> logiqctl 
 
 The LOGIQ command line toolkit, logiqctl, allows you to run commands against LOGIQ Observability stack.
 - You can tail logs from your applications and servers
@@ -85,11 +85,13 @@ rm -f $PROTOC_ZIP
 
 To know more about LOGIQ Observability stack, see https://logiq.ai/ and https://docs.logiq.ai/ 
 
-In case of any issues either email us at logiqctl@logiq.ai or you could create an issue in this repository.
+In case of any issues either email us at cli@logiq.ai or you could create an issue in this repository.
 
  ### logiqctl get
  
  ```bash
+> logiqctl get --help
+
 Prints a table of the most important information about the specified resources. For example:
 
 # List all namespaces
@@ -131,11 +133,14 @@ Use "logiqctl get [command] --help" for more information about a command.
 ### logiqctl logs
 
 ```bash
-
+> logiqctl logs --help
 Logs expect a namespace and application to be available to return results.
 Set the default namespace using 'logiqctl set-context' command or pass as '-n=NAMESPACE' flag
 Application name needs to be passed as an argument to the command.
-If the user is unsure of the application name, they can run an interactive prompt the would help them to choose filters.  See examples below.
+If the user is unsure of the application name, they can run an interactive prompt 
+the would help them to choose filters. See examples below.
+
+Search command searches at namespace level, flag -p is ignored.
 
 Global flag '--time-format' is not applicable for this command.
 Global flag '--output' only supports json format for this command.
@@ -157,16 +162,22 @@ Print logs in json format
 
 Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 In case of Kubernetes deployment a Stateful Set is an application, and each pods in it is a process
-The --process (-p) filter lets you view logs for the individual pod
+The --process (-p) flag lets you view logs for the individual pod
 # logiqctl logs -p=logiq-flash-2 logiq-flash
 
 Runs an interactive prompt to let user choose filters
 # logiqctl logs i
 
+Search logs for the given text
+# logiqctl logs search "your search term"
+
+If the flag --follow (-f) is specified the logs will be streamed till it over.
+
 
 
 Available Commands:
   interactive Runs an interactive prompt to let user select application and filters
+  search      Search for given test in logs
 
 Flags:
   -f, --follow           Specify if the logs should be streamed.

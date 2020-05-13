@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <logiqctl@logiq.ai>
+Copyright © 2020 Logiq.ai <cli@logiq.ai>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -37,11 +37,16 @@ Print logs in json format
 
 Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 In case of Kubernetes deployment a Stateful Set is an application, and each pods in it is a process
-The --process (-p) filter lets you view logs for the individual pod
+The --process (-p) flag lets you view logs for the individual pod
 # logiqctl logs -p=logiq-flash-2 logiq-flash
 
 Runs an interactive prompt to let user choose filters
 # logiqctl logs i
+
+Search logs for the given text
+# logiqctl logs search "your search term"   
+
+If the flag --follow (-f) is specified the logs will be streamed till it over. 
 
 `
 
@@ -49,6 +54,8 @@ var logsLong = `Logs expect a namespace and application to be available to retur
 Set the default namespace using 'logiqctl set-context' command or pass as '-n=NAMESPACE' flag
 Application name needs to be passed as an argument to the command. 
 If the user is unsure of the application name, they can run an interactive prompt the would help them to choose filters.  See examples below. 
+
+Search command searches at namespace level, flags -p is ignored. 
 
 Global flag '--time-format' is not applicable for this command.
 Global flag '--output' only supports json format for this command.`
@@ -65,21 +72,20 @@ var logsCmd = &cobra.Command{
 			fmt.Println(cmd.UsageString())
 			return
 		}
-
 		if utils.FlagProcId != "" {
 			proc, err := services.GetProcessByApplicationAndProc(args[0], utils.FlagProcId)
 			handleError(err)
-			query(args[0], proc.ProcID, proc.LastSeen)
+			query(args[0], "", proc.ProcID, proc.LastSeen)
 			return
 		}
 		app, err := services.GetApplicationByName(args[0])
 		handleError(err)
-		query(args[0], "", app.LastSeen)
+		query(args[0], "", "", app.LastSeen)
 	},
 }
 
-func query(appName, procId string, lastSeen int64) {
-	queryId, err := services.QueryV2(appName, procId, lastSeen)
+func query(appName, searchTerm, procId string, lastSeen int64) {
+	queryId, err := services.Query(appName, searchTerm, procId, lastSeen)
 	handleError(err)
 	if queryId != "" {
 		for {
@@ -113,7 +119,21 @@ var interactiveCmd = &cobra.Command{
 		handleError(err)
 		fmt.Printf("You could also run this directly `logiqctl logs -p=%s %s`\n", proc.ProcID, app.Name)
 		fmt.Printf("Fetching logs for %s (application) and %s (process)\n\n", app.Name, proc.ProcID)
-		query(app.Name, proc.ProcID, proc.LastSeen)
+		query(app.Name, "", proc.ProcID, proc.LastSeen)
+	},
+}
+
+var searchCmd = &cobra.Command{
+	Use:     "search",
+	Aliases: []string{"s"},
+	Example: ``,
+	Short:   `Search for given test in logs`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 1 {
+			fmt.Println(cmd.Usage())
+			return
+		}
+		query("", args[0], "", -1)
 	},
 }
 
@@ -125,4 +145,5 @@ This is in relative to the last seen log time for a specified application or pro
 	logsCmd.Flags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)
 	rootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(interactiveCmd)
+	logsCmd.AddCommand(searchCmd)
 }

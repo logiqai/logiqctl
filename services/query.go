@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <logiqctl@logiq.ai>
+Copyright © 2020 Logiq.ai <cli@logiq.ai>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ const (
 	OUTPUT_JSON    = "json"
 )
 
-func QueryV2(applicationName, procId string, lastSeen int64) (string, error) {
+func Query(applicationName, searchTerm, procId string, lastSeen int64) (string, error) {
 	conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
 	if err != nil {
 		return "", err
@@ -47,14 +47,19 @@ func QueryV2(applicationName, procId string, lastSeen int64) (string, error) {
 
 	if applicationName != "" {
 		in.ApplicationNames = []string{applicationName}
+		//  process filter is only available for query
+		if procId != "" {
+			filterValuesMap := make(map[string]*query.FilterValues)
+			filterValuesMap["ProcId"] = &query.FilterValues{
+				Values: []string{procId},
+			}
+			in.Filters = filterValuesMap
+		}
+
 	}
 
-	if procId != "" {
-		filterValuesMap := make(map[string]*query.FilterValues)
-		filterValuesMap["ProcId"] = &query.FilterValues{
-			Values: []string{procId},
-		}
-		in.Filters = filterValuesMap
+	if searchTerm != "" {
+		in.KeyWord = searchTerm
 	}
 
 	queryResponse, err := client.Query(context.Background(), in)

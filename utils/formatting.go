@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Logiq.ai <logiqctl@logiq.ai>
+Copyright © 2020 Logiq.ai <cli@logiq.ai>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -71,9 +71,13 @@ func PrintResponse(data interface{}) bool {
 }
 
 func GetStartTime(lastSeen int64) time.Time {
+	since, _ := time.ParseDuration(FlagLogsSince)
+	if lastSeen == -1 {
+		//search do not have last seen
+		return time.Now().Add(-1 * since)
+	}
 	t := time.Unix(lastSeen, 0)
-	duration, _ := time.ParseDuration(FlagLogsSince)
-	return t.Add(-duration)
+	return t.Add(-since)
 }
 
 func GetLineBreak() bool {
