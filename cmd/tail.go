@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+Copyright © 2020 Logiq.ai <cli@logiq.ai>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package cmd
 
 import (
@@ -20,28 +21,37 @@ import (
 	"strings"
 
 	"github.com/logiqai/logiqctl/services"
-	"github.com/logiqai/logiqctl/utils"
 
 	"github.com/spf13/cobra"
 )
 
 var procs, labels string
 
+var tailExample = `
+Tail all logs 
+# logiqctl tail
+
+Tail specific application logs
+# logiqctl tail -p=logiq-flash-2 logiq-flash
+
+Tail specific application and filter by its process id
+# logiqctl logs -p=logiq-flash-2 logiq-flash
+
+`
+
 // tailCmd represents the tail command
 var tailCmd = &cobra.Command{
 	Use:     "tail",
 	Aliases: []string{"t"},
+	Example: tailExample,
 	Short:   "Stream logs from logiq Observability stack",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Long: `Tail command enables you to see logs from applications in realtime, See examples for options.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var procsArray []string
 		var labelsArray []string
-		var namespaces = []string{utils.GetDefaultNamespace()}
+		//var namespaces = []string{utils.GetDefaultNamespace()}
 		if procs != "" {
 			procsArray = strings.Split(procs, ",")
 		}
@@ -50,7 +60,7 @@ to quickly create a Cobra application.`,
 		}
 
 		fmt.Println("Crunching data for you...")
-		services.Tail(namespaces, labelsArray, args, procsArray, nil)
+		services.Tail(nil, labelsArray, args, procsArray, nil)
 
 		return
 	},
@@ -60,6 +70,6 @@ func init() {
 
 	rootCmd.AddCommand(tailCmd)
 	tailCmd.Flags().StringVarP(&procs, "process", "p", "", `Filter logs by process id`)
-	tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by  label`)
+	tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by label`)
 
 }
