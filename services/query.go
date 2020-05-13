@@ -40,7 +40,7 @@ func Query(applicationName, searchTerm, procId string, lastSeen int64) (string, 
 
 	in := &query.QueryProperties{
 		Namespace: utils.GetDefaultNamespace(),
-		PageSize:  30,
+		PageSize:  utils.GetPageSize(),
 	}
 
 	in.StartTime = utils.GetStartTime(lastSeen).Format(time.RFC3339)
@@ -86,7 +86,7 @@ func Query(applicationName, searchTerm, procId string, lastSeen int64) (string, 
 			} else {
 				printSyslogMessageForType(entry, OUTPUT_RAW)
 			}
-			time.Sleep(50 * time.Millisecond)
+			time.Sleep(20 * time.Millisecond)
 		}
 		if dataResponse.Remaining <= 0 && dataResponse.Status == "COMPLETE" {
 			return "", err
@@ -120,7 +120,7 @@ func GetDataNext(queryId string) (bool, error) {
 		}
 		for _, entry := range dataResponse.Data {
 			printSyslogMessageForType(entry, "raw")
-			time.Sleep(10 * time.Millisecond)
+			time.Sleep(20 * time.Millisecond)
 		}
 		if dataResponse.Remaining <= 0 && dataResponse.Status == "COMPLETE" {
 			return false, err

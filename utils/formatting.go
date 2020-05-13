@@ -33,7 +33,7 @@ var FlagTimeFormat string
 var FlagNamespace string
 var FlagCluster string
 var FlagLogsSince string
-var FlagLogsPageSize int
+var FlagLogsPageSize uint32
 var FlagLogsFollow bool
 var FlagProcId string
 
@@ -80,9 +80,13 @@ func GetStartTime(lastSeen int64) time.Time {
 	return t.Add(-since)
 }
 
-func GetLineBreak() bool {
+func NeedsLineBreak() bool {
 	if val, ok := viper.Get(LineBreaksKey).(bool); ok {
 		return val
 	}
 	return false
+}
+
+func GetPageSize() uint32 {
+	return FlagLogsPageSize
 }

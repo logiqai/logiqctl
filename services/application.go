@@ -104,15 +104,9 @@ func RunSelectApplicationForNamespacePrompt() (*applications.ApplicationV2, erro
 	//	return response.Applications[0], nil
 	//}
 	if len(response.Applications) > 0 {
-		var apps []struct {
-			Name    string
-			Details string
-		}
+		var apps []SelectDisplay
 		for _, app := range response.Applications {
-			apps = append(apps, struct {
-				Name    string
-				Details string
-			}{
+			apps = append(apps, SelectDisplay{
 				Name:    app.Name,
 				Details: fmt.Sprintf("Last Seen %s", utils.GetTimeAsString(app.LastSeen)),
 			})
@@ -121,7 +115,7 @@ func RunSelectApplicationForNamespacePrompt() (*applications.ApplicationV2, erro
 		whatPrompt := promptui.Select{
 			Label:     fmt.Sprintf("Select an application (showing '%s' namespace)", utils.GetDefaultNamespace()),
 			Items:     apps,
-			Templates: templates,
+			Templates: GetTemplateForType(templateTypeApplication),
 			Size:      6,
 		}
 

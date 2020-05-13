@@ -5,18 +5,38 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/logiqai/logiqctl/utils"
-
 	"github.com/manifoldco/promptui"
+
+	"github.com/logiqai/logiqctl/utils"
 
 	"github.com/logiqai/logiqctl/api/v1/query"
 )
 
-var templates = &promptui.SelectTemplates{
-	Label:    "{{ . }}?",
-	Active:   "\U000000BB {{ .Name | green }} ({{ .Details | red }})",
-	Inactive: "  {{ .Name | cyan }} ({{ .Details | red }})",
-	Selected: "Application {{ .Name | red }} selected",
+type templateType int
+
+var templateTypeProcess templateType = 0
+var templateTypeApplication templateType = 1
+
+func GetTemplateForType(tType templateType) *promptui.SelectTemplates {
+	var template = &promptui.SelectTemplates{
+		Label:    "{{ . }}?",
+		Active:   "\U000000BB {{ .Name | green }} ({{ .Details | red }})",
+		Inactive: "  {{ .Name | cyan }} ({{ .Details | red }})",
+	}
+	switch tType {
+	case templateTypeProcess:
+		template.Selected = "Process {{ .Name | red }} selected"
+	case templateTypeApplication:
+		template.Selected = "Application {{ .Name | red }} selected"
+	default:
+		template.Selected = "{{ .Name | red }} selected"
+	}
+	return template
+}
+
+type SelectDisplay struct {
+	Name    string
+	Details string
 }
 
 const (
@@ -54,7 +74,7 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 			logMap["facility_string"],
 			logMap["message"],
 		)
-		if utils.GetLineBreak() {
+		if utils.NeedsLineBreak() {
 			fmt.Println()
 		}
 	}
@@ -79,7 +99,7 @@ func printSyslogMessageForType(log *query.SysLogMessage, output string) {
 			log.ProcID,
 			log.Message,
 		)
-		if utils.GetLineBreak() {
+		if utils.NeedsLineBreak() {
 			fmt.Println()
 		}
 	} else if output == OUTPUT_JSON {

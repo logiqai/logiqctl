@@ -102,15 +102,9 @@ func RunSelectProcessesForNamespaceAndAppPrompt(application string) (*processes.
 	//}
 	if len(response.Processes) > 0 {
 		//TODO clean this up
-		var apps []struct {
-			Name    string
-			Details string
-		}
+		var procForDisplay []SelectDisplay
 		for _, proc := range response.Processes {
-			apps = append(apps, struct {
-				Name    string
-				Details string
-			}{
+			procForDisplay = append(procForDisplay, SelectDisplay{
 				Name:    proc.ProcID,
 				Details: fmt.Sprintf("Last Seen %s", utils.GetTimeAsString(proc.LastSeen)),
 			})
@@ -118,8 +112,8 @@ func RunSelectProcessesForNamespaceAndAppPrompt(application string) (*processes.
 
 		whatPrompt := promptui.Select{
 			Label:     fmt.Sprintf("Select an process (showing '%s' namespace and '%s' application", utils.GetDefaultNamespace(), application),
-			Items:     apps,
-			Templates: templates,
+			Items:     procForDisplay,
+			Templates: GetTemplateForType(templateTypeProcess),
 			Size:      6,
 		}
 

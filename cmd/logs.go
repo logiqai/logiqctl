@@ -118,7 +118,7 @@ var interactiveCmd = &cobra.Command{
 		proc, err := services.RunSelectProcessesForNamespaceAndAppPrompt(app.Name)
 		handleError(err)
 		fmt.Printf("You could also run this directly `logiqctl logs -p=%s %s`\n", proc.ProcID, app.Name)
-		fmt.Printf("Fetching logs for %s (application) and %s (process)\n\n", app.Name, proc.ProcID)
+		fmt.Printf("Fetching logs for %s (namespace), %s (application) and %s (process)\n\n", utils.GetDefaultNamespace(), app.Name, proc.ProcID)
 		query(app.Name, "", proc.ProcID, proc.LastSeen)
 	},
 }
@@ -140,7 +140,7 @@ var searchCmd = &cobra.Command{
 func init() {
 	logsCmd.PersistentFlags().StringVarP(&utils.FlagLogsSince, "since", "s", "1h", `Only return logs newer than a relative duration like 2m, 3h, or 2h30m.
 This is in relative to the last seen log time for a specified application or processes.`)
-	logsCmd.PersistentFlags().IntVar(&utils.FlagLogsPageSize, "page-size", 30, `Number of log entries to return in one page`)
+	logsCmd.PersistentFlags().Uint32Var(&utils.FlagLogsPageSize, "page-size", 30, `Number of log entries to return in one page`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagLogsFollow, "follow", "f", false, `Specify if the logs should be streamed.`)
 	logsCmd.Flags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)
 	rootCmd.AddCommand(logsCmd)
