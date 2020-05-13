@@ -67,7 +67,6 @@ func QueryV2(applicationName, procId string, lastSeen int64) (string, error) {
 		if !utils.FlagLogsFollow {
 			return queryResponse.QueryId, err
 		}
-
 	}
 	return "", nil
 }

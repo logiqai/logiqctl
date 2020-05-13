@@ -6,11 +6,10 @@ import (
 	"io"
 	"strings"
 
-	"github.com/urfave/cli/v2"
+	"github.com/logiqai/logiqctl/utils"
 
 	"github.com/logiqai/easymap"
 	"github.com/logiqai/logiqctl/api/v1/realtimeLogStream"
-	"github.com/logiqai/logiqctl/cfg"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
@@ -138,14 +137,14 @@ func setupMatchAttributeValueMaps(matches []string, sep string, m map[string]str
 	}
 }
 
-func Tail(c *cli.Context, config *cfg.Config, tN, tL, tA, tP, def []string) {
+func Tail(tN, tL, tA, tP, def []string) error {
 	log.Debugln(len(tA), len(tN), len(tL), len(tP), len(def))
 	tailApps = len(tA) > 0
 	tailNamespaces = len(tN) > 0
 	tailLabels = len(tL) > 0
 	tailProcs = len(tP) > 0
 	tailDefault = len(def) > 0
-	output := c.String("output")
+	output := utils.FlagOut
 	log.Debugln(tN, tL, tA, tP, def)
 	log.Debugln("A:", tailApps, "N:", tailNamespaces, "L:", tailLabels, "P:", tailProcs, "D:", tailDefault)
 	if !tailApps && !tailLabels && !tailNamespaces && !tailProcs && !tailDefault {
@@ -158,10 +157,9 @@ func Tail(c *cli.Context, config *cfg.Config, tN, tL, tA, tP, def []string) {
 
 	log.Debugln(matchNamespaceMap, matchLabelsMap, matchProcessMap, matchAppMap)
 
-	conn, err := grpc.Dial(config.Cluster, grpc.WithInsecure())
+	conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
 	if err != nil {
-		handleError(config, err)
-		return
+		return err
 	}
 	defer conn.Close()
 	client := realtimeLogStream.NewLogStreamerServiceClient(conn)
@@ -174,8 +172,7 @@ func Tail(c *cli.Context, config *cfg.Config, tN, tL, tA, tP, def []string) {
 	}
 	stream, err := client.StreamLog(context.Background(), sub)
 	if err != nil {
-		handleError(config, err)
-		return
+		return err
 	}
 	if output == OUTPUT_COLUMNS {
 		printSyslogHeader()
@@ -186,8 +183,7 @@ func Tail(c *cli.Context, config *cfg.Config, tN, tL, tA, tP, def []string) {
 			break
 		}
 		if err != nil {
-			handleError(config, err)
-			return
+			return err
 		}
 		logMap := make(map[string]interface{})
 
@@ -206,6 +202,7 @@ func Tail(c *cli.Context, config *cfg.Config, tN, tL, tA, tP, def []string) {
 		}
 
 	}
+	return nil
 }
 
 //map[app_name:CRON facility:10 tag:CRON Id:bf4ef224-dc36-450b-a1d2-5909002f2aaf facility_string:security/authorization hostname:work severity:6 severity_string:info timestamp:2019-06-22T14:43:01.814112+05:30 uuid4:0ceacea4-600f-433d-ace4-7722401583fb message:pam_unix(cron:session): session opened for user tito by (uid=0) priority:86 proc_id:24280 source_ip:127.0.0.1]

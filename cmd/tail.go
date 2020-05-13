@@ -17,9 +17,15 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
+
+	"github.com/logiqai/logiqctl/services"
+	"github.com/logiqai/logiqctl/utils"
 
 	"github.com/spf13/cobra"
 )
+
+var procs, labels string
 
 // tailCmd represents the tail command
 var tailCmd = &cobra.Command{
@@ -33,22 +39,27 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("tail called")
+		var procsArray []string
+		var labelsArray []string
+		var namespaces = []string{utils.GetDefaultNamespace()}
+		if procs != "" {
+			procsArray = strings.Split(procs, ",")
+		}
+		if labels != "" {
+			labelsArray = strings.Split(labels, ",")
+		}
+
+		fmt.Println("Crunching data for you...")
+		services.Tail(namespaces, labelsArray, args, procsArray, nil)
+
+		return
 	},
 }
 
-//TODO
-
 func init() {
+
 	rootCmd.AddCommand(tailCmd)
+	tailCmd.Flags().StringVarP(&procs, "process", "p", "", `Filter logs by process id`)
+	tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by  label`)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// tailCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// tailCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

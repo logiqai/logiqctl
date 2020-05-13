@@ -113,15 +113,15 @@ func commands() {
 					procs = strings.Split(v, ",")
 				}
 
-				config, err := getConfig()
+				//config, err := getConfig()
 				args := c.Args()
 
 				log.Debugln(namespaces, labels, applications, procs, args.Slice())
 				log.Debugln(len(namespaces), len(labels), len(applications), len(procs), len(args.Slice()))
-				if err == nil {
-					fmt.Println("Crunching data for you...")
-					services.Tail(c, config, namespaces, labels, applications, procs, args.Slice())
-				}
+				//if err == nil {
+				//	fmt.Println("Crunching data for you...")
+				//	//services.Tail(c, config, namespaces, labels, applications, procs, args.Slice())
+				//}
 				return nil
 			},
 		},
