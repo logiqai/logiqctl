@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package events;
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+option go_package = "github.com/logiqai/logiqctl/api/v1/events;events";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info : {
+        title : "Events";
+        version: "1.0";
+};
+
+schemes:HTTP;
+schemes:HTTPS;
+consumes:"application/json";
+produces:"application/json";
+
+responses:{
+    key:"400";
+        value:{
+            description:"Invalid Request."
+        }
+    }
+    responses:{
+        key:"403";
+        value:{
+            description:"Token Expired."
+        }
+    }
+    responses:{
+        key:"404";
+        value:{
+            description:"Returned when the resource does not exist."
+        }
+    }
+};
+
+message Event {
+    string name = 1;
+    string level = 2;
+    string sender = 3;
+    string timestamp = 4 [deprecated=true];
+    string message = 5;
+    map<string,string> extract = 6;
+    string envirionment = 7;
+    int64 timestamp_int = 8;
+    string hostname = 9;
+	string appName = 10;
+	string procId = 11;
+	string namespace = 12;
+}
+
+message EventsResponse {
+    int64 offset = 1;
+    int64 count = 2;
+    int64 total_count = 3;
+    repeated Event events = 4;
+}
+
+message EventsFilter {
+    repeated string names = 1;
+    string search = 2;
+    repeated string level = 3;
+    string timestamp_start = 4;
+    string timestamp_end = 5;
+    repeated string hostname = 6;
+    repeated string appName = 7;
+    repeated string procId = 8;
+    repeated string namespace = 9;
+}
+
+enum SortOrderEnums {
+    UNKNOWN = 0;
+    ASC = 1;
+    DESC = 2;
+}
+
+message SortOrder {
+    string attribute = 1;
+    SortOrderEnums order = 2;
+}
+
+message EventsPostRequest {
+    uint64 offset = 1;
+    uint64 count = 2;
+    EventsFilter filter = 3;
+    SortOrder sort = 4;
+    uint64 timestamp_start = 5;
+    uint64 timestamp_end = 6;
+}
+
+service EventsService {
+    rpc GetEvents(EventsPostRequest) returns (EventsResponse) {
+        option (google.api.http) = {
+            post: "/v1/events/query"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description : "Get events"
+            tags : "events"
+        };
+    };
+}

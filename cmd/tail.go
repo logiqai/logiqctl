@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var procs, labels string
+var application, process, labels string
 
 var tailExample = `
 Tail all logs 
@@ -51,9 +51,10 @@ var tailCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var procsArray []string
 		var labelsArray []string
+		//TODO no server support
 		//var namespaces = []string{utils.GetDefaultNamespace()}
-		if procs != "" {
-			procsArray = strings.Split(procs, ",")
+		if process != "" {
+			procsArray = strings.Split(process, ",")
 		}
 		if labels != "" {
 			labelsArray = strings.Split(labels, ",")
@@ -69,7 +70,7 @@ var tailCmd = &cobra.Command{
 func init() {
 
 	rootCmd.AddCommand(tailCmd)
-	tailCmd.Flags().StringVarP(&procs, "process", "p", "", `Filter logs by process id`)
+	tailCmd.Flags().StringVarP(&process, "process", "p", "", `Filter logs by process id`)
 	tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by label`)
 
 }

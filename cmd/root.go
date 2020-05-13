@@ -35,8 +35,13 @@ var rootCmd = &cobra.Command{
 	Use:     "logiqctl [flags] [options]",
 	Version: "1.0.2",
 	Long: `
-The LOGIQ command line toolkit, logiqctl, allows you to run commands against LOGIQ clusters. 
-You can tail logs from your applications and servers, query historical data and search your log data.
+The LOGIQ command line toolkit, logiqctl, allows you to run commands against LOGIQ Observability stack. 
+- You can tail logs from your applications and servers
+- View available namespaces/applications/processes
+- Query historical data 
+- Search your log data.
+- View Events
+
 
 Find more information at: https://docs.logiq.ai/logiqctl/logiq-box
 

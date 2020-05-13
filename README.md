@@ -1,13 +1,55 @@
 # Logiqctl 
+
 ### CLI for Logiq Log Insights
 
-- Tail logs in realtime
-- Query historic data
-- Do Text Search on data 
+```bash
+
+> ./logiqctl 
+
+The LOGIQ command line toolkit, logiqctl, allows you to run commands against LOGIQ Observability stack.
+- You can tail logs from your applications and servers
+- View available namespaces/applications/processes
+- Query historical data
+- Search your log data.
+- View Events
+
+
+Find more information at: https://docs.logiq.ai/logiqctl/logiq-box
+
+Usage:
+  logiqctl [command]
+
+Available Commands:
+  config      Modify logiqctl configuration options
+  get         Display one or many resources
+  help        Help about any command
+  logs        Print the logs for an application or process
+  tail        Stream logs from logiq Observability stack
+
+Flags:
+  -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
+  -h, --help                 help for logiqctl
+  -n, --namespace string     Override the default context set by `logiqctl set-context' command
+  -o, --output string        Output format. One of: table|json|yaml. (default "table")
+  -t, --time-format string   Time formatting options. One of: relative|epoch|RFC3339.
+                             This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds.
+                             json output is not indented, use '| jq' for advanced json operations (default "relative")
+      --version              version for logiqctl
+
+Use "logiqctl [command] --help" for more information about a command.
+
+```
+
 
 ### Quick start
 The simplest way to try logiqctl is to download a pre-built binary from our release page:
 https://github.com/logiqai/logiqctl/releases
+
+Once you have the binary run the following to get started
+- run `logiqctl config set-cluster CLUSTER_URL`
+- run `logiqctl config set-context NAMESPACE`
+- run `logiqctl get namespaces` to verify
+
 
 #### How to build from source
 
@@ -40,39 +82,108 @@ rm -f $PROTOC_ZIP
 - run `./generate_grpc.sh `
 - run `go build logiqctl.go`
 
-```bash
 
-> ./logiqctl 
-               
-NAME:
-   Logiqctl - LOGIQ command line toolkit
+To know more about LOGIQ Observability stack, see https://logiq.ai/ and https://docs.logiq.ai/ 
 
-USAGE:
-   logiqctl [global options] command [command options] [arguments...]
+In case of any issues either email us at logiqctl@logiq.ai or you could create an issue in this repository.
 
-VERSION:
-   1.0.0
+ ### logiqctl get
+ 
+ ```bash
+Prints a table of the most important information about the specified resources. For example:
 
-AUTHOR:
-   logiq.ai <cli@logiq.ai>
+# List all namespaces
+logiqctl get namespaces
 
-COMMANDS:
-   configure, c  Configure Logiq-ctl
-   list, ls      List of applications that you can tail
-   tail, t       tail logs filtered by namespace, application, labels or process / pod name
-   next, n       query n
-   query, q      query "sudo cron" 2h
-   search, s     search sudo
-   help, h       Shows a list of commands or help for one command
+# List all applications for the selected context
+logiqctl get applications
 
-GLOBAL OPTIONS:
-   --st value     Relative start time. (default: "10h")
-   --et value     Relative end time. (default: "10h")
-   --debug value  --debug true (default: "false")
-   --help, -h     show help (default: false)
-   --version, -v  print the version (default: false)
+# List all applications for all the available context
+logiqctl get applications all
 
+# List all processes
+logiqctl get processes
+
+Usage:
+  logiqctl get [command]
+
+Available Commands:
+  applications List all the available applications in default namespace
+  events       List all the available events for the namespace
+  namespaces   List the available name spaces
+  processes    List all the available processes, runs an interactive prompt to select applications
+
+Flags:
+  -h, --help   help for get
+
+Global Flags:
+  -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
+  -n, --namespace string     Override the default context set by `logiqctl set-context' command
+  -o, --output string        Output format. One of: table|json|yaml. (default "table")
+  -t, --time-format string   Time formatting options. One of: relative|epoch|RFC3339.
+                             This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds.
+                             json output is not indented, use '| jq' for advanced json operations (default "relative")
+
+Use "logiqctl get [command] --help" for more information about a command. 
 
 ```
 
-To know more about Logiq Platform, see https://logiq.ai/ and https://docs.logiq.ai/ 
+### logiqctl logs
+
+```bash
+
+Logs expect a namespace and application to be available to return results.
+Set the default namespace using 'logiqctl set-context' command or pass as '-n=NAMESPACE' flag
+Application name needs to be passed as an argument to the command.
+If the user is unsure of the application name, they can run an interactive prompt the would help them to choose filters.  See examples below.
+
+Global flag '--time-format' is not applicable for this command.
+Global flag '--output' only supports json format for this command.
+
+Usage:
+  logiqctl logs [flags]
+  logiqctl logs [command]
+
+Aliases:
+  logs, log
+
+Examples:
+
+Print logs for logiq-flash ingest server
+# logiqctl logs logiq-flash
+
+Print logs in json format
+# logiqctl -o=json logs logiq-flash
+
+Print logs for logiq-flash ingest server filtered by process logiq-flash-2
+In case of Kubernetes deployment a Stateful Set is an application, and each pods in it is a process
+The --process (-p) filter lets you view logs for the individual pod
+# logiqctl logs -p=logiq-flash-2 logiq-flash
+
+Runs an interactive prompt to let user choose filters
+# logiqctl logs i
+
+
+
+Available Commands:
+  interactive Runs an interactive prompt to let user select application and filters
+
+Flags:
+  -f, --follow           Specify if the logs should be streamed.
+  -h, --help             help for logs
+      --page-size int    Number of log entries to return in one page (default 30)
+  -p, --process string   Filter logs by  proc id
+  -s, --since string     Only return logs newer than a relative duration like 2m, 3h, or 2h30m.
+                         This is in relative to the last seen log time for a specified application or processes. (default "1h")
+
+Global Flags:
+  -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
+  -n, --namespace string     Override the default context set by `logiqctl set-context' command
+  -o, --output string        Output format. One of: table|json|yaml. (default "table")
+  -t, --time-format string   Time formatting options. One of: relative|epoch|RFC3339.
+                             This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds.
+                             json output is not indented, use '| jq' for advanced json operations (default "relative")
+
+Use "logiqctl logs [command] --help" for more information about a command.
+
+```

@@ -48,6 +48,7 @@ func init() {
 	getCmd.AddCommand(NewListNameSpaceCommand())
 	getCmd.AddCommand(NewListApplicationsCommand())
 	getCmd.AddCommand(NewListProcessesCommand())
+	getCmd.AddCommand(NewListEventsCommand())
 }
 
 func NewListNameSpaceCommand() *cobra.Command {
@@ -85,6 +86,29 @@ func NewListApplicationsCommand() *cobra.Command {
 			services.GetApplicationsV2(true)
 		},
 	})
+	return cmd
+}
+
+func NewListEventsCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "events",
+		Example: `
+List last 30 events
+# logiqctl get events|e
+
+#List events by application 
+logiqctl get events -a=sshd
+
+`,
+		Aliases: []string{"e"},
+		Short:   "List all the available events for the namespace",
+		PreRun:  preRunWithNs,
+		Run: func(cmd *cobra.Command, args []string) {
+			services.GetEvents(application, process)
+		},
+	}
+	cmd.Flags().StringVarP(&application, "application", "a", "", `Filter events by application name`)
+	cmd.Flags().StringVarP(&process, "process", "p", "", `Filter events by application and process name`)
 	return cmd
 }
 
