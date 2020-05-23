@@ -23,10 +23,13 @@ import (
 )
 
 const (
-	KeyCluster   = "cluster"
-	KeyPort      = "port"
-	DefaultPort  = "8081"
-	KeyNamespace = "namespace"
+	KeyCluster    = "cluster"
+	KeyPort       = "port"
+	DefaultPort   = "8081"
+	KeyNamespace  = "namespace"
+	KeyUiToken    = "uitoken"
+	KeyUiUser     = "uiuser"
+	KeyUiPassword = "uipassword"
 )
 
 func GetClusterUrl() string {

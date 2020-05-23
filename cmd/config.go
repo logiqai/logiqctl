@@ -45,6 +45,11 @@ var configCmd = &cobra.Command{
 # Runs an interactive prompt and let user select namespace from the list
 	logiqctl set-context i
 
+# Set ui token context
+	logiqctl set-ui-token token
+
+# Set ui credential
+	logiqctl set-ui-credential user password
 `,
 }
 
@@ -53,6 +58,61 @@ func init() {
 	configCmd.AddCommand(NewSetClusterCommand())
 	configCmd.AddCommand(NewSetContextCommand())
 	configCmd.AddCommand(NewViewCommand())
+	configCmd.AddCommand(NewUiTokenCommand())
+	configCmd.AddCommand(NewUiCredentialsCommand())
+}
+
+func NewUiCredentialsCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "set-ui-credential",
+		Example: "logiqctl set-ui-credential login password",
+		Short:   "Sets a logiq ui credentials",
+		Long: `
+Sets the cluster ui credentials, a valid logiq cluster end point is also required for all the operations
+		`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 2 {
+				fmt.Println("Incorrect Usage")
+				fmt.Println(cmd.Example)
+				return
+			}
+			viper.Set(utils.KeyUiUser, args[0])
+			viper.Set(utils.KeyUiPassword, args[1])
+			err := viper.WriteConfig()
+			if err != nil {
+				fmt.Print(err)
+				return
+			}
+			printUiCredentials()
+		},
+	}
+	return cmd
+}
+
+func NewUiTokenCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "set-ui-token",
+		Example: "logiqctl set-ui-token api_access_token",
+		Short:   "Sets a logiq ui api token",
+		Long: `
+Sets the cluster UI api token, a valid logiq cluster end point is also required for all the operations
+		`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Println("Incorrect Usage")
+				fmt.Println(cmd.Example)
+				return
+			}
+			viper.Set(utils.KeyUiToken, args[0])
+			err := viper.WriteConfig()
+			if err != nil {
+				fmt.Print(err)
+				return
+			}
+			printUiToken()
+		},
+	}
+	return cmd
 }
 
 func NewSetClusterCommand() *cobra.Command {
@@ -89,6 +149,7 @@ func NewViewCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			printCluster()
 			printNamespace()
+			printUiToken()
 		},
 	}
 }
@@ -101,7 +162,7 @@ func NewSetContextCommand() *cobra.Command {
 		Long: `
 This will the default context for all the operations.
 		`,
-		PreRun: preRun,
+		PreRun: utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 1 {
 				fmt.Printf("Incorrect usage")
@@ -144,6 +205,30 @@ func setContext(arg string) {
 	if err != nil {
 		fmt.Print(err)
 		return
+	}
+}
+
+func printUiToken() {
+	uiToken := viper.GetString(utils.KeyUiToken)
+	if uiToken != "" {
+		fmt.Printf("UI token set to: %s\n", uiToken)
+	} else {
+		fmt.Println("Default UI token is not set")
+	}
+}
+
+func printUiCredentials() {
+	uiUser := viper.GetString(utils.KeyUiUser)
+	if uiUser != "" {
+		fmt.Printf("UI user set to: %s\n", uiUser)
+	} else {
+		fmt.Println("Default UI user is not set")
+	}
+	uiPass := viper.GetString(utils.KeyUiPassword)
+	if uiPass != "" {
+		fmt.Printf("UI password set to: %s\n", uiPass)
+	} else {
+		fmt.Println("Default UI password is not set")
 	}
 }
 

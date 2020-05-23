@@ -18,6 +18,8 @@ package cmd
 
 import (
 	"github.com/logiqai/logiqctl/services"
+	"github.com/logiqai/logiqctl/ui"
+	"github.com/logiqai/logiqctl/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -40,6 +42,9 @@ logiqctl get applications all
 # List all processes
 logiqctl get processes
 
+# List all dashboards
+logiqctl get dashboards all
+
 `,
 }
 
@@ -49,6 +54,7 @@ func init() {
 	getCmd.AddCommand(NewListApplicationsCommand())
 	getCmd.AddCommand(NewListProcessesCommand())
 	getCmd.AddCommand(NewListEventsCommand())
+	getCmd.AddCommand(ui.NewListDashboardsCommand())
 }
 
 func NewListNameSpaceCommand() *cobra.Command {
@@ -57,7 +63,7 @@ func NewListNameSpaceCommand() *cobra.Command {
 		Example: "logiqctl get namespaces|ns|n",
 		Aliases: []string{"n", "ns"},
 		Short:   "List the available name spaces",
-		PreRun:  preRun,
+		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.ListNamespaces()
 		},
@@ -72,7 +78,7 @@ func NewListApplicationsCommand() *cobra.Command {
 		Example: "logiqctl get applications|apps|a",
 		Aliases: []string{"a", "apps"},
 		Short:   "List all the available applications in default namespace",
-		PreRun:  preRunWithNs,
+		PreRun:  utils.PreRunWithNs,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.GetApplicationsV2(false)
 		},
@@ -81,7 +87,7 @@ func NewListApplicationsCommand() *cobra.Command {
 		Use:     "all",
 		Example: "logiqctl get applications all",
 		Short:   "List all the available applications across namespaces",
-		PreRun:  preRun,
+		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.GetApplicationsV2(true)
 		},
@@ -102,7 +108,7 @@ logiqctl get events -a=sshd
 `,
 		Aliases: []string{"e"},
 		Short:   "List all the available events for the namespace",
-		PreRun:  preRunWithNs,
+		PreRun:  utils.PreRunWithNs,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.GetEvents(application, process)
 		},
@@ -118,7 +124,7 @@ func NewListProcessesCommand() *cobra.Command {
 		Example: "logiqctl get processes|proc|p",
 		Aliases: []string{"p", "proc"},
 		Short:   "List all the available processes, runs an interactive prompt to select applications",
-		PreRun:  preRunWithNs,
+		PreRun:  utils.PreRunWithNs,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.ListProcesses()
 		},
