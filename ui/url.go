@@ -8,27 +8,6 @@ import (
 	"net/url"
 )
 
-type Resource int
-
-var (
-	Protocol UriProtocol = UriUnknown
-)
-
-const (
-	ResourceDashboardsAll Resource = iota
-	ResourceDashboardsGet Resource = iota
-	ResourceLogin = iota
-	ResourceQuery Resource = iota
-)
-
-type UriProtocol int
-
-const (
-	UriUnknown = iota
-	UriHttp UriProtocol = iota
-	UriHttps UriProtocol = iota
-)
-
 func addApiToken(uriNonTokenized string) string {
 	u, _ := url.Parse(uriNonTokenized)
 	q, _ := url.ParseQuery(u.RawQuery)
@@ -72,6 +51,10 @@ func getUrlForResource(r Resource, args...string) string {
 		uri = fmt.Sprintf("%s://%s/api/dashboards",protocolString, ipOrDns)
 	case ResourceDashboardsGet:
 		uri = fmt.Sprintf("%s://%s/api/dashboards/%s",protocolString, ipOrDns,args[0])
+	case ResourceQueryAll:
+		uri = fmt.Sprintf("%s://%s/api/queries",protocolString, ipOrDns)
+	case ResourceQuery:
+		uri = fmt.Sprintf("%s://%s/api/queries/%s",protocolString, ipOrDns,args[0])
 	case ResourceLogin:
 		uri = fmt.Sprintf("%s://%s/login",protocolString,ipOrDns)
 	}

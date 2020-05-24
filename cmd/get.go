@@ -45,6 +45,15 @@ logiqctl get processes
 # List all dashboards
 logiqctl get dashboards all
 
+# Get dashboard
+logiqctl get dashboard dashboard-slug
+
+# List all queries
+ogiqctl get queries all
+
+# Get query
+logiqctl get query query-slug
+
 `,
 }
 
@@ -55,6 +64,7 @@ func init() {
 	getCmd.AddCommand(NewListProcessesCommand())
 	getCmd.AddCommand(NewListEventsCommand())
 	getCmd.AddCommand(ui.NewListDashboardsCommand())
+	getCmd.AddCommand(ui.NewListQueriesCommand())
 }
 
 func NewListNameSpaceCommand() *cobra.Command {
