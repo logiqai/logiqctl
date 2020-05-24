@@ -12,6 +12,8 @@ const (
 	ResourceLogin                  = iota
 	ResourceQuery         Resource = iota
 	ResourceQueryAll      Resource = iota
+	ResourceDatasource         Resource = iota
+	ResourceDatasourceAll      Resource = iota
 )
 
 type UriProtocol int

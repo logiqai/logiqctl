@@ -65,6 +65,7 @@ func init() {
 	getCmd.AddCommand(NewListEventsCommand())
 	getCmd.AddCommand(ui.NewListDashboardsCommand())
 	getCmd.AddCommand(ui.NewListQueriesCommand())
+	getCmd.AddCommand(ui.NewListDatasourcesCommand())
 }
 
 func NewListNameSpaceCommand() *cobra.Command {

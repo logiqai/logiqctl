@@ -55,6 +55,10 @@ func getUrlForResource(r Resource, args...string) string {
 		uri = fmt.Sprintf("%s://%s/api/queries",protocolString, ipOrDns)
 	case ResourceQuery:
 		uri = fmt.Sprintf("%s://%s/api/queries/%s",protocolString, ipOrDns,args[0])
+	case ResourceDatasourceAll:
+		uri = fmt.Sprintf("%s://%s/api/data_sources",protocolString, ipOrDns)
+	case ResourceDatasource:
+		uri = fmt.Sprintf("%s://%s/api/data_sources/%s",protocolString, ipOrDns,args[0])
 	case ResourceLogin:
 		uri = fmt.Sprintf("%s://%s/login",protocolString,ipOrDns)
 	}
