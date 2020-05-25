@@ -3,7 +3,6 @@ package ui
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/TylerBrock/colorjson"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
@@ -42,9 +41,7 @@ func NewListQueriesCommand() *cobra.Command {
 
 func printQuery(args []string) {
 	if v, vErr := getQuery(args); v != nil {
-		f := colorjson.NewFormatter()
-		f.Indent = 2
-		s, _ := f.Marshal(*v)
+		s, _ := json.MarshalIndent(*v,"","    ")
 		fmt.Println(string(s))
 	} else {
 		fmt.Println(vErr.Error())

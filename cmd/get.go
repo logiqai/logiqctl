@@ -49,7 +49,7 @@ logiqctl get dashboards all
 logiqctl get dashboard dashboard-slug
 
 # List all queries
-ogiqctl get queries all
+logiqctl get queries all
 
 # Get query
 logiqctl get query query-slug

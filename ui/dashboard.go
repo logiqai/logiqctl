@@ -2,7 +2,6 @@ package ui
 
 import (
 	"encoding/json"
-	"github.com/TylerBrock/colorjson"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/cobra"
 	"fmt"
@@ -24,7 +23,7 @@ func NewListDashboardsCommand() *cobra.Command {
 				fmt.Println("Missing dashboard slug")
 				os.Exit(-1)
 			}
-			printDashboard(args)
+			exportDashboard(args)
 		},
 	}
 	cmd.AddCommand(&cobra.Command{
@@ -41,41 +40,64 @@ func NewListDashboardsCommand() *cobra.Command {
 }
 
 func exportDashboard(args []string) {
-	uri := getUrlForResource(ResourceDashboardsGet,args...)
-	client := getHttpClient()
+	dashboardOut := map[string]interface{}{}
 
-	if resp, err := client.Get(uri); err == nil {
-		defer resp.Body.Close()
-		var v = map[string]interface{}{}
-		if resp.StatusCode == http.StatusOK {
-			bodyBytes, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				fmt.Printf("Unable to fetch dashboards, Error: %s", err.Error())
-				os.Exit(-1)
+	if dashboardPtr, err := getDashboard(args); err != nil {
+		fmt.Println(err.Error())
+	} else {
+		dashboard := *dashboardPtr
+		dashboardParams := map[string]interface{}{}
+		dashboardParams["name"]=dashboard["name"]
+		dashboardParams["tags"]=dashboard["tags"]
+		dashboardOut["dashboard"] = dashboardParams
+
+		widgets := dashboard["widgets"].([]interface{})
+		widgetOut := []interface{}{}
+		dataSources := map[int]interface{}{}
+
+		for _, w := range widgets {
+			widget := w.(map[string]interface{})
+			visualization := widget["visualization"].(map[string]interface{})
+			query := visualization["query"].(map[string]interface{})
+			wOutEntry := map[string]interface{}{}
+			wOutEntry["options"] = widget["options"]
+			wOutEntry["text"] = widget["text"]
+			wOutEntry["visualization"] = map[string]interface{}{
+				"type": visualization["type"],
+				"name": visualization["name"],
+				"options": visualization["options"],
+				"query": map[string]interface{}{
+					"name":query["name"],
+					"options":query["options"],
+					"description":query["description"],
+					"data_source_id":query["data_source_id"],
+				},
 			}
-			err = json.Unmarshal(bodyBytes, &v)
-			if err != nil {
-				fmt.Printf("Unable to decode dashboards, Error: %s", err.Error())
+			dId := (int)(query["data_source_id"].(float64))
+			if _, ok := dataSources[dId]; !ok {
+				if dsPtr, dsErr := getDatasource([]string{fmt.Sprintf("%d",dId)});dsErr == nil {
+					datasource := *dsPtr
+					dataSources[dId] = map[string]interface{}{
+						"name": datasource["name"],
+						"options": datasource["options"],
+						"type": datasource["type"],
+					}
+				} else {
+					fmt.Printf("Data source not found: %d",dId)
+					fmt.Println("This widget will not be imported")
+				}
 			} else {
-				fmt.Println(string(bodyBytes))
+				fmt.Println("Here", dataSources[dId])
 			}
+			widgetOut = append(widgetOut, wOutEntry)
 		}
-	} else {
-		fmt.Printf("Unable to fetch dashboards, Error: %s", err.Error())
-		os.Exit(-1)
-	}
-}
 
-func printDashboard(args []string) {
-	if v, vErr := getDashboard(args); v != nil {
-		f := colorjson.NewFormatter()
-		f.Indent = 2
-		s, _ := f.Marshal(*v)
-		fmt.Println(string(s))
-	} else {
-		fmt.Println(vErr.Error())
-		os.Exit(-1)
+		dashboardOut["widgets"] = widgetOut
+		dashboardOut["datasources"] = dataSources
 	}
+
+	s, _ := json.MarshalIndent(dashboardOut,"","    ")
+	fmt.Println(string(s))
 }
 
 func getDashboard(args []string) (*map[string]interface{}, error){
@@ -88,19 +110,19 @@ func getDashboard(args []string) (*map[string]interface{}, error){
 		if resp.StatusCode == http.StatusOK {
 			bodyBytes, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				return nil, fmt.Errorf("Unable to fetch dashboards, Error: %s", err.Error())
+				return nil, fmt.Errorf("Unable to fetch dashboard, Error: %s", err.Error())
 			}
 			err = json.Unmarshal(bodyBytes, &v)
 			if err != nil {
-				return nil, fmt.Errorf("Unable to decode dashboards, Error: %s", err.Error())
+				return nil, fmt.Errorf("Unable to decode dashboard, Error: %s", err.Error())
 			} else {
 				return &v, nil
 			}
 		} else {
-			return nil, fmt.Errorf("Unable to fetch datasources, Error: %s", err.Error())
+			return nil, fmt.Errorf("Http response error, Error: %d", resp.StatusCode)
 		}
 	} else {
-		return nil, fmt.Errorf("Unable to fetch dashboards, Error: %s", err.Error())
+		return nil, fmt.Errorf("Unable to fetch dashboard, Error: %s", err.Error())
 	}
 }
 

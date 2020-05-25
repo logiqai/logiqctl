@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"github.com/olekukonko/tablewriter"
-"github.com/TylerBrock/colorjson"
 )
 
 func NewListDatasourcesCommand() *cobra.Command {
@@ -42,9 +41,7 @@ func NewListDatasourcesCommand() *cobra.Command {
 
 func printDataSource(args []string) {
 	if v, vErr := getDatasource(args); v != nil {
-		f := colorjson.NewFormatter()
-		f.Indent = 2
-		s, _ := f.Marshal(*v)
+		s, _ := json.MarshalIndent(*v,"","    ")
 		fmt.Println(string(s))
 	} else {
 		fmt.Println(vErr.Error())
