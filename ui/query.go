@@ -2,13 +2,14 @@ package ui
 
 import (
 	"encoding/json"
-	"github.com/logiqai/logiqctl/utils"
-	"github.com/spf13/cobra"
 	"fmt"
+	"github.com/TylerBrock/colorjson"
+	"github.com/logiqai/logiqctl/utils"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cobra"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"github.com/olekukonko/tablewriter"
 )
 
 func NewListQueriesCommand() *cobra.Command {
@@ -23,7 +24,7 @@ func NewListQueriesCommand() *cobra.Command {
 				fmt.Println("Missing query id")
 				os.Exit(-1)
 			}
-			getQuery(args)
+			printQuery(args)
 		},
 	}
 	cmd.AddCommand(&cobra.Command{
@@ -39,8 +40,20 @@ func NewListQueriesCommand() *cobra.Command {
 	return cmd
 }
 
-func getQuery(args []string) {
-	uri := getUrlForResource(ResourceQuery,args...)
+func printQuery(args []string) {
+	if v, vErr := getQuery(args); v != nil {
+		f := colorjson.NewFormatter()
+		f.Indent = 2
+		s, _ := f.Marshal(*v)
+		fmt.Println(string(s))
+	} else {
+		fmt.Println(vErr.Error())
+		os.Exit(-1)
+	}
+}
+
+func getQuery(args []string) (*map[string]interface{}, error) {
+	uri := getUrlForResource(ResourceQuery, args...)
 	client := getHttpClient()
 
 	if resp, err := client.Get(uri); err == nil {
@@ -49,19 +62,19 @@ func getQuery(args []string) {
 		if resp.StatusCode == http.StatusOK {
 			bodyBytes, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				fmt.Printf("Unable to fetch queries, Error: %s", err.Error())
-				os.Exit(-1)
+				return nil, fmt.Errorf("Unable to fetch queries, Error: %s", err.Error())
 			}
 			err = json.Unmarshal(bodyBytes, &v)
 			if err != nil {
-				fmt.Printf("Unable to decode queries, Error: %s", err.Error())
+				return nil, fmt.Errorf("Unable to decode queries, Error: %s", err.Error())
 			} else {
-				fmt.Println(string(bodyBytes))
+				return &v, nil
 			}
+		} else {
+			return nil, fmt.Errorf("Http response error, Error: %d", resp.StatusCode)
 		}
 	} else {
-		fmt.Printf("Unable to fetch queries, Error: %s", err.Error())
-		os.Exit(-1)
+		return nil, fmt.Errorf("Unable to fetch queries, Error: %s", err.Error())
 	}
 }
 
@@ -84,10 +97,10 @@ func listQueries() {
 			} else {
 				count := (int)(v["count"].(float64))
 				queries := v["results"].([]interface{})
-				fmt.Println("(",count, ") queries found")
-				if ( count > 0 ) {
+				fmt.Println("(", count, ") queries found")
+				if count > 0 {
 					table := tablewriter.NewWriter(os.Stdout)
-					table.SetHeader([]string{"Name", "Data source Id", "Id","Archived","Draft"})
+					table.SetHeader([]string{"Name", "Data source Id", "Id", "Archived", "Draft"})
 					for _, q := range queries {
 						query := q.(map[string]interface{})
 						dataSourceId := (int)(query["data_source_id"].(float64))
@@ -95,9 +108,9 @@ func listQueries() {
 						isArchived := query["is_archived"].(bool)
 						isDraft := query["is_draft"].(bool)
 						id := (int)(query["id"].(float64))
-						table.Append([]string{name, fmt.Sprintf("%d",dataSourceId),
-							fmt.Sprintf("%d",id), fmt.Sprintf("%v",isArchived),
-							fmt.Sprintf("%v",isDraft),
+						table.Append([]string{name, fmt.Sprintf("%d", dataSourceId),
+							fmt.Sprintf("%d", id), fmt.Sprintf("%v", isArchived),
+							fmt.Sprintf("%v", isDraft),
 						})
 					}
 

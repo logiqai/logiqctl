@@ -2,6 +2,7 @@ package ui
 
 import (
 	"encoding/json"
+	"github.com/TylerBrock/colorjson"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/cobra"
 	"fmt"
@@ -23,7 +24,7 @@ func NewListDashboardsCommand() *cobra.Command {
 				fmt.Println("Missing dashboard slug")
 				os.Exit(-1)
 			}
-			getDashboard(args)
+			printDashboard(args)
 		},
 	}
 	cmd.AddCommand(&cobra.Command{
@@ -39,7 +40,7 @@ func NewListDashboardsCommand() *cobra.Command {
 	return cmd
 }
 
-func getDashboard(args []string) {
+func exportDashboard(args []string) {
 	uri := getUrlForResource(ResourceDashboardsGet,args...)
 	client := getHttpClient()
 
@@ -62,6 +63,44 @@ func getDashboard(args []string) {
 	} else {
 		fmt.Printf("Unable to fetch dashboards, Error: %s", err.Error())
 		os.Exit(-1)
+	}
+}
+
+func printDashboard(args []string) {
+	if v, vErr := getDashboard(args); v != nil {
+		f := colorjson.NewFormatter()
+		f.Indent = 2
+		s, _ := f.Marshal(*v)
+		fmt.Println(string(s))
+	} else {
+		fmt.Println(vErr.Error())
+		os.Exit(-1)
+	}
+}
+
+func getDashboard(args []string) (*map[string]interface{}, error){
+	uri := getUrlForResource(ResourceDashboardsGet,args...)
+	client := getHttpClient()
+
+	if resp, err := client.Get(uri); err == nil {
+		defer resp.Body.Close()
+		var v = map[string]interface{}{}
+		if resp.StatusCode == http.StatusOK {
+			bodyBytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, fmt.Errorf("Unable to fetch dashboards, Error: %s", err.Error())
+			}
+			err = json.Unmarshal(bodyBytes, &v)
+			if err != nil {
+				return nil, fmt.Errorf("Unable to decode dashboards, Error: %s", err.Error())
+			} else {
+				return &v, nil
+			}
+		} else {
+			return nil, fmt.Errorf("Unable to fetch datasources, Error: %s", err.Error())
+		}
+	} else {
+		return nil, fmt.Errorf("Unable to fetch dashboards, Error: %s", err.Error())
 	}
 }
 

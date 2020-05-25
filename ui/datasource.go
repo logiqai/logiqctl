@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"github.com/olekukonko/tablewriter"
+"github.com/TylerBrock/colorjson"
 )
 
 func NewListDatasourcesCommand() *cobra.Command {
@@ -23,7 +24,7 @@ func NewListDatasourcesCommand() *cobra.Command {
 				fmt.Println("Missing datasource id")
 				os.Exit(-1)
 			}
-			getDatasource(args)
+			printDataSource(args)
 		},
 	}
 	cmd.AddCommand(&cobra.Command{
@@ -39,7 +40,19 @@ func NewListDatasourcesCommand() *cobra.Command {
 	return cmd
 }
 
-func getDatasource(args []string) {
+func printDataSource(args []string) {
+	if v, vErr := getDatasource(args); v != nil {
+		f := colorjson.NewFormatter()
+		f.Indent = 2
+		s, _ := f.Marshal(*v)
+		fmt.Println(string(s))
+	} else {
+		fmt.Println(vErr.Error())
+		os.Exit(-1)
+	}
+}
+
+func getDatasource(args []string) (*map[string]interface{}, error) {
 	uri := getUrlForResource(ResourceDatasource,args...)
 	client := getHttpClient()
 
@@ -49,19 +62,19 @@ func getDatasource(args []string) {
 		if resp.StatusCode == http.StatusOK {
 			bodyBytes, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				fmt.Printf("Unable to fetch datasources, Error: %s", err.Error())
-				os.Exit(-1)
+				return nil, fmt.Errorf("Unable to fetch datasources, Error: %s", err.Error())
 			}
 			err = json.Unmarshal(bodyBytes, &v)
 			if err != nil {
-				fmt.Printf("Unable to decode datasources, Error: %s", err.Error())
+				return nil, fmt.Errorf("Unable to decode datasources, Error: %s", err.Error())
 			} else {
-				fmt.Println(string(bodyBytes))
+				return &v, nil
 			}
+		} else {
+			return nil, fmt.Errorf("Http response error, Error: %d", resp.StatusCode)
 		}
 	} else {
-		fmt.Printf("Unable to fetch datasources, Error: %s", err.Error())
-		os.Exit(-1)
+		return nil, fmt.Errorf("Unable to fetch datasources, Error: %s", err.Error())
 	}
 }
 
