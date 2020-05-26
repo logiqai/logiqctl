@@ -133,8 +133,8 @@ func exportDashboard(args []string) {
 		dashboardOut["datasources"] = dataSources
 	}
 
-	//s, _ := json.MarshalIndent(dashboardOut, "", "    ")
-	//fmt.Println(string(s))
+	s, _ := json.MarshalIndent(dashboardOut, "", "    ")
+	fmt.Println(string(s))
 }
 
 func getDashboard(args []string) (*map[string]interface{}, error) {
