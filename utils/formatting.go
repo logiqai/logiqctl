@@ -36,6 +36,7 @@ var FlagLogsSince string
 var FlagLogsPageSize uint32
 var FlagLogsFollow bool
 var FlagProcId string
+var FlagFile string
 
 const LineBreaksKey = "lineBreaksAfterEachLogEntry"
 

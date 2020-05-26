@@ -2,20 +2,27 @@ package ui
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/viper"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
-	"fmt"
 	"os"
 )
 
+var (
+	client *http.Client = nil
+)
+
 func getHttpClient() *http.Client {
-	var client *http.Client
+	if client != nil {
+		return client
+	}
+
 	api_key := viper.GetString(utils.KeyUiToken)
 
-	if  api_key != "" {
+	if api_key != "" {
 		client = &http.Client{}
 	} else {
 		user := viper.GetString(utils.KeyUiUser)
@@ -30,12 +37,12 @@ func getHttpClient() *http.Client {
 			loginUrl := getUrlForResource(ResourceLogin)
 			u, _ := url.Parse(loginUrl)
 			q, _ := url.ParseQuery(u.RawQuery)
-			q.Add("remember","on")
-			q.Add("email",user)
-			q.Add("password",password)
+			q.Add("remember", "on")
+			q.Add("email", user)
+			q.Add("password", password)
 			u.RawQuery = q.Encode()
 
-			if resp, err := client.Post(u.String(),"application/x-www-form-urlencoded",bytes.NewReader(([]byte)(q.Encode()))); err != nil {
+			if resp, err := client.Post(u.String(), "application/x-www-form-urlencoded", bytes.NewReader(([]byte)(q.Encode()))); err != nil {
 				fmt.Println("Error login with provided credentials, Error:", err.Error())
 				os.Exit(-1)
 			} else {

@@ -62,6 +62,7 @@ This is only applicable when the output format is table. json and yaml outputs w
 json output is not indented, use '| jq' for advanced json operations`)
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagNamespace, "namespace", "n", "", "Override the default context set by `logiqctl set-context' command")
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagCluster, "cluster", "c", "", "Override the default cluster set by `logiqctl set-cluster' command")
+	rootCmd.PersistentFlags().StringVarP(&utils.FlagFile,"file","f","","Path to file")
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
