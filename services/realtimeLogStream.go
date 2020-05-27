@@ -19,6 +19,7 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"strings"
 
@@ -36,64 +37,16 @@ var (
 	matchLabelsMap    = map[string]string{}
 	matchProcessMap   = map[string]bool{}
 
-	allowAll       = false
-	tailApps       = false
-	tailNamespaces = false
-	tailLabels     = false
-	tailProcs      = false
-	tailDefault    = false
+	tailLabels  = false
+	tailDefault = false
 )
 
 func isMatch(logMap map[string]interface{}) bool {
 	match := false
 
-	log.Debugln("isMatch:", tailApps, tailNamespaces, tailProcs, tailLabels)
+	log.Debugln("isMatch:", tailLabels)
 	log.Debugln("isMatch:", logMap["app_name"], logMap["proc_id"])
 	log.Debugln("")
-
-	if allowAll {
-		return true
-	}
-
-	if tailApps {
-		if mApp, ok := logMap["app_name"]; ok {
-			if _, found := matchAppMap[mApp.(string)]; !found {
-				return false
-			} else {
-				log.Debugln("Matched app_name ", mApp)
-				match = true
-			}
-		} else {
-			log.Debugln("No app_name is data", logMap)
-		}
-	}
-
-	if tailNamespaces {
-		if ns, ok := logMap["namespace"]; ok {
-			if _, matchOk := matchNamespaceMap[ns.(string)]; !matchOk {
-				return false
-			} else {
-				match = true
-			}
-		} else {
-			if mRaw, ok := logMap["message_raw"]; ok {
-				var v easymap.EasyMap
-				if jErr := json.Unmarshal(([]byte)(mRaw.(string)), &v); jErr == nil {
-					nsDetails := v.Get("namespace_name")
-					if nsName, nsOk := nsDetails["kubernetes.namespace_name"]; nsOk {
-						if _, matchOk := matchNamespaceMap[nsName.(string)]; !matchOk {
-							return false
-						} else {
-							log.Debugln("Matched namespace ", ns)
-							match = true
-						}
-					}
-				}
-			} else {
-				return false
-			}
-		}
-	}
 
 	if tailLabels {
 		if mRaw, ok := logMap["message_raw"]; ok {
@@ -118,19 +71,8 @@ func isMatch(logMap map[string]interface{}) bool {
 		} else {
 			return false
 		}
-	}
-
-	if tailProcs {
-		if mProc, ok := logMap["proc_id"]; ok {
-			if _, found := matchProcessMap[mProc.(string)]; !found {
-				return false
-			} else {
-				log.Debugln("Matched process ", mProc)
-				match = true
-			}
-		} else {
-			log.Debugln("No proc_id in data", logMap)
-		}
+	} else {
+		match = true
 	}
 
 	return match
@@ -153,22 +95,12 @@ func setupMatchAttributeValueMaps(matches []string, sep string, m map[string]str
 	}
 }
 
-func Tail(tN, tL, tA, tP, def []string) error {
-	log.Debugln(len(tA), len(tN), len(tL), len(tP), len(def))
-	tailApps = len(tA) > 0
-	tailNamespaces = len(tN) > 0
+func Tail(appName, procId string, tL []string) error {
+	namespace := utils.GetDefaultNamespace()
+
 	tailLabels = len(tL) > 0
-	tailProcs = len(tP) > 0
-	tailDefault = len(def) > 0
 	output := utils.FlagOut
-	log.Debugln(tN, tL, tA, tP, def)
-	log.Debugln("A:", tailApps, "N:", tailNamespaces, "L:", tailLabels, "P:", tailProcs, "D:", tailDefault)
-	if !tailApps && !tailLabels && !tailNamespaces && !tailProcs && !tailDefault {
-		allowAll = true
-	}
-	setupMatchAttributeMaps(tA, matchAppMap)
-	setupMatchAttributeMaps(tN, matchNamespaceMap)
-	setupMatchAttributeMaps(tP, matchProcessMap)
+	log.Debugln("A:", appName, "N:", namespace, "L:", tailLabels, "P:", procId)
 	setupMatchAttributeValueMaps(tL, ":=", matchLabelsMap)
 
 	log.Debugln(matchNamespaceMap, matchLabelsMap, matchProcessMap, matchAppMap)
@@ -179,12 +111,16 @@ func Tail(tN, tL, tA, tP, def []string) error {
 	}
 	defer conn.Close()
 	client := realtimeLogStream.NewLogStreamerServiceClient(conn)
-	if tA == nil || len(tA) == 0 {
-		//always default to all logs
-		tA = []string{"*"}
+	subName := namespace
+	if appName != "" {
+		subName = fmt.Sprintf("%s:%s", subName, appName)
 	}
+	if procId != "" {
+		subName = fmt.Sprintf("%s:%s", subName, procId)
+	}
+	log.Debugf("====> %s \n", subName)
 	sub := &realtimeLogStream.Subscription{
-		Applications: tA,
+		Applications: []string{subName},
 	}
 	stream, err := client.StreamLog(context.Background(), sub)
 	if err != nil {
@@ -208,11 +144,6 @@ func Tail(tN, tL, tA, tP, def []string) error {
 			log.Print("Cannot read payload, this should not happen!")
 		}
 
-		ns := "default"
-		if v, ok := logMap["msg_id"]; ok {
-			ns = v.(string)
-		}
-		logMap["namespace"] = ns
 		if isMatch(logMap) {
 			printSyslogMessage(logMap, output)
 		}

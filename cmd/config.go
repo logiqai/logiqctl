@@ -186,7 +186,7 @@ func NewInteractiveSetContextCommand() *cobra.Command {
 		Aliases: []string{"i"},
 		Short:   `Runs an interactive prompt and let user select namespace from the list`,
 		Run: func(cmd *cobra.Command, args []string) {
-			selectedNs, err := services.RunSelectNamespacePrompt()
+			selectedNs, err := services.RunSelectNamespacePrompt(false)
 			if err != nil {
 				fmt.Printf("Incorrect usage")
 				fmt.Println(cmd.Example)

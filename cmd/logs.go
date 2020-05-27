@@ -113,9 +113,9 @@ var interactiveCmd = &cobra.Command{
 	Aliases: []string{"i"},
 	Short:   `Runs an interactive prompt to let user select application and filters`,
 	Run: func(cmd *cobra.Command, args []string) {
-		app, err := services.RunSelectApplicationForNamespacePrompt()
+		app, err := services.RunSelectApplicationForNamespacePrompt(false)
 		handleError(err)
-		proc, err := services.RunSelectProcessesForNamespaceAndAppPrompt(app.Name)
+		proc, err := services.RunSelectProcessesForNamespaceAndAppPrompt(app.Name, false)
 		handleError(err)
 		fmt.Printf("You could also run this directly `logiqctl logs -p=%s %s`\n", proc.ProcID, app.Name)
 		fmt.Printf("Fetching logs for %s (namespace), %s (application) and %s (process)\n\n", utils.GetDefaultNamespace(), app.Name, proc.ProcID)

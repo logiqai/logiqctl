@@ -95,14 +95,11 @@ func GetApplicationByName(application string) (*applications.ApplicationV2, erro
 	return nil, errors.New("Cannot find application ")
 }
 
-func RunSelectApplicationForNamespacePrompt() (*applications.ApplicationV2, error) {
+func RunSelectApplicationForNamespacePrompt(all bool) (*applications.ApplicationV2, error) {
 	response, err := getApplicationsV2Response(false)
 	if err != nil {
 		return nil, err
 	}
-	//if len(response.Applications) == 1 {
-	//	return response.Applications[0], nil
-	//}
 	if len(response.Applications) > 0 {
 		var apps []SelectDisplay
 		for _, app := range response.Applications {
@@ -110,6 +107,14 @@ func RunSelectApplicationForNamespacePrompt() (*applications.ApplicationV2, erro
 				Name:    app.Name,
 				Details: fmt.Sprintf("Last Seen %s", utils.GetTimeAsString(app.LastSeen)),
 			})
+		}
+		if all {
+			apps = append([]SelectDisplay{
+				{
+					Name:    "*",
+					Details: "Select All",
+				},
+			}, apps...)
 		}
 
 		whatPrompt := promptui.Select{
@@ -122,6 +127,13 @@ func RunSelectApplicationForNamespacePrompt() (*applications.ApplicationV2, erro
 		what, _, err := whatPrompt.Run()
 		if err != nil {
 			return nil, err
+		}
+		if all && what == 0 {
+			//select all
+			return nil, nil
+		}
+		if all {
+			return response.Applications[what-1], nil
 		}
 		return response.Applications[what], nil
 	}

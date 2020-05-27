@@ -82,10 +82,13 @@ func ListNamespaces() {
 	}
 }
 
-func RunSelectNamespacePrompt() (string, error) {
+func RunSelectNamespacePrompt(all bool) (string, error) {
 	namespaces, err := GetNamespacesAsStrings()
 	if err != nil {
 		return "", err
+	}
+	if all {
+		namespaces = append(namespaces, "*")
 	}
 	whatPrompt := promptui.Select{
 		Label: "Select a namespace to set as default context",

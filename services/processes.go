@@ -44,7 +44,7 @@ func getProcessesResponse(application string) (*processes.ProcessesResponse, err
 }
 
 func ListProcesses() {
-	application, err := RunSelectApplicationForNamespacePrompt()
+	application, err := RunSelectApplicationForNamespacePrompt(false)
 	if err != nil {
 		return
 	}
@@ -92,7 +92,7 @@ func GetProcessByApplicationAndProc(application, procId string) (*processes.Proc
 	return nil, errors.New("NOT_FOUND")
 }
 
-func RunSelectProcessesForNamespaceAndAppPrompt(application string) (*processes.Process, error) {
+func RunSelectProcessesForNamespaceAndAppPrompt(application string, all bool) (*processes.Process, error) {
 	response, err := getProcessesResponse(application)
 	if err != nil {
 		return nil, err
@@ -109,6 +109,14 @@ func RunSelectProcessesForNamespaceAndAppPrompt(application string) (*processes.
 				Details: fmt.Sprintf("Last Seen %s", utils.GetTimeAsString(proc.LastSeen)),
 			})
 		}
+		if all {
+			procForDisplay = append([]SelectDisplay{
+				{
+					Name:    "*",
+					Details: "Select All",
+				},
+			}, procForDisplay...)
+		}
 
 		whatPrompt := promptui.Select{
 			Label:     fmt.Sprintf("Select an process (showing '%s' namespace and '%s' application", utils.GetDefaultNamespace(), application),
@@ -120,6 +128,13 @@ func RunSelectProcessesForNamespaceAndAppPrompt(application string) (*processes.
 		what, _, err := whatPrompt.Run()
 		if err != nil {
 			return nil, err
+		}
+		if all && what == 0 {
+			//select all
+			return nil, nil
+		}
+		if all {
+			return response.Processes[what-1], nil
 		}
 		return response.Processes[what], nil
 	}

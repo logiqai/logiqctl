@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/manifoldco/promptui"
 
@@ -40,17 +41,19 @@ type SelectDisplay struct {
 }
 
 const (
-	FMT = "%-24s | %-16s | %-16s | %-16s | %-16s | %s\n"
+	FMT = "%-24s | %-9s | %-16s | %-16s | %-16s | %-16s | %s\n"
 )
 
 func printSyslogHeader() {
-	fmt.Printf(FMT, "Timestamp", "Namespace", "Application", "Process/Pod", "Facility", "Log message")
+	fmt.Printf(FMT, "Timestamp", "Level", "Namespace", "Application", "Process/Pod", "Facility", "Log message")
 }
 
 func printSyslogMessage(logMap map[string]interface{}, output string) {
+	logMap["namespace"] = GetNamespaceSansHost(logMap["namespace"].(string))
 	if output == OUTPUT_COLUMNS {
 		fmt.Printf(FMT,
 			logMap["timestamp"],
+			logMap["severity_string"],
 			logMap["namespace"],
 			logMap["app_name"],
 			logMap["proc_id"],
@@ -58,6 +61,7 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 			logMap["message"],
 		)
 	} else if output == OUTPUT_JSON {
+
 		v, err := json.Marshal(logMap)
 		if err == nil {
 			fmt.Printf("%s\n", v)
@@ -66,8 +70,9 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 			os.Exit(-1)
 		}
 	} else {
-		fmt.Printf("%s %s %s %s %s %s\n",
+		fmt.Printf("%s %9s %s %s %s %s %s\n",
 			logMap["timestamp"],
+			logMap["severity_string"],
 			logMap["namespace"],
 			logMap["app_name"],
 			logMap["proc_id"],
@@ -111,4 +116,14 @@ func printSyslogMessageForType(log *query.SysLogMessage, output string) {
 			os.Exit(-1)
 		}
 	}
+}
+
+var hostnameSuffix = "-@h"
+
+func GetNamespaceSansHost(namespace string) string {
+	ns := namespace
+	if namespace != "" && strings.HasSuffix(namespace, hostnameSuffix) {
+		ns = strings.Replace(namespace, hostnameSuffix, "", -1)
+	}
+	return ns
 }

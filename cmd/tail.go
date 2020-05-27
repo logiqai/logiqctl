@@ -18,7 +18,6 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/logiqai/logiqctl/services"
 
@@ -49,19 +48,25 @@ var tailCmd = &cobra.Command{
 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		var procsArray []string
 		var labelsArray []string
-		//TODO no server support
-		//var namespaces = []string{utils.GetDefaultNamespace()}
-		if process != "" {
-			procsArray = strings.Split(process, ",")
+		var appName string
+		var procId string
+		app, err := services.RunSelectApplicationForNamespacePrompt(true)
+		handleError(err)
+		if app != nil {
+			appName = app.Name
+			process, err := services.RunSelectProcessesForNamespaceAndAppPrompt(app.Name, true)
+			handleError(err)
+			if process != nil {
+				procId = process.ProcID
+			} else {
+				procId = "*"
+			}
+		} else {
+			appName = "*"
 		}
-		if labels != "" {
-			labelsArray = strings.Split(labels, ",")
-		}
-
 		fmt.Println("Crunching data for you...")
-		services.Tail(nil, labelsArray, args, procsArray, nil)
+		services.Tail(appName, procId, labelsArray)
 
 		return
 	},
