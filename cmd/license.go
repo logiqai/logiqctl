@@ -35,7 +35,6 @@ This command helps set the subscription license for the deployment.
 This command also help get the configured license information.
 `
 
-// logsCmd represents the logs command
 var licenseCmd = &cobra.Command{
 	Use:     "license",
 	Example: licenseExample,
