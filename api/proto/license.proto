@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package license;
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+option go_package = "github.com/logiqai/logiqctl/api/v1/license;license";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+  info : {
+    title : "License";
+    version : "1.0";
+        };
+
+schemes : HTTP;
+schemes : HTTPS;
+consumes : "application/json";
+produces : "application/json";
+
+responses : {
+  key:
+    "400" value : {
+    description:
+      "Invalid Request."
+    }
+  }
+  responses : {
+  key:
+    "403" value : {
+    description:
+      "Token Expired."
+    }
+  }
+  responses : {
+  key:
+    "404";
+  value : {
+  description:
+    "Returned when the resource does not exist."
+  }
+  }
+};
+
+message licenseRequest {};
+enum status {
+    notFound = 0;
+    expired = 1;
+    aboutToExpire = 2;
+    valid = 3;
+}
+
+enum licenseType {
+  trial = 0;
+  pro = 1;
+  ami = 2;
+}
+
+message licenseResponse { 
+    status Status = 1;
+    int64 expiry_date = 2;
+    string message = 3; //message to the user
+    licenseType type = 4;
+    // map<string,string> features = 5;
+}
+
+message licensePayload {
+  string licenseData=1;
+}
+
+service LicenseService {
+  rpc GetLicense(licenseRequest) returns (licenseResponse) {
+    option (google.api.http) = {
+      get : "/v1/license",
+    };
+  option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+    description : "Get license"
+    tags : "license"
+  };
+};
+
+rpc uploadLicense(licensePayload) returns (licenseResponse) {
+  option (google.api.http) = {
+      post: "/v1/license"
+      body: "*"
+  };
+  option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Upload license"
+      tags : "license"
+  };
+};
+}
