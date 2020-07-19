@@ -1,0 +1,168 @@
+syntax = "proto3";
+
+package eventRules;
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/logiqai/logiqctl/api/v1/eventRules;eventRules";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info : {
+        title : "EventRules";
+        version: "1.0";
+};
+
+schemes:HTTP;
+schemes:HTTPS;
+consumes:"application/json";
+produces:"application/json";
+
+responses:{
+    key:"400";
+        value:{
+            description:"Invalid Request."
+        }
+    }
+    responses:{
+        key:"403";
+        value:{
+            description:"Token Expired."
+        }
+    }
+    responses:{
+        key:"404";
+        value:{
+            description:"Returned when the resource does not exist."
+        }
+    }
+};
+
+message EventRule {
+    string name = 1;
+    string description = 2;
+    string level = 3;
+    string condition = 4;
+    // map<string,string> extract = 5;
+    string groupName = 6;
+    int32 active = 7; // used as boolean 0 to inactive and 1 to active
+    int32 immutable = 8; // used as boolean 0 for mutable and 1 to immutable
+    string ruleType = 9; // possible values {"REGEX", "EVALUATE"} Dectates how to apply rule to logline.
+    string applicationMatch = 10;
+}
+
+message EventRulesResponse {
+    int64 offset = 1;
+    int64 count = 2;
+    int64 total_count = 3;
+    repeated EventRule eventRules = 4;
+}
+
+message EventRulesResponseResult {
+     string error = 1;
+}
+
+message EventRulesFilter {
+    repeated string names = 1;
+    string search = 2;
+    repeated string level = 3;
+    repeated string groupNames = 4;
+    int32 active = 5; // used as boolean 0 to inactive and 1 to active 
+    int32 immutable = 6; // used as boolean 0 for mutable and 1 to immutable 
+}
+
+enum SortOrderEnums {
+    UNKNOWN = 0;
+    ASC = 1;
+    DESC = 2;
+}
+
+message SortOrder {
+    string attribute = 1;
+    SortOrderEnums order = 2;
+}
+
+message EventRulesQueryRequest {
+    uint64 offset = 1;
+    uint64 count = 2;
+    EventRulesFilter filter = 3;
+    SortOrder sort = 4;
+}
+
+message EventRulesGroupResponse {
+    repeated string groupNames = 1;
+}
+
+message ProcessEventRuleByNameRequest{
+    string name = 1;
+}
+
+message EventRuleGroupActiveConfig{
+    string groupName = 1;
+    int32 active = 2; // used as boolean 0 to inactive and 1 to active 
+}
+
+service EventRulesService {
+    rpc GetEventRuleGroups(google.protobuf.Empty) returns (EventRulesGroupResponse) {
+        option (google.api.http) = {
+            get: "/v1/eventRules/groups"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description : "Get event rule groups"
+            tags : "eventRules"
+        };
+    };
+
+    rpc SetEventRuleGroupsActive(EventRuleGroupActiveConfig) returns (EventRulesResponseResult) {
+        option (google.api.http) = {
+            post: "/v1/eventRules/groups"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description : "Activate or Deactivate all eventRules for a group"
+            tags : "eventRules"
+        };
+    };
+
+    rpc GetEventRules(EventRulesQueryRequest) returns (EventRulesResponse) {
+        option (google.api.http) = {
+            post: "/v1/eventRules/query"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description : "Get event rules"
+            tags : "eventRules"
+        };
+    };
+    rpc CreateEventRule(EventRule) returns (EventRulesResponseResult) {
+        option (google.api.http) = {
+            post: "/v1/eventRules"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description : "Create event rule"
+            tags : "eventRules"
+        };
+    };
+
+    rpc UpdateEventRule(EventRule) returns (EventRulesResponseResult) {
+        option (google.api.http) = {
+            put: "/v1/eventRules/{name}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description : "Update event rule"
+            tags : "eventRules"
+        };
+    };
+
+    rpc DeleteEventRule(ProcessEventRuleByNameRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/v1/eventRules/{name}"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description : "Delete event rule"
+            tags : "eventRules"
+        };
+    };
+}

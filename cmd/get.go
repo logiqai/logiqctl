@@ -30,23 +30,32 @@ var getCmd = &cobra.Command{
 	Short: "Display one or many resources",
 	Long: `Prints a table of the most important information about the specified resources. For example:
 
-# List all namespaces
-logiqctl get namespaces
-
 # List all applications for the selected context
 logiqctl get applications
 
 # List all applications for all the available context
 logiqctl get applications all
 
-# List all processes
-logiqctl get processes
-
 # List all dashboards
 logiqctl get dashboards all
 
 # Get dashboard
 logiqctl get dashboard dashboard-slug
+
+# List events
+logiqctl get events
+
+# List all events
+logiqctl get events all
+
+# List or export eventrules
+logiqctl get eventrules
+
+# List all namespaces
+logiqctl get namespaces
+
+# List all processes
+logiqctl get processes
 
 # List all queries
 logiqctl get queries all
@@ -63,11 +72,10 @@ func init() {
 	getCmd.AddCommand(NewListApplicationsCommand())
 	getCmd.AddCommand(NewListProcessesCommand())
 	getCmd.AddCommand(NewListEventsCommand())
+	getCmd.AddCommand(services.NewGetEventRulesCommand())
 	getCmd.AddCommand(ui.NewListDashboardsCommand())
 	getCmd.AddCommand(ui.NewListQueriesCommand())
 	getCmd.AddCommand(ui.NewListDatasourcesCommand())
-	rootCmd.AddCommand(createCmd)
-	createCmd.AddCommand(ui.NewDashboardCreateCommand())
 }
 
 func NewListNameSpaceCommand() *cobra.Command {
@@ -75,7 +83,7 @@ func NewListNameSpaceCommand() *cobra.Command {
 		Use:     "namespaces",
 		Example: "logiqctl get namespaces|ns|n",
 		Aliases: []string{"n", "ns"},
-		Short:   "List the available name spaces",
+		Short:   "List the available namespaces",
 		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.ListNamespaces()
@@ -119,7 +127,7 @@ List last 30 events
 logiqctl get events -a=sshd
 
 `,
-		Aliases: []string{"e"},
+		Aliases: []string{"ev"},
 		Short:   "List all the available events for the namespace",
 		PreRun:  utils.PreRunWithNs,
 		Run: func(cmd *cobra.Command, args []string) {
