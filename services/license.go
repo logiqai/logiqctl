@@ -8,17 +8,19 @@ import (
 	"github.com/logiqai/logiqctl/api/v1/license"
 	"github.com/logiqai/logiqctl/grpc_utils"
 	"github.com/logiqai/logiqctl/utils"
-	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )
 
-func SetLicense(cmd *cobra.Command, args []string) error {
-	if len(args) == 0 {
+var LicenseFile string
+
+func SetLicense() error {
+
+	if LicenseFile == "" {
 		fmt.Println("Missing license file")
 		return fmt.Errorf("Missing license file")
 	} else {
-		fmt.Println("license file:", args[0])
-		if fileBytes, err := ioutil.ReadFile(args[0]); err != nil {
+		fmt.Println("license file:", LicenseFile)
+		if fileBytes, err := ioutil.ReadFile(LicenseFile); err != nil {
 			fmt.Println(err.Error())
 			return err
 		} else {

@@ -1,5 +1,5 @@
 
-codegen:  generate
+all: generate build
 
 revendor:
 	@go mod tidy -v
@@ -9,5 +9,8 @@ revendor:
 generate:
 	echo "Building $@"
 	./generate_grpc.sh
+
+build:
+	@go build
 
 .PHONY:

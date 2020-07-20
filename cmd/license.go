@@ -24,9 +24,10 @@ import (
 
 var licenseExample = `
 Upload your LOGIQ deployment license
-# logiqctl license set ./license.jws
-# logiqctl license get 
+# logiqctl license set -l=license.jws
 
+View License information
+# logiqctl license get 
 `
 var licenseLong = `
 Logiq deployment comes configured with 30 day trial license
@@ -66,13 +67,14 @@ func NewGetLicenseCommand() *cobra.Command {
 func NewSetLicenseCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set",
-		Example: "logiqctl license set <license-file-path>",
+		Example: "logiqctl license set -l=<license-file-path>",
 		Aliases: []string{},
 		Short:   "Configure license for LOGIQ deployment",
 		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
-			services.SetLicense(cmd, args)
+			services.SetLicense()
 		},
 	}
+	cmd.PersistentFlags().StringVarP(&services.LicenseFile, "license", "l", "", `license file path`)
 	return cmd
 }
