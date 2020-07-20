@@ -16,10 +16,10 @@ import (
 
 // logiqctl create eventrules -f=filename.json
 // logiqctl get eventrules all
-// logiqctl get eventrules all -f=filename.json
+// logiqctl get eventrules all -w=filename.json
 // logiqctl get eventrules groups
 // logiqctl get eventrules groups -g=group1,group2,...
-// logiqctl get eventrules groups -g=group1,group2,... -f=filename.json
+// logiqctl get eventrules groups -g=group1,group2,... -w=filename.json
 
 var eventRuleGroupsFlag string
 
@@ -83,10 +83,10 @@ func NewGetEventRulesCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			help := `Usage:
 logiqctl get eventrules all
-logiqctl get eventrules all -f filename.json
+logiqctl get eventrules all -w filename.json
 logiqctl get eventrules groups
 logiqctl get eventrules groups -g=group1,group2,...
-logiqctl get eventrules groups -g=group1,group2,... -f filename.json
+logiqctl get eventrules groups -g=group1,group2,... -w filename.json
 `
 			fmt.Print(help)
 		},
@@ -113,8 +113,8 @@ logiqctl get eventrules groups -g=group1,group2,... -f filename.json
 			getEventRuleGroups(args)
 		},
 	})
-	cmd.PersistentFlags().StringVarP(&eventRuleGroupsFlag, "groups", "g", "", "Path to file")
-	cmd.PersistentFlags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
+	cmd.PersistentFlags().StringVarP(&eventRuleGroupsFlag, "groups", "g", "", "list of groups separated by comma")
+	cmd.PersistentFlags().StringVarP(&utils.FlagFile, "file", "w", "", "Path to file to be written to")
 	return cmd
 }
 func getEventRuleGroups(args []string) error {
