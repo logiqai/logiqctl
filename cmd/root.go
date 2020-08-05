@@ -59,10 +59,10 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVarP(&utils.FlagOut, "output", "o", "table", `Output format. One of: table|json|yaml.`)
-	rootCmd.PersistentFlags().StringVarP(&utils.FlagTimeFormat, "time-format", "t", "relative", `Time formatting options. One of: relative|epoch|RFC3339. 
-This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds.
+	rootCmd.PersistentFlags().StringVarP(&utils.FlagOut, "output", "o", "table", `Output format. One of: table|json|yaml. 
 json output is not indented, use '| jq' for advanced json operations`)
+	rootCmd.PersistentFlags().StringVarP(&utils.FlagTimeFormat, "time-format", "t", "relative", `Time formatting options. One of: relative|epoch|RFC3339. 
+This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds.`)
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagNamespace, "namespace", "n", "", "Override the default context set by `logiqctl set-context' command")
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagCluster, "cluster", "c", "", "Override the default cluster set by `logiqctl set-cluster' command")
 	// Here you will define your flags and configuration settings.

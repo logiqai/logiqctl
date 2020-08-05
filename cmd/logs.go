@@ -29,19 +29,19 @@ import (
 )
 
 var logsExample = `
-Print logs for logiq-flash ingest server
+Print logs for logiq ingest server
 # logiqctl logs logiq-flash
 
 Print logs in json format
 # logiqctl -o=json logs logiq-flash
 
 Print logs for logiq-flash ingest server filtered by process logiq-flash-2
-In case of Kubernetes deployment a Stateful Set is an application, and each pods in it is a process
+In the case of Kubernetes deployment, a Stateful Set is an application, and each pod in it is a process
 The --process (-p) flag lets you view logs for the individual pod
 # logiqctl logs -p=logiq-flash-2 logiq-flash
 
 Runs an interactive prompt to let user choose filters
-# logiqctl logs i
+# logiqctl logs interactive|i
 
 Search logs for the given text
 # logiqctl logs search "your search term"   
@@ -50,13 +50,12 @@ If the flag --follow (-f) is specified the logs will be streamed till it over.
 
 `
 
-var logsLong = `Logs expect a namespace and application to be available to return results.
+var logsLong = `
+log command is used to view historical logs.  
+This expects a namespace and an application to be available to return results.
 Set the default namespace using 'logiqctl set-context' command or pass as '-n=NAMESPACE' flag
-Application name needs to be passed as an argument to the command. 
-If the user is unsure of the application name, they can run an interactive prompt the would help them to choose filters.  
-See examples below. 
-
-Search command searches at namespace level, flags -p is ignored. 
+Application name needs to be passed as an argument to the command or use the 'interactive' 
+command to choose from the list of available applications and processes.   
 
 Global flag '--time-format' is not applicable for this command.
 Global flag '--output' only supports json format for this command.`
@@ -66,7 +65,7 @@ var logsCmd = &cobra.Command{
 	Use:     "logs",
 	Example: logsExample,
 	Aliases: []string{"log"},
-	Short:   "Print the logs for an application or process",
+	Short:   "View logs for the given namespace and application",
 	Long:    logsLong,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
@@ -112,7 +111,7 @@ func query(appName, searchTerm, procId string, lastSeen int64) {
 var interactiveCmd = &cobra.Command{
 	Use:     "interactive",
 	Aliases: []string{"i"},
-	Short:   `Runs an interactive prompt to let user select application and filters`,
+	Short:   `Runs an interactive prompt to let the user select application and filters`,
 	Run: func(cmd *cobra.Command, args []string) {
 		app, err := services.RunSelectApplicationForNamespacePrompt(false)
 		handleError(err)
@@ -128,7 +127,8 @@ var searchCmd = &cobra.Command{
 	Use:     "search",
 	Aliases: []string{"s"},
 	Example: ``,
-	Short:   `Search for given text in logs`,
+	Short:   `Search given text in logs`,
+	Long:    `Search within the namespace,`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			fmt.Println(cmd.Usage())
@@ -139,8 +139,10 @@ var searchCmd = &cobra.Command{
 }
 
 func init() {
-	logsCmd.PersistentFlags().StringVarP(&utils.FlagLogsSince, "since", "s", "1h", `Only return logs newer than a relative duration like 2m, 3h, or 2h30m.
-This is in relative to the last seen log time for a specified application or processes.`)
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagLogsSince, "since", "s", "1h", `
+Only return logs newer than a relative duration. This is in relative to the last seen log time for a specified application or processes within the namespace. 
+A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". 
+Valid time units are "s", "m", "h"`)
 	logsCmd.PersistentFlags().Uint32Var(&utils.FlagLogsPageSize, "page-size", 30, `Number of log entries to return in one page`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagLogsFollow, "follow", "f", false, `Specify if the logs should be streamed.`)
 	logsCmd.Flags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)

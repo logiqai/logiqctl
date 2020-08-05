@@ -50,7 +50,6 @@ func NewDashboardCreateCommand() *cobra.Command {
 		Long: `
 The crowd-sourced dashboards available in https://github.com/logiqai/logiqhub can be downloaded and applied to any clusters. 
 One can also export dashboards created using "logiqctl get dashboard" command and apply on different clusters.
-
 `,
 		PreRun: utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -73,7 +72,7 @@ One can also export dashboards created using "logiqctl get dashboard" command an
 			}
 		},
 	}
-	cmd.PersistentFlags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
+	cmd.Flags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
 	return cmd
 }
 
