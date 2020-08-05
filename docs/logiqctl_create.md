@@ -4,19 +4,14 @@ Create a resource
 
 ### Synopsis
 
-Creates a resource from a resource specification
+Creates a reource from a resource specification. For example:
 
-### Examples
-
-```
-
-Create a dashboard
+# Create a dashboard
 logiqctl create dashboard -f <path to dashboard_spec_file.json>
 
-Create eventrules
+# create eventrules
 logiqctl create eventrules -f <path to eventrules_file.json>
 
-```
 
 ### Options
 
@@ -39,5 +34,5 @@ logiqctl create eventrules -f <path to eventrules_file.json>
 
 * [logiqctl](logiqctl.md)	 - Logiqctl - CLI for Logiq Observability stack
 * [logiqctl create dashboard](logiqctl_create_dashboard.md)	 - Create a dashboard
-* [logiqctl create eventrules](logiqctl_create_eventrules.md)	 - Create event rules
+* [logiqctl create eventrules](logiqctl_create_eventrules.md)	 - Import event rules
 

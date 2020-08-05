@@ -26,6 +26,8 @@ logiqctl get eventrules all
 
 ```
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
+  -w, --file string          Path to file to be written to
+  -g, --groups string        list of groups separated by comma
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
                              json output is not indented, use '| jq' for advanced json operations (default "table")

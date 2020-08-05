@@ -1,10 +1,10 @@
 ## logiqctl create eventrules
 
-Create event rules
+Import event rules
 
 ### Synopsis
 
-Create event rules
+Import event rules
 
 ```
 logiqctl create eventrules [flags]

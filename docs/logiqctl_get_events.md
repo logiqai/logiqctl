@@ -15,10 +15,10 @@ logiqctl get events [flags]
 ```
 
 List last 30 events
-- logiqctl get events|e
+# logiqctl get events|e
 
-List events by application 
-- logiqctl get events -a=sshd
+#List events by application 
+logiqctl get events -a=sshd
 
 
 ```

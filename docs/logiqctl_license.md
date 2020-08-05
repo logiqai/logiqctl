@@ -1,12 +1,14 @@
 ## logiqctl license
 
-View or update license
+set and get license
 
 ### Synopsis
 
 
-Logiq deployment comes configured with a 30-day trial license. Obtain a valid license by contacting LOGIQ at license@logiq.ai.
-With this command, the user can view or apply a license. 
+Logiq deployment comes configured with 30 day trial license
+Obtain a valid license by contacting LOGIQ at license@logiq.ai.
+This command helps set the subscription license for the deployment.
+This command also help get the configured license information.
 
 
 ### Examples
@@ -14,10 +16,10 @@ With this command, the user can view or apply a license.
 ```
 
 Upload your LOGIQ deployment license
-- logiqctl license set -l=license.jws
+# logiqctl license set -l=license.jws
 
 View License information
- - logiqctl license get 
+# logiqctl license get 
 
 ```
 
@@ -41,6 +43,6 @@ View License information
 ### SEE ALSO
 
 * [logiqctl](logiqctl.md)	 - Logiqctl - CLI for Logiq Observability stack
-* [logiqctl license get](logiqctl_license_get.md)	 - View license information
+* [logiqctl license get](logiqctl_license_get.md)	 - Retrive license information
 * [logiqctl license set](logiqctl_license_set.md)	 - Configure license for LOGIQ deployment
 

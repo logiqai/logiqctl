@@ -5,7 +5,7 @@ Sets a logiq ui credentials
 ### Synopsis
 
 
-Sets the cluster credentials, a valid logiq cluster end point is also required for all the operations
+Sets the cluster ui credentials, a valid logiq cluster end point is also required for all the operations
 		
 
 ```

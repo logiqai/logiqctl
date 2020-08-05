@@ -36,6 +36,6 @@ Find more information at: https://docs.logiq.ai/logiqctl/logiq-box
 * [logiqctl config](logiqctl_config.md)	 - Modify logiqctl configuration options
 * [logiqctl create](logiqctl_create.md)	 - Create a resource
 * [logiqctl get](logiqctl_get.md)	 - Display one or many resources
-* [logiqctl license](logiqctl_license.md)	 - View or update license
+* [logiqctl license](logiqctl_license.md)	 - set and get license
 * [logiqctl logs](logiqctl_logs.md)	 - View logs for the given namespace and application
 

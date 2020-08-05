@@ -139,10 +139,10 @@ var searchCmd = &cobra.Command{
 }
 
 func init() {
-	logsCmd.PersistentFlags().StringVarP(&utils.FlagLogsSince, "since", "s", "1h", `
-Only return logs newer than a relative duration. This is in relative to the last seen log time for a specified application or processes within the namespace. 
-A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". 
-Valid time units are "s", "m", "h"`)
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagLogsSince, "since", "s", "1h", `Only return logs newer than a relative duration. This is in relative to the last
+seen log time for a specified application or processes within the namespace.
+A duration string is a possibly signed sequence of decimal numbers, each with optional
+fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units are "s", "m", "h"`)
 	logsCmd.PersistentFlags().Uint32Var(&utils.FlagLogsPageSize, "page-size", 30, `Number of log entries to return in one page`)
 	logsCmd.PersistentFlags().BoolVarP(&utils.FlagLogsFollow, "follow", "f", false, `Specify if the logs should be streamed.`)
 	logsCmd.Flags().StringVarP(&utils.FlagProcId, "process", "p", "", `Filter logs by  proc id`)
