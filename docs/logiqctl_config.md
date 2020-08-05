@@ -4,22 +4,28 @@ Modify logiqctl configuration options
 
 ### Synopsis
 
+Modify logiqctl configuration options
 
-# View current context
+### Examples
+
+```
+
+View current context
 	logiqctl config view
 
-# Set default cluster
+Set default cluster
 	logiqctl config set-cluster END-POINT
 
-# Set default context
+Set default context
 	logiqctl config set-context namespace
 
-# Runs an interactive prompt and let user select namespace from the list
+Runs an interactive prompt and let user select namespace from the list
 	logiqctl config set-context i
 
-# Set ui credential
+Set Credential
 	logiqctl config set-ui-credential user password
 
+```
 
 ### Options
 

@@ -11,20 +11,17 @@ import (
 	"google.golang.org/grpc"
 )
 
-var LicenseFile string
-
 func SetLicense() error {
 
-	if LicenseFile == "" {
+	if utils.FlagFile == "" {
 		fmt.Println("Missing license file")
 		return fmt.Errorf("Missing license file")
 	} else {
-		fmt.Println("license file:", LicenseFile)
-		if fileBytes, err := ioutil.ReadFile(LicenseFile); err != nil {
+		//fmt.Println("license file:", utils.FlagFile)
+		if fileBytes, err := ioutil.ReadFile(utils.FlagFile); err != nil {
 			fmt.Println(err.Error())
 			return err
 		} else {
-			println(string(fileBytes))
 			conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
 			if err != nil {
 				return err
@@ -39,6 +36,7 @@ func SetLicense() error {
 				fmt.Println(err.Error())
 				return err
 			} else {
+				fmt.Println("License applied successfully!")
 				printLicense(license)
 				return nil
 

@@ -23,21 +23,21 @@ logiqctl logs [flags]
 ```
 
 Print logs for logiq ingest server
-# logiqctl logs logiq-flash
+- logiqctl logs logiq-flash
 
 Print logs in json format
-# logiqctl -o=json logs logiq-flash
+- logiqctl -o=json logs logiq-flash
 
 Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 In the case of Kubernetes deployment, a Stateful Set is an application, and each pod in it is a process
 The --process (-p) flag lets you view logs for the individual pod
-# logiqctl logs -p=logiq-flash-2 logiq-flash
+- logiqctl logs -p=logiq-flash-2 logiq-flash
 
 Runs an interactive prompt to let user choose filters
-# logiqctl logs interactive|i
+- logiqctl logs interactive|i
 
 Search logs for the given text
-# logiqctl logs search "your search term"   
+- logiqctl logs search "your search term"   
 
 If the flag --follow (-f) is specified the logs will be streamed till it over. 
 
@@ -51,10 +51,10 @@ If the flag --follow (-f) is specified the logs will be streamed till it over.
   -h, --help               help for logs
       --page-size uint32   Number of log entries to return in one page (default 30)
   -p, --process string     Filter logs by  proc id
-  -s, --since string       
-                           Only return logs newer than a relative duration. This is in relative to the last seen log time for a specified application or processes within the namespace. 
-                           A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". 
-                           Valid time units are "s", "m", "h" (default "1h")
+  -s, --since string       Only return logs newer than a relative duration. This is in relative to the last
+                           seen log time for a specified application or processes within the namespace.
+                           A duration string is a possibly signed sequence of decimal numbers, each with optional
+                           fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units are "s", "m", "h" (default "1h")
 ```
 
 ### Options inherited from parent commands

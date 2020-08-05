@@ -19,8 +19,8 @@ logiqctl license set -l=<license-file-path>
 ### Options
 
 ```
-  -h, --help             help for set
-  -l, --license string   license file path
+  -f, --file string   Path to file
+  -h, --help          help for set
 ```
 
 ### Options inherited from parent commands
@@ -36,5 +36,5 @@ logiqctl license set -l=<license-file-path>
 
 ### SEE ALSO
 
-* [logiqctl license](logiqctl_license.md)	 - set and get license
+* [logiqctl license](logiqctl_license.md)	 - View or update license
 

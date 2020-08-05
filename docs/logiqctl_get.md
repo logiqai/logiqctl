@@ -4,42 +4,46 @@ Display one or many resources
 
 ### Synopsis
 
-Prints a table of the most important information about the specified resources. For example:
+Prints a table of the most important information about the specified resources
 
-# List all applications for the selected context
+### Examples
+
+```
+
+List all applications for the selected context
 logiqctl get applications
 
-# List all applications for all the available context
+List all applications for all the available context
 logiqctl get applications all
 
-# List all dashboards
+List all dashboards
 logiqctl get dashboards all
 
-# Get dashboard
+Get dashboard
 logiqctl get dashboard dashboard-slug
 
-# List events
+List events for the available namespace
 logiqctl get events
 
-# List all events
+List events for all the available namespaces
 logiqctl get events all
 
-# List or export eventrules
+List or export eventrules
 logiqctl get eventrules
 
-# List all namespaces
+List all namespaces
 logiqctl get namespaces
 
-# List all processes
+List all processes
 logiqctl get processes
 
-# List all queries
+List all queries
 logiqctl get queries all
 
-# Get query
+Get query
 logiqctl get query query-slug
 
-
+```
 
 ### Options
 

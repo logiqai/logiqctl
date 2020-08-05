@@ -73,6 +73,6 @@ func NewSetLicenseCommand() *cobra.Command {
 			services.SetLicense()
 		},
 	}
-	cmd.Flags().StringVarP(&services.LicenseFile, "license", "l", "", `license file path`)
+	cmd.Flags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
 	return cmd
 }
