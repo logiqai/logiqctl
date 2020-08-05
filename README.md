@@ -1,17 +1,18 @@
-# Logiqctl 
-### CLI for Logiq Log Insights
+# Logiqctl
 
-- Tail logs in realtime
-- Query historic data
-- Do Text Search on data 
+## CLI for Logiq Log Insights
 
+* Tail logs in realtime
+* Query historic data
+* Do Text Search on data 
 
-#### How to run
+### How to run
 
 **Requirements**
-- Install Go [https://golang.org/dl/]
-- Install protoc [https://github.com/protocolbuffers/protobuf/releases]
-    
+
+* Install Go \[[https://golang.org/dl/](https://golang.org/dl/)\]
+* Install protoc \[[https://github.com/protocolbuffers/protobuf/releases](https://github.com/protocolbuffers/protobuf/releases)\]
+
 ```bash
 # For MAC
 PROTOC_ZIP=protoc-3.7.1-osx-x86_64.zip
@@ -20,7 +21,7 @@ sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
 sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
 rm -f $PROTOC_ZIP
 ```
-   
+
 ```bash
 # For Linux
 PROTOC_ZIP=protoc-3.7.1-linux-x86_64.zip
@@ -28,19 +29,18 @@ curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/$P
 sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
 sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
 rm -f $PROTOC_ZIP
-
 ```
-- run `mkdir -p $GOPATH/src/github.com/logiqai`
-- run `cd $GOPATH/src/github.com/logiqai`
-- run `git clone git@github.com:logiqai/logiqctl.git`
-- run `cd logiqctl`
-- run `./generate_grpc.sh `
-- run `go build logiqctl.go`
+
+* run `mkdir -p $GOPATH/src/github.com/logiqai`
+* run `cd $GOPATH/src/github.com/logiqai`
+* run `git clone git@github.com:logiqai/logiqctl.git`
+* run `cd logiqctl`
+* run `./generate_grpc.sh`
+* run `go build logiqctl.go`
 
 ```bash
-
 > ./logiqctl 
-               
+
 NAME:
    Logiqctl - LOGIQ command line toolkit
 
@@ -68,8 +68,7 @@ GLOBAL OPTIONS:
    --debug value  --debug true (default: "false")
    --help, -h     show help (default: false)
    --version, -v  print the version (default: false)
-
-
 ```
 
-To know more about Logiq Platform, see https://logiq.ai/ and https://docs.logiq.ai/ 
+To know more about Logiq Platform, see [https://logiq.ai/](https://logiq.ai/) and [https://docs.logiq.ai/](https://docs.logiq.ai/)
+
