@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/logiqai/logiqctl/utils"
-	"github.com/olekukonko/tablewriter"
-	"github.com/spf13/cobra"
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"github.com/logiqai/logiqctl/utils"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cobra"
 )
 
 func NewListDashboardsCommand() *cobra.Command {
@@ -46,7 +47,12 @@ func NewDashboardCreateCommand() *cobra.Command {
 		Example: "logiqctl create dashboard|d -f <path to dashboard spec>",
 		Aliases: []string{"d"},
 		Short:   "Create a dashboard",
-		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Long: `
+The crowd-sourced dashboards available in https://github.com/logiqai/logiqhub can be downloaded and applied to any clusters. 
+One can also export dashboards created using "logiqctl get dashboard" command and apply on different clusters.
+
+`,
+		PreRun: utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {
 			if utils.FlagFile == "" {
 				fmt.Println("Missing dashboard spec file")

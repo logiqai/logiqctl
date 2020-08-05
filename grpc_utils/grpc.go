@@ -24,8 +24,8 @@ var (
 )
 
 func GetGrpcContext() context.Context {
-	if grpcContext != nil {
-		return grpcContext
+	if grpcContext == nil {
+		return metadata.NewOutgoingContext(context.Background(), nil)
 	}
 
 	api_key := viper.GetString(utils.KeyUiToken)

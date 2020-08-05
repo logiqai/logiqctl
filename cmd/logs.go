@@ -53,7 +53,8 @@ If the flag --follow (-f) is specified the logs will be streamed till it over.
 var logsLong = `Logs expect a namespace and application to be available to return results.
 Set the default namespace using 'logiqctl set-context' command or pass as '-n=NAMESPACE' flag
 Application name needs to be passed as an argument to the command. 
-If the user is unsure of the application name, they can run an interactive prompt the would help them to choose filters.  See examples below. 
+If the user is unsure of the application name, they can run an interactive prompt the would help them to choose filters.  
+See examples below. 
 
 Search command searches at namespace level, flags -p is ignored. 
 
@@ -127,7 +128,7 @@ var searchCmd = &cobra.Command{
 	Use:     "search",
 	Aliases: []string{"s"},
 	Example: ``,
-	Short:   `Search for given test in logs`,
+	Short:   `Search for given text in logs`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			fmt.Println(cmd.Usage())
