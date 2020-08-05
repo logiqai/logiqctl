@@ -1,20 +1,26 @@
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+
+	"github.com/logiqai/logiqctl/api/v1/eventRules"
 	"github.com/logiqai/logiqctl/services"
 	"github.com/logiqai/logiqctl/ui"
+	"github.com/logiqai/logiqctl/utils"
 	"github.com/spf13/cobra"
 )
 
 var createCmd = &cobra.Command{
 	Use:   "create <resource_name>",
 	Short: "Create a resource",
-	Long: `Creates a reource from a resource specification. For example:
-
-# Create a dashboard
+	Long:  `Creates a resource from a resource specification`,
+	Example: `
+Create a dashboard
 logiqctl create dashboard -f <path to dashboard_spec_file.json>
 
-# create eventrules
+Create eventrules
 logiqctl create eventrules -f <path to eventrules_file.json>
 `,
 }
@@ -22,5 +28,36 @@ logiqctl create eventrules -f <path to eventrules_file.json>
 func init() {
 	rootCmd.AddCommand(createCmd)
 	createCmd.AddCommand(ui.NewDashboardCreateCommand())
-	createCmd.AddCommand(services.NewCreateEventRulesCommand())
+	createCmd.AddCommand(NewCreateEventRulesCommand())
+}
+
+func NewCreateEventRulesCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "eventrules",
+		Example: "logiqctl create eventrules -f <path to event rules file>",
+		Aliases: []string{"eventrule", "er"},
+		Short:   "Create event rules",
+		PreRun:  utils.PreRunWithNs,
+		Run: func(cmd *cobra.Command, args []string) {
+			if utils.FlagFile == "" {
+				fmt.Println("Missing event rules file")
+				return
+			} else {
+				fmt.Println("Event rules file :", utils.FlagFile)
+				if fileBytes, err := ioutil.ReadFile(utils.FlagFile); err != nil {
+					fmt.Println("Unable to read file", utils.FlagFile)
+					return
+				} else {
+					var rules []eventRules.EventRule
+					if err = json.Unmarshal(fileBytes, &rules); err != nil {
+						fmt.Println("Unable to decode event rules from ", utils.FlagFile)
+					} else {
+						services.CreateEventRules(rules)
+					}
+				}
+			}
+		},
+	}
+	cmd.Flags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
+	return cmd
 }

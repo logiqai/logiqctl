@@ -1,10 +1,10 @@
 ## logiqctl license get
 
-Retrive license information
+View license information
 
 ### Synopsis
 
-Retrive license information
+View license information
 
 ```
 logiqctl license get [flags]
@@ -35,5 +35,5 @@ logiqctl license get
 
 ### SEE ALSO
 
-* [logiqctl license](logiqctl_license.md)	 - set and get license
+* [logiqctl license](logiqctl_license.md)	 - View or update license
 

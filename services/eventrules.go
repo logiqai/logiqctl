@@ -9,7 +9,6 @@ import (
 	"github.com/logiqai/logiqctl/api/v1/eventRules"
 	"github.com/logiqai/logiqctl/grpc_utils"
 	"github.com/logiqai/logiqctl/utils"
-	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -21,40 +20,7 @@ import (
 // logiqctl get eventrules groups -g=group1,group2,...
 // logiqctl get eventrules groups -g=group1,group2,... -w=filename.json
 
-var eventRuleGroupsFlag string
-
-func NewCreateEventRulesCommand() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "eventrules",
-		Example: "logiqctl create eventrules -f <path to event rules file>",
-		Aliases: []string{"eventrule", "er"},
-		Short:   "Import event rules",
-		PreRun:  utils.PreRunWithNs,
-		Run: func(cmd *cobra.Command, args []string) {
-			if utils.FlagFile == "" {
-				fmt.Println("Missing event rules file")
-				return
-			} else {
-				fmt.Println("Event rules file :", utils.FlagFile)
-				if fileBytes, err := ioutil.ReadFile(utils.FlagFile); err != nil {
-					fmt.Println("Unable to read file", utils.FlagFile)
-					return
-				} else {
-					rules := []eventRules.EventRule{}
-					if err = json.Unmarshal(fileBytes, &rules); err != nil {
-						fmt.Println("Unable to decode event rules from ", utils.FlagFile)
-					} else {
-						createEventRules(rules)
-					}
-				}
-			}
-		},
-	}
-	cmd.PersistentFlags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
-	return cmd
-}
-
-func createEventRules(ers []eventRules.EventRule) error {
+func CreateEventRules(ers []eventRules.EventRule) error {
 	conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
 	if err != nil {
 		fmt.Println(err.Error())
@@ -73,61 +39,17 @@ func createEventRules(ers []eventRules.EventRule) error {
 	return nil
 }
 
-func NewGetEventRulesCommand() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "eventrules",
-		Example: "logiqctl get eventrule",
-		Aliases: []string{"eventrule", "er"},
-		Short:   "List event rules",
-		PreRun:  utils.PreRunWithNs,
-		Run: func(cmd *cobra.Command, args []string) {
-			help := `Usage:
-logiqctl get eventrules all
-logiqctl get eventrules all -w filename.json
-logiqctl get eventrules groups
-logiqctl get eventrules groups -g=group1,group2,...
-logiqctl get eventrules groups -g=group1,group2,... -w filename.json
-`
-			fmt.Print(help)
-		},
-	}
-
-	cmd.AddCommand(&cobra.Command{
-		Use:     "all",
-		Example: "logiqctl get eventrules all",
-		Aliases: []string{},
-		Short:   "List all event rules",
-		PreRun:  utils.PreRunWithNs,
-		Run: func(cmd *cobra.Command, args []string) {
-			getEventRules(args, nil)
-		},
-	})
-
-	cmd.AddCommand(&cobra.Command{
-		Use:     "groups",
-		Example: "logiqctl get eventrules all",
-		Aliases: []string{},
-		Short:   "List all event rules",
-		PreRun:  utils.PreRunWithNs,
-		Run: func(cmd *cobra.Command, args []string) {
-			getEventRuleGroups(args)
-		},
-	})
-	cmd.PersistentFlags().StringVarP(&eventRuleGroupsFlag, "groups", "g", "", "list of groups separated by comma")
-	cmd.PersistentFlags().StringVarP(&utils.FlagFile, "file", "w", "", "Path to file to be written to")
-	return cmd
-}
-func getEventRuleGroups(args []string) error {
-	if eventRuleGroupsFlag != "" {
+func GetEventRuleGroups(args []string) error {
+	if utils.EventRuleGroupsFlag != "" {
 		// fmt.Println(eventRuleGroupsFlag)
-		groups := strings.Split(eventRuleGroupsFlag, ",")
+		groups := strings.Split(utils.EventRuleGroupsFlag, ",")
 		if len(groups) == 0 {
 			err := fmt.Errorf("Use logiqctl get eventrules groups -g=group1,group2,...")
 			fmt.Println(err.Error())
 			return err
 		} else {
 			fmt.Println("Fetching event rules for groups: ", groups)
-			return getEventRules(args, groups)
+			return GetEventRules(args, groups)
 		}
 	} else {
 		conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
@@ -156,7 +78,7 @@ func getEventRuleGroups(args []string) error {
 	}
 }
 
-func getEventRules(args, groupNames []string) error {
+func GetEventRules(args, groupNames []string) error {
 	conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
 	if err != nil {
 		fmt.Println(err.Error())

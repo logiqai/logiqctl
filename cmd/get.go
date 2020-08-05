@@ -17,6 +17,8 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/logiqai/logiqctl/services"
 	"github.com/logiqai/logiqctl/ui"
 	"github.com/logiqai/logiqctl/utils"
@@ -28,41 +30,40 @@ import (
 var getCmd = &cobra.Command{
 	Use:   "get <resource_name>",
 	Short: "Display one or many resources",
-	Long: `Prints a table of the most important information about the specified resources. For example:
-
-# List all applications for the selected context
+	Long:  `Prints a table of the most important information about the specified resources`,
+	Example: `
+List all applications for the selected context
 logiqctl get applications
 
-# List all applications for all the available context
+List all applications for all the available context
 logiqctl get applications all
 
-# List all dashboards
+List all dashboards
 logiqctl get dashboards all
 
-# Get dashboard
+Get dashboard
 logiqctl get dashboard dashboard-slug
 
-# List events
+List events for the available namespace
 logiqctl get events
 
-# List all events
+List events for all the available namespaces
 logiqctl get events all
 
-# List or export eventrules
+List or export eventrules
 logiqctl get eventrules
 
-# List all namespaces
+List all namespaces
 logiqctl get namespaces
 
-# List all processes
+List all processes
 logiqctl get processes
 
-# List all queries
+List all queries
 logiqctl get queries all
 
-# Get query
+Get query
 logiqctl get query query-slug
-
 `,
 }
 
@@ -72,7 +73,7 @@ func init() {
 	getCmd.AddCommand(NewListApplicationsCommand())
 	getCmd.AddCommand(NewListProcessesCommand())
 	getCmd.AddCommand(NewListEventsCommand())
-	getCmd.AddCommand(services.NewGetEventRulesCommand())
+	getCmd.AddCommand(NewGetEventRulesCommand())
 	getCmd.AddCommand(ui.NewListDashboardsCommand())
 	getCmd.AddCommand(ui.NewListQueriesCommand())
 	getCmd.AddCommand(ui.NewListDatasourcesCommand())
@@ -121,10 +122,10 @@ func NewListEventsCommand() *cobra.Command {
 		Use: "events",
 		Example: `
 List last 30 events
-# logiqctl get events|e
+- logiqctl get events|e
 
-#List events by application 
-logiqctl get events -a=sshd
+List events by application 
+- logiqctl get events -a=sshd
 
 `,
 		Aliases: []string{"ev"},
@@ -150,4 +151,49 @@ func NewListProcessesCommand() *cobra.Command {
 			services.ListProcesses()
 		},
 	}
+}
+
+func NewGetEventRulesCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "eventrules",
+		Example: "logiqctl get eventrule",
+		Aliases: []string{"eventrule", "er"},
+		Short:   "List event rules",
+		PreRun:  utils.PreRunWithNs,
+		Run: func(cmd *cobra.Command, args []string) {
+			help := `Usage:
+logiqctl get eventrules all
+logiqctl get eventrules all -w filename.json
+logiqctl get eventrules groups
+logiqctl get eventrules groups -g=group1,group2,...
+logiqctl get eventrules groups -g=group1,group2,... -w filename.json
+`
+			fmt.Print(help)
+		},
+	}
+
+	cmd.AddCommand(&cobra.Command{
+		Use:     "all",
+		Example: "logiqctl get eventrules all",
+		Aliases: []string{},
+		Short:   "List all event rules",
+		PreRun:  utils.PreRunWithNs,
+		Run: func(cmd *cobra.Command, args []string) {
+			services.GetEventRules(args, nil)
+		},
+	})
+
+	cmd.AddCommand(&cobra.Command{
+		Use:     "groups",
+		Example: "logiqctl get eventrules all",
+		Aliases: []string{},
+		Short:   "List all event rules",
+		PreRun:  utils.PreRunWithNs,
+		Run: func(cmd *cobra.Command, args []string) {
+			services.GetEventRuleGroups(args)
+		},
+	})
+	cmd.Flags().StringVarP(&utils.EventRuleGroupsFlag, "groups", "g", "", "list of groups separated by comma")
+	cmd.Flags().StringVarP(&utils.FlagFile, "file", "w", "", "Path to file to be written to")
+	return cmd
 }

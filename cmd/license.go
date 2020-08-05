@@ -24,23 +24,21 @@ import (
 
 var licenseExample = `
 Upload your LOGIQ deployment license
-# logiqctl license set -l=license.jws
+- logiqctl license set -l=license.jws
 
 View License information
-# logiqctl license get 
+ - logiqctl license get 
 `
 var licenseLong = `
-Logiq deployment comes configured with 30 day trial license
-Obtain a valid license by contacting LOGIQ at license@logiq.ai.
-This command helps set the subscription license for the deployment.
-This command also help get the configured license information.
+Logiq deployment comes configured with a 30-day trial license. Obtain a valid license by contacting LOGIQ at license@logiq.ai.
+With this command, the user can view or apply a license. 
 `
 
 var licenseCmd = &cobra.Command{
 	Use:     "license",
 	Example: licenseExample,
 	Aliases: []string{"licence"},
-	Short:   "set and get license",
+	Short:   "View or update license",
 	Long:    licenseLong,
 }
 
@@ -55,7 +53,7 @@ func NewGetLicenseCommand() *cobra.Command {
 		Use:     "get",
 		Example: "logiqctl license get",
 		Aliases: []string{},
-		Short:   "Retrive license information",
+		Short:   "View license information",
 		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.GetLicense()
@@ -75,6 +73,6 @@ func NewSetLicenseCommand() *cobra.Command {
 			services.SetLicense()
 		},
 	}
-	cmd.PersistentFlags().StringVarP(&services.LicenseFile, "license", "l", "", `license file path`)
+	cmd.Flags().StringVarP(&services.LicenseFile, "license", "l", "", `license file path`)
 	return cmd
 }

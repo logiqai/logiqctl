@@ -33,20 +33,20 @@ import (
 var configCmd = &cobra.Command{
 	Use:   "config SUBCOMMAND",
 	Short: "Modify logiqctl configuration options",
-	Long: `
-# View current context
+	Example: `
+View current context
 	logiqctl config view
 
-# Set default cluster
+Set default cluster
 	logiqctl config set-cluster END-POINT
 
-# Set default context
+Set default context
 	logiqctl config set-context namespace
 
-# Runs an interactive prompt and let user select namespace from the list
+Runs an interactive prompt and let user select namespace from the list
 	logiqctl config set-context i
 
-# Set ui credential
+Set Credential
 	logiqctl config set-ui-credential user password
 `,
 }
@@ -66,7 +66,7 @@ func NewUiCredentialsCommand() *cobra.Command {
 		Example: "logiqctl set-ui-credential login password",
 		Short:   "Sets a logiq ui credentials",
 		Long: `
-Sets the cluster ui credentials, a valid logiq cluster end point is also required for all the operations
+Sets the cluster credentials, a valid logiq cluster end point is also required for all the operations
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 2 {

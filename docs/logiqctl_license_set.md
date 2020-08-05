@@ -36,5 +36,5 @@ logiqctl license set -l=<license-file-path>
 
 ### SEE ALSO
 
-* [logiqctl license](logiqctl_license.md)	 - set and get license
+* [logiqctl license](logiqctl_license.md)	 - View or update license
 

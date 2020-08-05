@@ -30,21 +30,21 @@ import (
 
 var logsExample = `
 Print logs for logiq ingest server
-# logiqctl logs logiq-flash
+- logiqctl logs logiq-flash
 
 Print logs in json format
-# logiqctl -o=json logs logiq-flash
+- logiqctl -o=json logs logiq-flash
 
 Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 In the case of Kubernetes deployment, a Stateful Set is an application, and each pod in it is a process
 The --process (-p) flag lets you view logs for the individual pod
-# logiqctl logs -p=logiq-flash-2 logiq-flash
+- logiqctl logs -p=logiq-flash-2 logiq-flash
 
 Runs an interactive prompt to let user choose filters
-# logiqctl logs interactive|i
+- logiqctl logs interactive|i
 
 Search logs for the given text
-# logiqctl logs search "your search term"   
+- logiqctl logs search "your search term"   
 
 If the flag --follow (-f) is specified the logs will be streamed till it over. 
 
