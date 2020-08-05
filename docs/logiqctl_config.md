@@ -4,7 +4,10 @@ Modify logiqctl configuration options
 
 ### Synopsis
 
-Modify logiqctl configuration options
+
+Configure  LOGIQ CLI (logiqctl) options. 
+Note: The values you provide will be written to the config file located at (~/.logiqctl)
+
 
 ### Examples
 
@@ -47,8 +50,9 @@ Set Credential
 ### SEE ALSO
 
 * [logiqctl](logiqctl.md)	 - Logiqctl - CLI for Logiq Observability stack
-* [logiqctl config set-cluster](logiqctl_config_set-cluster.md)	 - Sets a logiq cluster entry point
-* [logiqctl config set-context](logiqctl_config_set-context.md)	 - Sets a default namespace in logiqctl
-* [logiqctl config set-ui-credential](logiqctl_config_set-ui-credential.md)	 - Sets a logiq ui credentials
+* [logiqctl config init](logiqctl_config_init.md)	 - Interactive configuration command
+* [logiqctl config set-cluster](logiqctl_config_set-cluster.md)	 - Sets the logiq cluster end-point
+* [logiqctl config set-context](logiqctl_config_set-context.md)	 - Sets the default context or namespace.
+* [logiqctl config set-credential](logiqctl_config_set-credential.md)	 - Sets logiq credentials
 * [logiqctl config view](logiqctl_config_view.md)	 - View current defaults
 

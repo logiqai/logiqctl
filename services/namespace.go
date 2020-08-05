@@ -90,7 +90,7 @@ func RunSelectNamespacePrompt(all bool) (string, error) {
 		namespaces = append(namespaces, "*")
 	}
 	whatPrompt := promptui.Select{
-		Label: "Select a namespace to set as default context",
+		Label: "Select a namespace",
 		Items: namespaces,
 	}
 	what, _, err := whatPrompt.Run()

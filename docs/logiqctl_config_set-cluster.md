@@ -1,11 +1,11 @@
 ## logiqctl config set-cluster
 
-Sets a logiq cluster entry point
+Sets the logiq cluster end-point
 
 ### Synopsis
 
 
-Sets the cluster, a valid logiq cluster end point is required for all the operations
+Sets the cluster, a valid logiq cluster endpoint is required for all the operations
 		
 
 ```

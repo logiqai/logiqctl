@@ -1,27 +1,27 @@
-## logiqctl config set-context
+## logiqctl config set-credential
 
-Sets the default context or namespace.
+Sets logiq credentials
 
 ### Synopsis
 
 
-A context or namespace is required for all the logiqctl operations. To override the default namespace for individual command use flag '-n'. 
+Sets the cluster credentials, valid credential is required for all the operations.
 		
 
 ```
-logiqctl config set-context [flags]
+logiqctl config set-credential [flags]
 ```
 
 ### Examples
 
 ```
-set-context <namespace name>
+logiqctl set-credential login password
 ```
 
 ### Options
 
 ```
-  -h, --help   help for set-context
+  -h, --help   help for set-credential
 ```
 
 ### Options inherited from parent commands
@@ -38,5 +38,4 @@ set-context <namespace name>
 ### SEE ALSO
 
 * [logiqctl config](logiqctl_config.md)	 - Modify logiqctl configuration options
-* [logiqctl config set-context interactive](logiqctl_config_set-context_interactive.md)	 - Runs an interactive prompt and let user select namespace from the list
 

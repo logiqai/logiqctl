@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package federation;
+
+import "google/protobuf/empty.proto";
+
+
+option go_package = "github.com/logiqai/logiqctl/api/v1/federation;federation";
+
+message Filter {
+    string name = 1;
+    string condition = 2;
+}
+
+
+message Pong {
+  string data = 1;
+}
+
+service Federation {
+  rpc Ping (google.protobuf.Empty) returns (Pong) {
+  };
+}

@@ -32,7 +32,7 @@ require (
 	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
 	golang.org/x/text v0.3.2 // indirect
 	golang.org/x/tools v0.0.0-20190621195816-6e04913cbbac // indirect
-	google.golang.org/genproto v0.0.0-20200726014623-da3ae01ef02d
+	google.golang.org/genproto v0.0.0-20200804151602-45615f50871c
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect

@@ -29,5 +29,5 @@ logiqctl config set-context interactive [flags]
 
 ### SEE ALSO
 
-* [logiqctl config set-context](logiqctl_config_set-context.md)	 - Sets a default namespace in logiqctl
+* [logiqctl config set-context](logiqctl_config_set-context.md)	 - Sets the default context or namespace.
 

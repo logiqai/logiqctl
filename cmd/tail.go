@@ -27,15 +27,8 @@ import (
 var application, process, labels string
 
 var tailExample = `
-Tail all logs 
-# logiqctl tail
-
-Tail specific application logs
-# logiqctl tail -p=logiq-flash-2 logiq-flash
-
-Tail specific application and filter by its process id
-# logiqctl logs -p=logiq-flash-2 logiq-flash
-
+Tail logs 
+- logiqctl tail
 `
 
 // tailCmd represents the tail command
@@ -43,9 +36,9 @@ var tailCmd = &cobra.Command{
 	Use:     "tail",
 	Aliases: []string{"t"},
 	Example: tailExample,
-	Short:   "Stream logs from logiq Observability stack",
-	Long: `Tail command enables you to see logs from applications in realtime, See examples for options.
-
+	Short:   "Stream logs from LOGIQ Observability Stack",
+	Long: `
+'logiqctl tail' is similar to tail -f command, allows you to view the log data that is being sent to LOGIQ Observability Stack in real-time. You can see logs from the cluster at multiple levels. 'tail' without any option runs an interactive prompt and let you choose application and process in the current context. 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		var labelsArray []string
@@ -75,7 +68,7 @@ var tailCmd = &cobra.Command{
 func init() {
 
 	rootCmd.AddCommand(tailCmd)
-	tailCmd.Flags().StringVarP(&process, "process", "p", "", `Filter logs by process id`)
-	tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by label`)
+	//tailCmd.Flags().StringVarP(&process, "process", "p", "", `Filter logs by process id`)
+	//tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by label`)
 
 }

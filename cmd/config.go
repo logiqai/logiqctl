@@ -18,7 +18,10 @@ package cmd
 
 import (
 	b64 "encoding/base64"
+	"errors"
 	"fmt"
+
+	"github.com/manifoldco/promptui"
 
 	"github.com/logiqai/logiqctl/services"
 
@@ -33,6 +36,10 @@ import (
 var configCmd = &cobra.Command{
 	Use:   "config SUBCOMMAND",
 	Short: "Modify logiqctl configuration options",
+	Long: `
+Configure  LOGIQ CLI (logiqctl) options. 
+Note: The values you provide will be written to the config file located at (~/.logiqctl)
+`,
 	Example: `
 View current context
 	logiqctl config view
@@ -56,17 +63,88 @@ func init() {
 	configCmd.AddCommand(NewSetClusterCommand())
 	configCmd.AddCommand(NewSetContextCommand())
 	configCmd.AddCommand(NewViewCommand())
-	//configCmd.AddCommand(NewUiTokenCommand())
-	configCmd.AddCommand(NewUiCredentialsCommand())
+	configCmd.AddCommand(NewSetConfigInitCommand())
+	configCmd.AddCommand(NewCredentialsCommand())
 }
 
-func NewUiCredentialsCommand() *cobra.Command {
+func validInput(s string) error {
+	if len(s) < 1 {
+		return errors.New("cannot be empty")
+	}
+	return nil
+}
+
+func NewSetConfigInitCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "set-ui-credential",
-		Example: "logiqctl set-ui-credential login password",
-		Short:   "Sets a logiq ui credentials",
+		Use:     "init",
+		Example: "logiqctl config init",
+		Short:   "Interactive configuration command",
+		Run: func(cmd *cobra.Command, args []string) {
+			clusterPrompt := promptui.Prompt{
+				Label:    "Enter cluster endpoint ",
+				Validate: validInput,
+			}
+			cluster, err := clusterPrompt.Run()
+			if err != nil {
+				fmt.Println("cannot read input")
+				return
+			}
+			viper.Set(utils.KeyCluster, cluster)
+			viper.Set(utils.KeyPort, utils.DefaultPort)
+
+			err = services.Ping()
+			if err != nil {
+				return
+			}
+
+			userNamePrompt := promptui.Prompt{
+				Label:    "Enter User Name ",
+				Validate: validInput,
+			}
+
+			userName, err := userNamePrompt.Run()
+			if err != nil {
+				fmt.Println("cannot read input")
+				return
+			}
+			viper.Set(utils.KeyUiUser, b64.StdEncoding.EncodeToString([]byte(userName)))
+
+			userPasswordPrompt := promptui.Prompt{
+				Label:    "Enter Password ",
+				Validate: validInput,
+				Mask:     '*',
+			}
+
+			userPassword, err := userPasswordPrompt.Run()
+			if err != nil {
+				fmt.Println("cannot read input")
+				return
+			}
+			viper.Set(utils.KeyUiPassword, b64.StdEncoding.EncodeToString([]byte(userPassword)))
+
+			selectedNs, err := services.RunSelectNamespacePrompt(false)
+			if err != nil {
+				fmt.Printf("Incorrect usage")
+				return
+			}
+			viper.Set(utils.KeyNamespace, selectedNs)
+			err = viper.WriteConfig()
+			if err != nil {
+				fmt.Print(err)
+				return
+			}
+		},
+	}
+	return cmd
+}
+
+func NewCredentialsCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "set-credential",
+		Example: "logiqctl set-credential login password",
+		Short:   "Sets logiq credentials",
 		Long: `
-Sets the cluster credentials, a valid logiq cluster end point is also required for all the operations
+Sets the cluster credentials, valid credential is required for all the operations.
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 2 {
@@ -117,9 +195,9 @@ func NewSetClusterCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set-cluster",
 		Example: "logiqctl set-cluster END-POINT",
-		Short:   "Sets a logiq cluster entry point",
+		Short:   "Sets the logiq cluster end-point",
 		Long: `
-Sets the cluster, a valid logiq cluster end point is required for all the operations
+Sets the cluster, a valid logiq cluster endpoint is required for all the operations
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 1 {
@@ -155,10 +233,10 @@ func NewViewCommand() *cobra.Command {
 func NewSetContextCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set-context",
-		Example: "set-context NAMESPACE",
-		Short:   "Sets a default namespace in logiqctl",
+		Example: "set-context <namespace name>",
+		Short:   "Sets the default context or namespace.",
 		Long: `
-This will the default context for all the operations.
+A context or namespace is required for all the logiqctl operations. To override the default namespace for individual command use flag '-n'. 
 		`,
 		PreRun: utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {

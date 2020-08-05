@@ -35,8 +35,8 @@ Print logs for logiq ingest server
 Print logs in json format
 - logiqctl -o=json logs logiq-flash
 
-Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 In the case of Kubernetes deployment, a Stateful Set is an application, and each pod in it is a process
+Print logs for logiq-flash ingest server filtered by process logiq-flash-2
 The --process (-p) flag lets you view logs for the individual pod
 - logiqctl logs -p=logiq-flash-2 logiq-flash
 
@@ -51,11 +51,7 @@ If the flag --follow (-f) is specified the logs will be streamed till it over.
 `
 
 var logsLong = `
-log command is used to view historical logs.  
-This expects a namespace and an application to be available to return results.
-Set the default namespace using 'logiqctl set-context' command or pass as '-n=NAMESPACE' flag
-Application name needs to be passed as an argument to the command or use the 'interactive' 
-command to choose from the list of available applications and processes.   
+logs command is used to view historical logs. This expects a namespace and an application to be available to return results. Set the default namespace using 'logiqctl set-context' command or pass as '-n=NAMESPACE' flag. Application name needs to be passed as an argument to the command or use the 'interactive' command to choose from the list of available applications and processes.   
 
 Global flag '--time-format' is not applicable for this command.
 Global flag '--output' only supports json format for this command.`

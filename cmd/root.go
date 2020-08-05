@@ -97,7 +97,7 @@ func initConfig() {
 			return
 		}
 		viper.SetConfigFile(cfgFile)
-		viper.Set("logiqctl", "v.1.0")
+		viper.Set("logiqctl", "v.2.0.0")
 		viper.Set(utils.LineBreaksKey, false)
 		viper.WriteConfig()
 	} else {

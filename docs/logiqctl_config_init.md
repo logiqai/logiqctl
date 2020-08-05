@@ -1,27 +1,25 @@
-## logiqctl config set-ui-credential
+## logiqctl config init
 
-Sets a logiq ui credentials
+Interactive configuration command
 
 ### Synopsis
 
-
-Sets the cluster credentials, a valid logiq cluster end point is also required for all the operations
-		
+Interactive configuration command
 
 ```
-logiqctl config set-ui-credential [flags]
+logiqctl config init [flags]
 ```
 
 ### Examples
 
 ```
-logiqctl set-ui-credential login password
+logiqctl config init
 ```
 
 ### Options
 
 ```
-  -h, --help   help for set-ui-credential
+  -h, --help   help for init
 ```
 
 ### Options inherited from parent commands
