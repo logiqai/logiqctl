@@ -1,23 +1,20 @@
-## logiqctl logs
+# logiqctl logs
 
 View logs for the given namespace and application
 
-### Synopsis
+## Synopsis
 
+logs command is used to view historical logs. This expects a namespace and an application to be available to return results. Set the default namespace using 'logiqctl set-context' command or pass as '-n=NAMESPACE' flag. Application name needs to be passed as an argument to the command or use the 'interactive' command to choose from the list of available applications and processes.
 
-logs command is used to view historical logs. This expects a namespace and an application to be available to return results. Set the default namespace using 'logiqctl set-context' command or pass as '-n=NAMESPACE' flag. Application name needs to be passed as an argument to the command or use the 'interactive' command to choose from the list of available applications and processes.   
+Global flag '--time-format' is not applicable for this command. Global flag '--output' only supports json format for this command.
 
-Global flag '--time-format' is not applicable for this command.
-Global flag '--output' only supports json format for this command.
-
-```
+```text
 logiqctl logs [flags]
 ```
 
-### Examples
+## Examples
 
-```
-
+```text
 Print logs for logiq ingest server
 - logiqctl logs logiq-flash
 
@@ -35,14 +32,12 @@ Runs an interactive prompt to let user choose filters
 Search logs for the given text
 - logiqctl logs search "your search term"   
 
-If the flag --follow (-f) is specified the logs will be streamed till it over. 
-
-
+If the flag --follow (-f) is specified the logs will be streamed till it over.
 ```
 
-### Options
+## Options
 
-```
+```text
   -f, --follow             Specify if the logs should be streamed.
   -h, --help               help for logs
       --page-size uint32   Number of log entries to return in one page (default 30)
@@ -53,9 +48,9 @@ If the flag --follow (-f) is specified the logs will be streamed till it over.
                            fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units are "s", "m", "h" (default "1h")
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -64,9 +59,9 @@ If the flag --follow (-f) is specified the logs will be streamed till it over.
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl](logiqctl.md)	 - Logiqctl - CLI for Logiq Observability stack
-* [logiqctl logs interactive](logiqctl_logs_interactive.md)	 - Runs an interactive prompt to let the user select application and filters
-* [logiqctl logs search](logiqctl_logs_search.md)	 - Search given text in logs
+* [logiqctl](logiqctl.md)     - Logiqctl - CLI for Logiq Observability stack
+* [logiqctl logs interactive](logiqctl_logs_interactive.md)     - Runs an interactive prompt to let the user select application and filters
+* [logiqctl logs search](logiqctl_logs_search.md)     - Search given text in logs
 

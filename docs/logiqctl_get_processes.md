@@ -1,30 +1,30 @@
-## logiqctl get processes
+# logiqctl get processes
 
 List all the available processes, runs an interactive prompt to select applications
 
-### Synopsis
+## Synopsis
 
 List all the available processes, runs an interactive prompt to select applications
 
-```
+```text
 logiqctl get processes [flags]
 ```
 
-### Examples
+## Examples
 
-```
+```text
 logiqctl get processes|proc|p
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for processes
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -33,7 +33,7 @@ logiqctl get processes|proc|p
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl get](logiqctl_get.md)	 - Display one or many resources
+* [logiqctl get](logiqctl_get.md)     - Display one or many resources
 

@@ -1,24 +1,24 @@
-## logiqctl config set-context interactive
+# logiqctl config set-context interactive
 
 Runs an interactive prompt and let user select namespace from the list
 
-### Synopsis
+## Synopsis
 
 Runs an interactive prompt and let user select namespace from the list
 
-```
+```text
 logiqctl config set-context interactive [flags]
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for interactive
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -27,7 +27,7 @@ logiqctl config set-context interactive [flags]
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl config set-context](logiqctl_config_set-context.md)	 - Sets the default context or namespace.
+* [logiqctl config set-context](logiqctl_config_set-context.md)     - Sets the default context or namespace.
 

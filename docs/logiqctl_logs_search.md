@@ -1,24 +1,24 @@
-## logiqctl logs search
+# logiqctl logs search
 
 Search given text in logs
 
-### Synopsis
+## Synopsis
 
 Search within the namespace,
 
-```
+```text
 logiqctl logs search [flags]
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for search
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -f, --follow               Specify if the logs should be streamed.
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
@@ -33,7 +33,7 @@ logiqctl logs search [flags]
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl logs](logiqctl_logs.md)	 - View logs for the given namespace and application
+* [logiqctl logs](logiqctl_logs.md)     - View logs for the given namespace and application
 

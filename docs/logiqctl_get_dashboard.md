@@ -1,30 +1,30 @@
-## logiqctl get dashboard
+# logiqctl get dashboard
 
 Get a dashboard
 
-### Synopsis
+## Synopsis
 
 Get a dashboard
 
-```
+```text
 logiqctl get dashboard [flags]
 ```
 
-### Examples
+## Examples
 
-```
+```text
 logiqctl get dashboard|d <dashboard-slug>
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for dashboard
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -33,8 +33,8 @@ logiqctl get dashboard|d <dashboard-slug>
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl get](logiqctl_get.md)	 - Display one or many resources
-* [logiqctl get dashboard all](logiqctl_get_dashboard_all.md)	 - List all the available dashboards
+* [logiqctl get](logiqctl_get.md)     - Display one or many resources
+* [logiqctl get dashboard all](logiqctl_get_dashboard_all.md)     - List all the available dashboards
 

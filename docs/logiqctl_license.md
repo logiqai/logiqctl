@@ -1,35 +1,30 @@
-## logiqctl license
+# logiqctl license
 
 View or update license
 
-### Synopsis
+## Synopsis
 
+Logiq deployment comes configured with a 30-day trial license. Obtain a valid license by contacting LOGIQ at license@logiq.ai. With this command, the user can view or apply a license.
 
-Logiq deployment comes configured with a 30-day trial license. Obtain a valid license by contacting LOGIQ at license@logiq.ai.
-With this command, the user can view or apply a license. 
+## Examples
 
-
-### Examples
-
-```
-
+```text
 Upload your LOGIQ deployment license
 - logiqctl license set -l=license.jws
 
 View License information
- - logiqctl license get 
-
+ - logiqctl license get
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for license
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -38,9 +33,9 @@ View License information
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl](logiqctl.md)	 - Logiqctl - CLI for Logiq Observability stack
-* [logiqctl license get](logiqctl_license_get.md)	 - View license information
-* [logiqctl license set](logiqctl_license_set.md)	 - Configure license for LOGIQ deployment
+* [logiqctl](logiqctl.md)     - Logiqctl - CLI for Logiq Observability stack
+* [logiqctl license get](logiqctl_license_get.md)     - View license information
+* [logiqctl license set](logiqctl_license_set.md)     - Configure license for LOGIQ deployment
 

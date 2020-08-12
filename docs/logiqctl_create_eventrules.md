@@ -1,31 +1,31 @@
-## logiqctl create eventrules
+# logiqctl create eventrules
 
 Create event rules
 
-### Synopsis
+## Synopsis
 
 Create event rules
 
-```
+```text
 logiqctl create eventrules [flags]
 ```
 
-### Examples
+## Examples
 
-```
+```text
 logiqctl create eventrules -f <path to event rules file>
 ```
 
-### Options
+## Options
 
-```
+```text
   -f, --file string   Path to file
   -h, --help          help for eventrules
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -34,7 +34,7 @@ logiqctl create eventrules -f <path to event rules file>
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl create](logiqctl_create.md)	 - Create a resource
+* [logiqctl create](logiqctl_create.md)     - Create a resource
 

@@ -1,32 +1,30 @@
-## logiqctl config set-context
+# logiqctl config set-context
 
 Sets the default context or namespace.
 
-### Synopsis
+## Synopsis
 
+A context or namespace is required for all the logiqctl operations. To override the default namespace for individual command use flag '-n'.
 
-A context or namespace is required for all the logiqctl operations. To override the default namespace for individual command use flag '-n'. 
-		
-
-```
+```text
 logiqctl config set-context [flags]
 ```
 
-### Examples
+## Examples
 
-```
+```text
 set-context <namespace name>
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for set-context
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -35,8 +33,8 @@ set-context <namespace name>
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl config](logiqctl_config.md)	 - Modify logiqctl configuration options
-* [logiqctl config set-context interactive](logiqctl_config_set-context_interactive.md)	 - Runs an interactive prompt and let user select namespace from the list
+* [logiqctl config](logiqctl_config.md)     - Modify logiqctl configuration options
+* [logiqctl config set-context interactive](logiqctl_config_set-context_interactive.md)     - Runs an interactive prompt and let user select namespace from the list
 

@@ -1,30 +1,30 @@
-## logiqctl get query
+# logiqctl get query
 
 Get a query
 
-### Synopsis
+## Synopsis
 
 Get a query
 
-```
+```text
 logiqctl get query [flags]
 ```
 
-### Examples
+## Examples
 
-```
+```text
 logiqctl get query|q <query-id>
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for query
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -33,8 +33,8 @@ logiqctl get query|q <query-id>
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl get](logiqctl_get.md)	 - Display one or many resources
-* [logiqctl get query all](logiqctl_get_query_all.md)	 - List all the available queries
+* [logiqctl get](logiqctl_get.md)     - Display one or many resources
+* [logiqctl get query all](logiqctl_get_query_all.md)     - List all the available queries
 

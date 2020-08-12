@@ -1,30 +1,30 @@
-## logiqctl get datasource all
+# logiqctl get datasource all
 
 List all the available datasources
 
-### Synopsis
+## Synopsis
 
 List all the available datasources
 
-```
+```text
 logiqctl get datasource all [flags]
 ```
 
-### Examples
+## Examples
 
-```
+```text
 logiqctl get datasource all
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for all
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -33,7 +33,7 @@ logiqctl get datasource all
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl get datasource](logiqctl_get_datasource.md)	 - Get a datasource
+* [logiqctl get datasource](logiqctl_get_datasource.md)     - Get a datasource
 

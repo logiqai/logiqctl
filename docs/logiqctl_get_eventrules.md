@@ -1,32 +1,32 @@
-## logiqctl get eventrules
+# logiqctl get eventrules
 
 List event rules
 
-### Synopsis
+## Synopsis
 
 List event rules
 
-```
+```text
 logiqctl get eventrules [flags]
 ```
 
-### Examples
+## Examples
 
-```
+```text
 logiqctl get eventrule
 ```
 
-### Options
+## Options
 
-```
+```text
   -w, --file string     Path to file to be written to
   -g, --groups string   list of groups separated by comma
   -h, --help            help for eventrules
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -35,9 +35,9 @@ logiqctl get eventrule
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl get](logiqctl_get.md)	 - Display one or many resources
-* [logiqctl get eventrules all](logiqctl_get_eventrules_all.md)	 - List all event rules
-* [logiqctl get eventrules groups](logiqctl_get_eventrules_groups.md)	 - List all event rules
+* [logiqctl get](logiqctl_get.md)     - Display one or many resources
+* [logiqctl get eventrules all](logiqctl_get_eventrules_all.md)     - List all event rules
+* [logiqctl get eventrules groups](logiqctl_get_eventrules_groups.md)     - List all event rules
 

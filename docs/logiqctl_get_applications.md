@@ -1,30 +1,30 @@
-## logiqctl get applications
+# logiqctl get applications
 
 List all the available applications in default namespace
 
-### Synopsis
+## Synopsis
 
 List all the available applications in default namespace
 
-```
+```text
 logiqctl get applications [flags]
 ```
 
-### Examples
+## Examples
 
-```
+```text
 logiqctl get applications|apps|a
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for applications
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -33,8 +33,8 @@ logiqctl get applications|apps|a
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl get](logiqctl_get.md)	 - Display one or many resources
-* [logiqctl get applications all](logiqctl_get_applications_all.md)	 - List all the available applications across namespaces
+* [logiqctl get](logiqctl_get.md)     - Display one or many resources
+* [logiqctl get applications all](logiqctl_get_applications_all.md)     - List all the available applications across namespaces
 

@@ -1,32 +1,30 @@
-## logiqctl config set-credential
+# logiqctl config set-credential
 
 Sets logiq credentials
 
-### Synopsis
-
+## Synopsis
 
 Sets the cluster credentials, valid credential is required for all the operations.
-		
 
-```
+```text
 logiqctl config set-credential [flags]
 ```
 
-### Examples
+## Examples
 
-```
+```text
 logiqctl set-credential login password
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for set-credential
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -35,7 +33,7 @@ logiqctl set-credential login password
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl config](logiqctl_config.md)	 - Modify logiqctl configuration options
+* [logiqctl config](logiqctl_config.md)     - Modify logiqctl configuration options
 

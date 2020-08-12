@@ -1,35 +1,31 @@
-## logiqctl tail
+# logiqctl tail
 
 Stream logs from LOGIQ Observability Stack
 
-### Synopsis
+## Synopsis
 
+'logiqctl tail' is similar to tail -f command, allows you to view the log data that is being sent to LOGIQ Observability Stack in real-time. You can see logs from the cluster at multiple levels. 'tail' without any option runs an interactive prompt and let you choose application and process in the current context.
 
-'logiqctl tail' is similar to tail -f command, allows you to view the log data that is being sent to LOGIQ Observability Stack in real-time. You can see logs from the cluster at multiple levels. 'tail' without any option runs an interactive prompt and let you choose application and process in the current context. 
-
-
-```
+```text
 logiqctl tail [flags]
 ```
 
-### Examples
+## Examples
 
-```
-
+```text
 Tail logs 
 - logiqctl tail
-
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for tail
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -38,7 +34,7 @@ Tail logs
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl](logiqctl.md)	 - Logiqctl - CLI for Logiq Observability stack
+* [logiqctl](logiqctl.md)     - Logiqctl - CLI for Logiq Observability stack
 

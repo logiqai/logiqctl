@@ -1,31 +1,31 @@
-## logiqctl license set
+# logiqctl license set
 
 Configure license for LOGIQ deployment
 
-### Synopsis
+## Synopsis
 
 Configure license for LOGIQ deployment
 
-```
+```text
 logiqctl license set [flags]
 ```
 
-### Examples
+## Examples
 
-```
+```text
 logiqctl license set -l=<license-file-path>
 ```
 
-### Options
+## Options
 
-```
+```text
   -f, --file string   Path to file
   -h, --help          help for set
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -34,7 +34,7 @@ logiqctl license set -l=<license-file-path>
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl license](logiqctl_license.md)	 - View or update license
+* [logiqctl license](logiqctl_license.md)     - View or update license
 

@@ -1,48 +1,44 @@
-## logiqctl config
+# logiqctl config
 
 Modify logiqctl configuration options
 
-### Synopsis
+## Synopsis
 
+Configure LOGIQ CLI \(logiqctl\) options. To get token see [https://docs.logiq.ai/vewing-logs/logiqctl/obtaining-api-key](https://docs.logiq.ai/vewing-logs/logiqctl/obtaining-api-key)
 
-Configure  LOGIQ CLI (logiqctl) options. To get token see https://docs.logiq.ai/vewing-logs/logiqctl/obtaining-api-key
+Note: The values you provide will be written to the config file located at \(~/.logiqctl\)
 
-Note: The values you provide will be written to the config file located at (~/.logiqctl)
+## Examples
 
-
-### Examples
-
-```
-
+```text
 View current context
-	logiqctl config view
+    logiqctl config view
 
 Runs an interactive prompt and let user configure
-	logiqctl config init
+    logiqctl config init
 
 Set default cluster
-	logiqctl config set-cluster END-POINT
+    logiqctl config set-cluster END-POINT
 
 Set default context
-	logiqctl config set-context namespace
+    logiqctl config set-context namespace
 
 Runs an interactive prompt and let user select namespace from the list
-	logiqctl config set-context i
+    logiqctl config set-context i
 
 Set token
-	logiqctl config set-token api_token
-
+    logiqctl config set-token api_token
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for config
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -51,12 +47,12 @@ Set token
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl](logiqctl.md)	 - Logiqctl - CLI for Logiq Observability stack
-* [logiqctl config init](logiqctl_config_init.md)	 - Interactive configuration command
-* [logiqctl config set-cluster](logiqctl_config_set-cluster.md)	 - Sets the logiq cluster end-point
-* [logiqctl config set-context](logiqctl_config_set-context.md)	 - Sets the default context or namespace.
-* [logiqctl config set-token](logiqctl_config_set-token.md)	 - Sets a logiq ui api token
-* [logiqctl config view](logiqctl_config_view.md)	 - View current defaults
+* [logiqctl](logiqctl.md)     - Logiqctl - CLI for Logiq Observability stack
+* [logiqctl config init](logiqctl_config_init.md)     - Interactive configuration command
+* [logiqctl config set-cluster](logiqctl_config_set-cluster.md)     - Sets the logiq cluster end-point
+* [logiqctl config set-context](logiqctl_config_set-context.md)     - Sets the default context or namespace.
+* [logiqctl config set-token](logiqctl_config_set-token.md)     - Sets a logiq ui api token
+* [logiqctl config view](logiqctl_config_view.md)     - View current defaults
 

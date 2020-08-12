@@ -1,24 +1,24 @@
-## logiqctl logs interactive
+# logiqctl logs interactive
 
 Runs an interactive prompt to let the user select application and filters
 
-### Synopsis
+## Synopsis
 
 Runs an interactive prompt to let the user select application and filters
 
-```
+```text
 logiqctl logs interactive [flags]
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for interactive
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -f, --follow               Specify if the logs should be streamed.
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
@@ -33,7 +33,7 @@ logiqctl logs interactive [flags]
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl logs](logiqctl_logs.md)	 - View logs for the given namespace and application
+* [logiqctl logs](logiqctl_logs.md)     - View logs for the given namespace and application
 

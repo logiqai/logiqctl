@@ -1,32 +1,30 @@
-## logiqctl create
+# logiqctl create
 
 Create a resource
 
-### Synopsis
+## Synopsis
 
 Creates a resource from a resource specification
 
-### Examples
+## Examples
 
-```
-
+```text
 Create a dashboard
 logiqctl create dashboard -f <path to dashboard_spec_file.json>
 
 Create eventrules
 logiqctl create eventrules -f <path to eventrules_file.json>
-
 ```
 
-### Options
+## Options
 
-```
+```text
   -h, --help   help for create
 ```
 
-### Options inherited from parent commands
+## Options inherited from parent commands
 
-```
+```text
   -c, --cluster string       Override the default cluster set by `logiqctl set-cluster' command
   -n, --namespace string     Override the default context set by `logiqctl set-context' command
   -o, --output string        Output format. One of: table|json|yaml. 
@@ -35,9 +33,9 @@ logiqctl create eventrules -f <path to eventrules_file.json>
                              This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds. (default "relative")
 ```
 
-### SEE ALSO
+## SEE ALSO
 
-* [logiqctl](logiqctl.md)	 - Logiqctl - CLI for Logiq Observability stack
-* [logiqctl create dashboard](logiqctl_create_dashboard.md)	 - Create a dashboard
-* [logiqctl create eventrules](logiqctl_create_eventrules.md)	 - Create event rules
+* [logiqctl](logiqctl.md)     - Logiqctl - CLI for Logiq Observability stack
+* [logiqctl create dashboard](logiqctl_create_dashboard.md)     - Create a dashboard
+* [logiqctl create eventrules](logiqctl_create_eventrules.md)     - Create event rules
 
