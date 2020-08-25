@@ -2,7 +2,7 @@ module github.com/logiqai/logiqctl
 
 replace github.com/logiqai/logiqctl => ./
 
-go 1.14
+go 1.12
 
 require (
 	github.com/alecthomas/gometalinter v3.0.0+incompatible // indirect
