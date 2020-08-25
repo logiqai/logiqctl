@@ -28,11 +28,11 @@ func GetGrpcContext() context.Context {
 		return grpcContext
 	}
 
-	var cookieStr string
 	if url, cookieJar, err := GetCookies(); err != nil {
 		fmt.Println("api token or ui credentials must be set. See \"logiqctl config help\" for more details")
 		os.Exit(-1)
 	} else {
+		var cookieStr string
 		for _, c := range cookieJar.Cookies(url) {
 			if c.Name == "x-api-key" {
 				cookieStr = fmt.Sprintf("%s=%s", c.Name, c.Value)
@@ -58,7 +58,7 @@ func GetCookies() (*url.URL, *cookiejar.Jar, error) {
 		}
 		req, err := http.NewRequest("GET", loginUrl, nil)
 		if err != nil {
-			fmt.Println("Unable to create visualization ", err.Error())
+			fmt.Println("Unable to create login Request: ", err.Error())
 			os.Exit(-1)
 		}
 		if api_key := viper.GetString(utils.AuthToken); api_key != "" {

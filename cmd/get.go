@@ -63,11 +63,11 @@ logiqctl get processes
 List all queries
 logiqctl get queries all
 
+Get httpingestkey
+logiqctl get httpingestkey
+
 Get query
 logiqctl get query query-slug
-
-Get token
-logiqctl get token
 `,
 }
 
@@ -81,19 +81,19 @@ func init() {
 	getCmd.AddCommand(ui.NewListDashboardsCommand())
 	getCmd.AddCommand(ui.NewListQueriesCommand())
 	getCmd.AddCommand(ui.NewListDatasourcesCommand())
-	getCmd.AddCommand(getTokenCommand())
-
+	getCmd.AddCommand(getHttpingestkeyCommand())
 }
-func getTokenCommand() *cobra.Command {
+
+func getHttpingestkeyCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "token",
-		Example: "logiqctl get token",
-		Aliases: []string{"tok"},
-		Short:   "Get a jwt token",
+		Use:     "httpingestkey",
+		Example: "logiqctl get httpingestkey",
+		Aliases: []string{"ingestkey"},
+		Short:   "Get httpingestkey",
 		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {
 			if u, cookieJar, err := grpc_utils.GetCookies(); err != nil {
-				fmt.Println("Error getting token: ", err.Error())
+				fmt.Println("Error getting httpingestkey: ", err.Error())
 			} else {
 				tokFound := false
 				for _, c := range cookieJar.Cookies(u) {
@@ -103,7 +103,7 @@ func getTokenCommand() *cobra.Command {
 					}
 				}
 				if !tokFound {
-					fmt.Println("Error getting the token")
+					fmt.Println("Error getting the httpingestkey")
 				}
 			}
 		},

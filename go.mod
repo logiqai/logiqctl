@@ -2,7 +2,7 @@ module github.com/logiqai/logiqctl
 
 replace github.com/logiqai/logiqctl => ./
 
-go 1.12
+go 1.14
 
 require (
 	github.com/alecthomas/gometalinter v3.0.0+incompatible // indirect
@@ -32,7 +32,7 @@ require (
 	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
 	golang.org/x/text v0.3.2 // indirect
 	golang.org/x/tools v0.0.0-20190621195816-6e04913cbbac // indirect
-	google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70
+	google.golang.org/genproto v0.0.0-20200825200019-8632dd797987
 	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect
