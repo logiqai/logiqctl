@@ -28,38 +28,48 @@ func GetGrpcContext() context.Context {
 		return grpcContext
 	}
 
+	var cookieStr string
+	if url, cookieJar, err := GetCookies(); err != nil {
+		fmt.Println("api token or ui credentials must be set. See \"logiqctl config help\" for more details")
+		os.Exit(-1)
+	} else {
+		for _, c := range cookieJar.Cookies(url) {
+			if c.Name == "x-api-key" {
+				cookieStr = fmt.Sprintf("%s=%s", c.Name, c.Value)
+				break
+			}
+		}
+		md := metadata.Pairs("grpcgateway-cookie", cookieStr)
+		grpcContext = metadata.NewOutgoingContext(context.Background(), md)
+	}
+	return grpcContext
+}
+
+func GetCookies() (*url.URL, *cookiejar.Jar, error) {
 	api_key := viper.GetString(utils.AuthToken)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	loginUrl := ui.GetUrlForResource(ui.ResourceLogin)
+	u, _ := url.Parse(loginUrl)
 
 	if api_key != "" {
-		loginUrl := ui.GetUrlForResource(ui.ResourceJWTToken)
 		cookieJar, _ := cookiejar.New(nil)
-
 		client = &http.Client{
 			Jar: cookieJar,
 		}
-		req, err := http.NewRequest("GET",loginUrl,nil)
+		req, err := http.NewRequest("GET", loginUrl, nil)
 		if err != nil {
 			fmt.Println("Unable to create visualization ", err.Error())
 			os.Exit(-1)
 		}
 		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key ))
+			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
 		}
 		if _, err := client.Do(req); err != nil {
 			fmt.Println("Error login with provided token, Error:", err.Error())
 			os.Exit(-1)
 		} else {
-			var cookieStr string
 			u, _ := url.Parse(loginUrl)
-			for _, c := range cookieJar.Cookies(u) {
-				if c.Name == "x-api-key" {
-					cookieStr = fmt.Sprintf("%s=%s", c.Name, c.Value)
-					break
-				}
-			}
-			md := metadata.Pairs("grpcgateway-cookie", cookieStr)
-			grpcContext = metadata.NewOutgoingContext(context.Background(), md)
+			return u, cookieJar, nil
 		}
 	} else {
 		user := utils.GetUIUser()
@@ -71,8 +81,6 @@ func GetGrpcContext() context.Context {
 			client = &http.Client{
 				Jar: cookieJar,
 			}
-			loginUrl := ui.GetUrlForResource(ui.ResourceLogin)
-			u, _ := url.Parse(loginUrl)
 			q, _ := url.ParseQuery(u.RawQuery)
 			q.Add("remember", "on")
 			q.Add("email", user)
@@ -89,22 +97,13 @@ func GetGrpcContext() context.Context {
 					fmt.Println("Error credentials")
 					os.Exit(-1)
 				}
-
-				var cookieStr string
-				for _, c := range cookieJar.Cookies(u) {
-					if c.Name == "x-api-key" {
-						cookieStr = fmt.Sprintf("%s=%s", c.Name, c.Value)
-						break
-					}
-				}
-				md := metadata.Pairs("grpcgateway-cookie", cookieStr)
-				grpcContext = metadata.NewOutgoingContext(context.Background(), md)
+				u, _ := url.Parse(loginUrl)
+				return u, cookieJar, nil
 			}
 		} else {
 			fmt.Println("api token or ui credentials must be set. See \"logiqctl config help\" for more details")
 			os.Exit(-1)
 		}
 	}
-
-	return grpcContext
+	return nil, nil, fmt.Errorf("Error getting the token")
 }

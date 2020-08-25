@@ -19,6 +19,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/logiqai/logiqctl/grpc_utils"
 	"github.com/logiqai/logiqctl/services"
 	"github.com/logiqai/logiqctl/ui"
 	"github.com/logiqai/logiqctl/utils"
@@ -64,6 +65,9 @@ logiqctl get queries all
 
 Get query
 logiqctl get query query-slug
+
+Get token
+logiqctl get token
 `,
 }
 
@@ -77,6 +81,34 @@ func init() {
 	getCmd.AddCommand(ui.NewListDashboardsCommand())
 	getCmd.AddCommand(ui.NewListQueriesCommand())
 	getCmd.AddCommand(ui.NewListDatasourcesCommand())
+	getCmd.AddCommand(getTokenCommand())
+
+}
+func getTokenCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "token",
+		Example: "logiqctl get token",
+		Aliases: []string{"tok"},
+		Short:   "Get a jwt token",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			if u, cookieJar, err := grpc_utils.GetCookies(); err != nil {
+				fmt.Println("Error getting token: ", err.Error())
+			} else {
+				tokFound := false
+				for _, c := range cookieJar.Cookies(u) {
+					if "x-api-key" == c.Name {
+						tokFound = true
+						fmt.Println(c.Value)
+					}
+				}
+				if !tokFound {
+					fmt.Println("Error getting the token")
+				}
+			}
+		},
+	}
+	return cmd
 }
 
 func NewListNameSpaceCommand() *cobra.Command {

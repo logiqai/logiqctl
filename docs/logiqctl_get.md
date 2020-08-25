@@ -43,6 +43,9 @@ logiqctl get queries all
 Get query
 logiqctl get query query-slug
 
+Get token
+logiqctl get token
+
 ```
 
 ### Options
@@ -73,4 +76,5 @@ logiqctl get query query-slug
 * [logiqctl get namespaces](logiqctl_get_namespaces.md)	 - List the available namespaces
 * [logiqctl get processes](logiqctl_get_processes.md)	 - List all the available processes, runs an interactive prompt to select applications
 * [logiqctl get query](logiqctl_get_query.md)	 - Get a query
+* [logiqctl get token](logiqctl_get_token.md)	 - Get a jwt token
 
