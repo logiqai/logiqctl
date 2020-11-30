@@ -45,9 +45,9 @@ enum OrderBy {
     DESC = 1;
 }
 
-enum MapQueryType {
-    DataMap = 0;
-    TextMap = 1;
+enum QueryType {
+    Search = 0;
+    Fetch = 1;
 }
 
 message StructuredDataValues {
@@ -89,7 +89,7 @@ message FacetValues {
 }
 
 message QueryProperties {
-    repeated string applicationNames = 1; //What is a good name for this when we do schemaless???
+    repeated string applicationNames = 1;
     map<string, FilterValues> filters = 2;
     string namespace = 3;
     OrderBy order = 4;
@@ -98,6 +98,8 @@ message QueryProperties {
     string endTime = 8;
     string keyWord = 9;
     string destination = 10;
+    bool facets = 11;
+    QueryType qType = 12;
 }
 
 message GetDataRequest {
@@ -127,6 +129,7 @@ message GetQueryResponse {
     repeated QueryInfo info = 3;
     repeated QueryErrors errors = 4;
     map<string, string> meta = 5;
+    string details = 6;
 }
 
 service QueryService {

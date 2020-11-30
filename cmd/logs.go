@@ -130,7 +130,9 @@ var searchCmd = &cobra.Command{
 			fmt.Println(cmd.Usage())
 			return
 		}
-		query("", args[0], "", -1)
+		app, err := services.RunSelectApplicationForNamespacePrompt(false)
+		handleError(err)
+		query(app.Name, args[0], "", -1)
 	},
 }
 

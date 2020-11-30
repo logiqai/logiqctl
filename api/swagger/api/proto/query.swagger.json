@@ -38,7 +38,7 @@
             "schema": {}
           },
           "default": {
-            "description": "An unexpected error response",
+            "description": "An unexpected error response.",
             "schema": {
               "$ref": "#/definitions/runtimeError"
             }
@@ -78,7 +78,7 @@
             "schema": {}
           },
           "default": {
-            "description": "An unexpected error response",
+            "description": "An unexpected error response.",
             "schema": {
               "$ref": "#/definitions/runtimeError"
             }
@@ -128,7 +128,7 @@
             "schema": {}
           },
           "default": {
-            "description": "An unexpected error response",
+            "description": "An unexpected error response.",
             "schema": {
               "$ref": "#/definitions/runtimeError"
             }
@@ -168,7 +168,7 @@
             "schema": {}
           },
           "default": {
-            "description": "An unexpected error response",
+            "description": "An unexpected error response.",
             "schema": {
               "$ref": "#/definitions/runtimeError"
             }
@@ -218,7 +218,7 @@
             "schema": {}
           },
           "default": {
-            "description": "An unexpected error response",
+            "description": "An unexpected error response.",
             "schema": {
               "$ref": "#/definitions/runtimeError"
             }
@@ -342,6 +342,9 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "details": {
+          "type": "string"
         }
       }
     },
@@ -411,8 +414,22 @@
         },
         "destination": {
           "type": "string"
+        },
+        "facets": {
+          "type": "boolean"
+        },
+        "qType": {
+          "$ref": "#/definitions/queryQueryType"
         }
       }
+    },
+    "queryQueryType": {
+      "type": "string",
+      "enum": [
+        "Search",
+        "Fetch"
+      ],
+      "default": "Search"
     },
     "querySysLogMessage": {
       "type": "object",

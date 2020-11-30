@@ -17,8 +17,9 @@ limitations under the License.
 package services
 
 import (
-	"github.com/logiqai/logiqctl/grpc_utils"
 	"time"
+
+	"github.com/logiqai/logiqctl/grpc_utils"
 
 	"github.com/logiqai/logiqctl/api/v1/query"
 	"github.com/logiqai/logiqctl/utils"
@@ -41,6 +42,7 @@ func Query(applicationName, searchTerm, procId string, lastSeen int64) (string, 
 	in := &query.QueryProperties{
 		Namespace: utils.GetDefaultNamespace(),
 		PageSize:  utils.GetPageSize(),
+		QType:     query.QueryType_Fetch,
 	}
 
 	in.StartTime = utils.GetStartTime(lastSeen).Format(time.RFC3339)
@@ -60,6 +62,7 @@ func Query(applicationName, searchTerm, procId string, lastSeen int64) (string, 
 
 	if searchTerm != "" {
 		in.KeyWord = searchTerm
+		in.QType = query.QueryType_Search
 	}
 
 	queryResponse, err := client.Query(grpc_utils.GetGrpcContext(), in)
