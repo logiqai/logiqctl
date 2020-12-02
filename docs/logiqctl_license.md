@@ -14,7 +14,7 @@ With this command, the user can view or apply a license.
 ```
 
 Upload your LOGIQ deployment license
-- logiqctl license set -l=license.jws
+- logiqctl license set -f license.jws
 
 View License information
  - logiqctl license get 

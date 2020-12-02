@@ -29,10 +29,13 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Update this before publishing the release!!!
+var currentReleaseVersion = "2.0.3"
+
 var rootCmd = &cobra.Command{
 	Short:   "Logiqctl - CLI for Logiq Observability stack",
 	Use:     "logiqctl [flags] [options]",
-	Version: "2.0.0",
+	Version: currentReleaseVersion,
 	Long: `
 The LOGIQ command line toolkit, logiqctl, allows you to run commands against LOGIQ Observability stack. 
 - Real-time streaming of logs
@@ -96,7 +99,7 @@ func initConfig() {
 			return
 		}
 		viper.SetConfigFile(cfgFile)
-		viper.Set("logiqctl", "v.2.0.0")
+		viper.Set("logiqctl", currentReleaseVersion)
 		viper.Set(utils.LineBreaksKey, false)
 		viper.WriteConfig()
 	} else {

@@ -17,7 +17,7 @@ func SetLicense() error {
 		fmt.Println("Missing license file")
 		return fmt.Errorf("Missing license file")
 	} else {
-		//fmt.Println("license file:", utils.FlagFile)
+		fmt.Println("license file:", utils.FlagFile)
 		if fileBytes, err := ioutil.ReadFile(utils.FlagFile); err != nil {
 			fmt.Println(err.Error())
 			return err
@@ -39,7 +39,6 @@ func SetLicense() error {
 				fmt.Println("License applied successfully!")
 				printLicense(license)
 				return nil
-
 			}
 		}
 	}

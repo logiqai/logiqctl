@@ -13,7 +13,7 @@ logiqctl license set [flags]
 ### Examples
 
 ```
-logiqctl license set -l=<license-file-path>
+logiqctl license set -f <license-file-path>
 ```
 
 ### Options

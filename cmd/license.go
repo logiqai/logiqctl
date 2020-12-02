@@ -24,7 +24,7 @@ import (
 
 var licenseExample = `
 Upload your LOGIQ deployment license
-- logiqctl license set -l=license.jws
+- logiqctl license set -f license.jws
 
 View License information
  - logiqctl license get 
@@ -65,7 +65,7 @@ func NewGetLicenseCommand() *cobra.Command {
 func NewSetLicenseCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set",
-		Example: "logiqctl license set -l=<license-file-path>",
+		Example: "logiqctl license set -f <license-file-path>",
 		Aliases: []string{},
 		Short:   "Configure license for LOGIQ deployment",
 		PreRun:  utils.PreRun,

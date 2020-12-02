@@ -274,69 +274,71 @@ func createAndPublishDashboardSpec(dashboardSpec map[string]interface{}) {
 	}
 
 	// We now create the dashboard
-	dashboardParams := dashboardSpec["dashboard"].(map[string]interface{})
+	if _, dashboardExists := dashboardSpec["dashboard"]; dashboardExists {
+		dashboardParams := dashboardSpec["dashboard"].(map[string]interface{})
 
-	if existingDashboard := getDashboardByName(dashboardParams["name"].(string)); existingDashboard != nil {
-		fmt.Println("Dashboard already exists ", dashboardParams["name"])
-		os.Exit(0)
-		dashboardParams["id"] = existingDashboard["id"]
-	} else {
-		respDict, err := createAndPublishDashboard(dashboardParams["name"].(string))
-		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(-1)
-		}
-		dashboardParams["id"] = respDict["id"]
-	}
-
-	// We will now create the queries and visualizations
-	widgets := dashboardSpec["widgets"]
-	for _, w := range widgets.([]interface{}) {
-		widget := w.(map[string]interface{})
-		visualization := widget["visualization"].(map[string]interface{})
-		q := visualization["query"].(map[string]interface{})
-		dsIdLookupKey := fmt.Sprintf("%d", (int)(q["data_source_id"].(float64)))
-		dsIdForQuery := dataSources[dsIdLookupKey].(map[string]interface{})["id"]
-		q["data_source_id"] = dsIdForQuery
-
-		var isDraft bool
-
-		if existingQuery := getQueryByName(q["name"].(string)); existingQuery == nil {
-			if respDict, err := createQuery(q); err != nil {
-				fmt.Println("Failed creating query,", q)
+		if existingDashboard := getDashboardByName(dashboardParams["name"].(string)); existingDashboard != nil {
+			fmt.Println("Dashboard already exists ", dashboardParams["name"])
+			os.Exit(0)
+			dashboardParams["id"] = existingDashboard["id"]
+		} else {
+			respDict, err := createAndPublishDashboard(dashboardParams["name"].(string))
+			if err != nil {
+				fmt.Println(err.Error())
 				os.Exit(-1)
-			} else {
-				q["id"] = respDict["id"]
-				q["version"] = respDict["version"]
-				isDraft = respDict["is_draft"].(bool)
 			}
-		} else {
-			fmt.Println("Query with name already exists ", q["name"])
-			q["id"] = existingQuery["id"]
-			q["version"] = existingQuery["version"]
-			isDraft = existingQuery["is_draft"].(bool)
+			dashboardParams["id"] = respDict["id"]
 		}
 
-		if isDraft {
-			publishArgs := []string{fmt.Sprintf("%v", q["id"]), fmt.Sprintf("%v", q["version"])}
-			//fmt.Println(publisArgs)
-			publishQuery(publishArgs)
-		}
+		// We will now create the queries and visualizations
+		widgets := dashboardSpec["widgets"]
+		for _, w := range widgets.([]interface{}) {
+			widget := w.(map[string]interface{})
+			visualization := widget["visualization"].(map[string]interface{})
+			q := visualization["query"].(map[string]interface{})
+			dsIdLookupKey := fmt.Sprintf("%d", (int)(q["data_source_id"].(float64)))
+			dsIdForQuery := dataSources[dsIdLookupKey].(map[string]interface{})["id"]
+			q["data_source_id"] = dsIdForQuery
 
-		// Create the visualization for the widget/query
-		// The visualization is attached to
-		if respDict, err := createVisualization(visualization, q["id"]); err != nil {
-			fmt.Println(err.Error())
-			os.Exit(-1)
-		} else {
-			q["visualization_id"] = respDict["id"]
+			var isDraft bool
 
-			// The visualization is ready, lets add to the dashboard
-			if _, err := createWidget(widget, q["visualization_id"], dashboardParams["id"]); err != nil {
+			if existingQuery := getQueryByName(q["name"].(string)); existingQuery == nil {
+				if respDict, err := createQuery(q); err != nil {
+					fmt.Println("Failed creating query,", q)
+					os.Exit(-1)
+				} else {
+					q["id"] = respDict["id"]
+					q["version"] = respDict["version"]
+					isDraft = respDict["is_draft"].(bool)
+				}
+			} else {
+				fmt.Println("Query with name already exists ", q["name"])
+				q["id"] = existingQuery["id"]
+				q["version"] = existingQuery["version"]
+				isDraft = existingQuery["is_draft"].(bool)
+			}
+
+			if isDraft {
+				publishArgs := []string{fmt.Sprintf("%v", q["id"]), fmt.Sprintf("%v", q["version"])}
+				//fmt.Println(publisArgs)
+				publishQuery(publishArgs)
+			}
+
+			// Create the visualization for the widget/query
+			// The visualization is attached to
+			if respDict, err := createVisualization(visualization, q["id"]); err != nil {
 				fmt.Println(err.Error())
 				os.Exit(-1)
 			} else {
-				fmt.Println("Added visualization to dashboards ", visualization["name"])
+				q["visualization_id"] = respDict["id"]
+
+				// The visualization is ready, lets add to the dashboard
+				if _, err := createWidget(widget, q["visualization_id"], dashboardParams["id"]); err != nil {
+					fmt.Println(err.Error())
+					os.Exit(-1)
+				} else {
+					fmt.Println("Added visualization to dashboards ", visualization["name"])
+				}
 			}
 		}
 	}
