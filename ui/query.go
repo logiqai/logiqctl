@@ -172,7 +172,6 @@ func printQueryResult(args []string) {
 		rows := em.Get("rows")
 		columns := em.Get("columns")
 		s, _ := json.MarshalIndent(*v, "", "    ")
-		fmt.Println(rows, columns)
 		if utils.FlagOut == "json" {
 			fmt.Println(string(s))
 		} else if utils.FlagOut == "table" {
