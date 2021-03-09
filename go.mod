@@ -7,6 +7,7 @@ go 1.12
 require (
 	github.com/alecthomas/gometalinter v3.0.0+incompatible // indirect
 	github.com/dustin/go-humanize v1.0.0
+	github.com/ghodss/yaml v1.0.0
 	github.com/golang/protobuf v1.4.2
 	github.com/gordonklaus/ineffassign v0.0.0-20190601041439-ed7b1b5ee0f8 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.15.0

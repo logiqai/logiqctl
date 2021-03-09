@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/ghodss/yaml"
+	"github.com/logiqai/easymap"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
@@ -12,6 +14,8 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 )
 
 func NewListQueriesCommand() *cobra.Command {
@@ -29,6 +33,20 @@ func NewListQueriesCommand() *cobra.Command {
 			printQuery(args)
 		},
 	}
+	cmd.AddCommand(&cobra.Command{
+		Use:     "result",
+		Example: "logiqctl get query result|q <query-result-id>",
+		Aliases: []string{"q"},
+		Short:   "Get a query result",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				fmt.Println("Missing query result id")
+				os.Exit(-1)
+			}
+			printQueryResult(args)
+		},
+	})
 	cmd.AddCommand(&cobra.Command{
 		Use:     "all",
 		Example: "logiqctl get query all",
@@ -78,8 +96,117 @@ func createQuery(qyerySpec map[string]interface{}) (map[string]interface{}, erro
 
 func printQuery(args []string) {
 	if v, vErr := getQuery(args); v != nil {
+		query := (*v)
 		s, _ := json.MarshalIndent(*v, "", "    ")
-		fmt.Println(string(s))
+		if utils.FlagOut == "json" {
+			fmt.Println(string(s))
+		} else if utils.FlagOut == "table" {
+			table := tablewriter.NewWriter(os.Stdout)
+			table.SetHeader([]string{"Name", "Data source Id", "Id", "Latest query result Id", "Archived", "Draft"})
+			dataSourceId := (int)(query["data_source_id"].(float64))
+			name := query["name"].(string)
+			isArchived := query["is_archived"].(bool)
+			isDraft := query["is_draft"].(bool)
+			id := (int)(query["id"].(float64))
+			lastRun := ""
+			if lrId, lrIdOk := query["latest_query_data_id"]; lrIdOk {
+				lastRun = fmt.Sprintf("%d",(int)(lrId.(float64)))
+			}
+			table.Append([]string{name, fmt.Sprintf("%d", dataSourceId),
+				fmt.Sprintf("%d", id), fmt.Sprintf("%s",lastRun),
+				fmt.Sprintf("%v", isArchived),
+				fmt.Sprintf("%v", isDraft),
+			})
+			table.Render()
+		} else if utils.FlagOut == "yaml" {
+			a, yamlErr := yaml.Marshal(v)
+			if yamlErr != nil {
+				fmt.Errorf("Error converting to YAML")
+			} else {
+				fmt.Println(string(a))
+			}
+		}
+	} else {
+		fmt.Println(vErr.Error())
+		os.Exit(-1)
+	}
+}
+
+func getQueryResult(args []string) (*map[string]interface{}, error) {
+	uri := GetUrlForResource(ResourceQueryResult, args...)
+	client := getHttpClient()
+	req, err := http.NewRequest("GET",uri, nil)
+	if err != nil {
+		fmt.Println("Unable to get query ", err.Error())
+		os.Exit(-1)
+	}
+	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
+	}
+
+	if resp, err := client.Do(req); err == nil {
+		defer resp.Body.Close()
+		var v = map[string]interface{}{}
+		if resp.StatusCode == http.StatusOK {
+			bodyBytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, fmt.Errorf("Unable to fetch queries, Error: %s", err.Error())
+			}
+			err = json.Unmarshal(bodyBytes, &v)
+			if err != nil {
+				return nil, fmt.Errorf("Unable to decode queries, Error: %s", err.Error())
+			} else {
+				return &v, nil
+			}
+		} else {
+			return nil, fmt.Errorf("Http response error, Error: %d", resp.StatusCode)
+		}
+	} else {
+		return nil, fmt.Errorf("Unable to fetch queries, Error: %s", err.Error())
+	}
+}
+
+func printQueryResult(args []string) {
+	if v, vErr := getQueryResult(args); v != nil {
+		em := (easymap.EasyMap)(*v)
+		rows := em.Get("rows")
+		columns := em.Get("columns")
+		s, _ := json.MarshalIndent(*v, "", "    ")
+		fmt.Println(rows, columns)
+		if utils.FlagOut == "json" {
+			fmt.Println(string(s))
+		} else if utils.FlagOut == "table" {
+			table := tablewriter.NewWriter(os.Stdout)
+			th := []string{}
+			for _, colDetails := range columns["query_result.data.columns"].([]interface{}) {
+				c := colDetails.(map[string]interface{})
+				th = append(th, c["friendly_name"].(string))
+			}
+			table.SetHeader(th)
+			for _, rowDetails := range rows["query_result.data.rows"].([]interface{}) {
+				r := rowDetails.(map[string]interface{})
+				rvals := []string{}
+				for _, key := range th {
+					if strings.ToLower(key) == "timestamp" {
+						if v, vOk := r[key].(float64); vOk {
+							t := time.Unix((int64)(v/1000),0)
+							rvals = append(rvals, t.String() )
+						}
+					} else {
+						rvals = append(rvals, fmt.Sprintf("%v", r[key]))
+					}
+				}
+				table.Append(rvals)
+			}
+			table.Render()
+		} else if utils.FlagOut == "yaml" {
+			a, yamlErr := yaml.Marshal(v)
+			if yamlErr != nil {
+				fmt.Errorf("Error converting to YAML")
+			} else {
+				fmt.Println(string(a))
+			}
+		}
 	} else {
 		fmt.Println(vErr.Error())
 		os.Exit(-1)

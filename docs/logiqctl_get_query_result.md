@@ -1,25 +1,25 @@
-## logiqctl get query
+## logiqctl get query result
 
-Get a query
+Get a query result
 
 ### Synopsis
 
-Get a query
+Get a query result
 
 ```
-logiqctl get query [flags]
+logiqctl get query result [flags]
 ```
 
 ### Examples
 
 ```
-logiqctl get query|q <query-id>
+logiqctl get query result|q <query-result-id>
 ```
 
 ### Options
 
 ```
-  -h, --help   help for query
+  -h, --help   help for result
 ```
 
 ### Options inherited from parent commands
@@ -35,7 +35,5 @@ logiqctl get query|q <query-id>
 
 ### SEE ALSO
 
-* [logiqctl get](logiqctl_get.md)	 - Display one or many resources
-* [logiqctl get query all](logiqctl_get_query_all.md)	 - List all the available queries
-* [logiqctl get query result](logiqctl_get_query_result.md)	 - Get a query result
+* [logiqctl get query](logiqctl_get_query.md)	 - Get a query
 

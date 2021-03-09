@@ -19,6 +19,7 @@ const (
 	ResourceWidget           Resource = iota
 	ResourceWidgetAll        Resource = iota
 	ResourceJWTToken         Resource = iota
+	ResourceQueryResult Resource = iota
 )
 
 type UriProtocol int
