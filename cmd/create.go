@@ -14,8 +14,8 @@ import (
 
 var createCmd = &cobra.Command{
 	Use:   "create <resource_name>",
-	Short: "Create a resource",
-	Long:  `Creates a resource from a resource specification`,
+	Short: "Create a LOGIQ resource",
+	Long:  `This command helps you create LOGIQ resources such as dashboards and event rules from a resource specification.`,
 	Example: `
 Create a dashboard
 logiqctl create dashboard -f <path to dashboard_spec_file.json>
@@ -36,7 +36,7 @@ func NewCreateEventRulesCommand() *cobra.Command {
 		Use:     "eventrules",
 		Example: "logiqctl create eventrules -f <path to event rules file>",
 		Aliases: []string{"eventrule", "er"},
-		Short:   "Create event rules",
+		Short:   "Create an event rule",
 		PreRun:  utils.PreRunWithNs,
 		Run: func(cmd *cobra.Command, args []string) {
 			if utils.FlagFile == "" {

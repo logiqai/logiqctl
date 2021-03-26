@@ -30,13 +30,13 @@ import (
 // getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get <resource_name>",
-	Short: "Display one or many resources",
-	Long:  `Prints a table of the most important information about the specified resources`,
+	Short: "Display one or more of your LOGIQ resources",
+	Long:  `Prints a table that displays the most important information about the LOGIQ resource you specify.`,
 	Example: `
 List all applications for the selected context
 logiqctl get applications
 
-List all applications for all the available context
+List all applications for all available contexts
 logiqctl get applications all
 
 List all dashboards
@@ -48,7 +48,7 @@ logiqctl get dashboard dashboard-slug
 List events for the available namespace
 logiqctl get events
 
-List events for all the available namespaces
+List events for all available namespaces
 logiqctl get events all
 
 List or export eventrules
@@ -116,7 +116,7 @@ func NewListNameSpaceCommand() *cobra.Command {
 		Use:     "namespaces",
 		Example: "logiqctl get namespaces|ns|n",
 		Aliases: []string{"n", "ns"},
-		Short:   "List the available namespaces",
+		Short:   "List all available namespaces",
 		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.ListNamespaces()
@@ -131,7 +131,7 @@ func NewListApplicationsCommand() *cobra.Command {
 		Use:     "applications",
 		Example: "logiqctl get applications|apps|a",
 		Aliases: []string{"a", "apps"},
-		Short:   "List all the available applications in default namespace",
+		Short:   "List all available applications within the default namespace",
 		PreRun:  utils.PreRunWithNs,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.GetApplicationsV2(false)
@@ -140,7 +140,7 @@ func NewListApplicationsCommand() *cobra.Command {
 	cmd.AddCommand(&cobra.Command{
 		Use:     "all",
 		Example: "logiqctl get applications all",
-		Short:   "List all the available applications across namespaces",
+		Short:   "List all available applications across namespaces",
 		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.GetApplicationsV2(true)
@@ -161,7 +161,7 @@ List events by application
 
 `,
 		Aliases: []string{"ev"},
-		Short:   "List all the available events for the namespace",
+		Short:   "List all available events for the namespace",
 		PreRun:  utils.PreRunWithNs,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.GetEvents(application, process)
@@ -177,7 +177,7 @@ func NewListProcessesCommand() *cobra.Command {
 		Use:     "processes",
 		Example: "logiqctl get processes|proc|p",
 		Aliases: []string{"p", "proc"},
-		Short:   "List all the available processes, runs an interactive prompt to select applications",
+		Short:   "List all available processes. This command runs an interactive prompt that lets you choose an application from a list of available applications.",
 		PreRun:  utils.PreRunWithNs,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.ListProcesses()
