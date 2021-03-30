@@ -19,8 +19,13 @@ The quickest way to start using `logiqctl` is to download a pre-built binary fro
 Once you've downloaded the binary, you can configure `logiqctl` to interact with your LOGIQ instance by doing the following:
 1. Set your cluster URL:
     ```
-    logiqctl config set-cluster CLUSTER_URL
+    logiqctl config set-cluster <CLUSTER_URL>
     ```
+1. Set the API token:
+    ```
+    logiqctl config set-token <LOGIQ_API_KEY>
+    ```
+    **Note:** If you don't have a LOGIQ API key, read [Obtaining API Key](https://docs.logiq.ai/vewing-logs/logiqctl/obtaining-api-key) to learn how to obtain one. 
 1. Set your LOGIQ credentials:
     ```
     logiqctl config set-ui-credential flash-userid password
