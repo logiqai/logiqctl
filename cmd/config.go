@@ -35,17 +35,17 @@ import (
 // configCmd represents the config command
 var configCmd = &cobra.Command{
 	Use:   "config SUBCOMMAND",
-	Short: "Modify logiqctl configuration options",
+	Short: "Modify your logiqctl configuration.",
 	Long: `
-Configure  LOGIQ CLI (logiqctl) options. To get token see https://docs.logiq.ai/vewing-logs/logiqctl/obtaining-api-key
+The 'logiqctl config' command lets you configure your LOGIQ CLI. If this is your first time configuring logiqctl, you'll need an API token in order to use this command. To know how to generate an API token, read https://docs.logiq.ai/vewing-logs/logiqctl/obtaining-api-key.
 
-Note: The values you provide will be written to the config file located at (~/.logiqctl)
+Note: The values you provide during configuration will be written to the configuration file located at (~/.logiqctl)
 `,
 	Example: `
 View current context
 	logiqctl config view
 
-Runs an interactive prompt and let user configure
+Runs an interactive prompt that lets you configure logiqctl
 	logiqctl config init
 
 Set default cluster
@@ -54,10 +54,10 @@ Set default cluster
 Set default context
 	logiqctl config set-context namespace
 
-Runs an interactive prompt and let user select namespace from the list
+Runs an interactive prompt and lets you select a namespace from a list of namespaces
 	logiqctl config set-context i
 
-Set token
+Set API token
 	logiqctl config set-token api_token
 `,
 }
@@ -83,7 +83,7 @@ func NewSetConfigInitCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "init",
 		Example: "logiqctl config init",
-		Short:   "Interactive configuration command",
+		Short:   "Configure logiqctl interactively",
 		Run: func(cmd *cobra.Command, args []string) {
 			clusterPrompt := promptui.Prompt{
 				Label:    "Enter cluster endpoint ",
@@ -135,9 +135,9 @@ func NewCredentialsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set-credential",
 		Example: "logiqctl set-credential login password",
-		Short:   "Sets logiq credentials",
+		Short:   "Set your LOGIQ user credentials",
 		Long: `
-Sets the cluster credentials, valid credential is required for all the operations.
+This command lets you set your LOGIQ user credentials. You'll need valid user credentials in order to access all operations.
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 2 {
@@ -162,9 +162,9 @@ func NewUiTokenCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set-token",
 		Example: "logiqctl set-token api_token",
-		Short:   "Sets a logiq ui api token",
+		Short:   "Set your LOGIQ API token",
 		Long: `
-Sets the cluster UI api token, a valid logiq cluster end point is also required for all the operations
+This command lets you set your LOGIQ API token. You'll need a valid LOGIQ cluster endpoint in order to complete all operations. 
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 1 {
@@ -188,9 +188,9 @@ func NewSetClusterCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "set-cluster",
 		Example: "logiqctl set-cluster END-POINT",
-		Short:   "Sets the logiq cluster end-point",
+		Short:   "Set your LOGIQ platform endpoint",
 		Long: `
-Sets the cluster, a valid logiq cluster endpoint is required for all the operations
+This command lets you set your LOGIQ cluster endpoint. You'll need a valid LOGIQ cluster endpoint in order to complete all operations. 
 		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 1 {
@@ -214,7 +214,10 @@ Sets the cluster, a valid logiq cluster endpoint is required for all the operati
 func NewViewCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "view",
-		Short: "View current defaults",
+		Short: "View your current logiqctl configuration.",
+		Long: `
+This command lets you view your current logiqctl configuration. 
+		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			printCluster()
 			printNamespace()
@@ -229,7 +232,7 @@ func NewSetContextCommand() *cobra.Command {
 		Example: "set-context <namespace name>",
 		Short:   "Sets the default context or namespace.",
 		Long: `
-A context or namespace is required for all the logiqctl operations. To override the default namespace for individual command use flag '-n'. 
+All logiqctl operations require a context or namespace. To override the default namespace set for an individual command, use the flag '-n'. 
 		`,
 		PreRun: utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -253,7 +256,10 @@ func NewInteractiveSetContextCommand() *cobra.Command {
 	var interactiveCmd = &cobra.Command{
 		Use:     "interactive",
 		Aliases: []string{"i"},
-		Short:   `Runs an interactive prompt and let user select namespace from the list`,
+		Short:   `Run an interactive prompt that lets you select a namespace from a list.`,
+		Long: `
+This command lets you set a default context interactively. Running 'logiqctl config set-context interactive' brings up an interactive list of namespaces from which you can select a namespace and set a context.
+		`,
 		Run: func(cmd *cobra.Command, args []string) {
 			selectedNs, err := services.RunSelectNamespacePrompt(false)
 			if err != nil {

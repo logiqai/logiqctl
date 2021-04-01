@@ -37,17 +37,15 @@ var rootCmd = &cobra.Command{
 	Use:     "logiqctl [flags] [options]",
 	Version: currentReleaseVersion,
 	Long: `
-The LOGIQ command line toolkit, logiqctl, allows you to run commands against LOGIQ Observability stack. 
-- Real-time streaming of logs
-- Query historical application logs 
-- Search your log data.
-- View Events
-- Manage Dashboards
-- Create event rules
-- Manage license
-
-
-Find more information at: https://docs.logiq.ai/logiqctl/logiq-box
+LOGIQ comes with an inbuilt command-line toolkit that lets you interact with the LOGIQ Observability platform without logging into the UI. Using logiqctl, you can:
+- Stream logs in real-time
+- Query historical application logs
+- Search within logs across namespaces
+- Query and view events across your LOGIQ stack
+- View and create event rules
+- Create and manage dashboards
+- Query and view all your resources on LOGIQ such as applications, dashboards, namespaces, processes, and queries
+- Manage LOGIQ licenses
 
 `,
 }
@@ -64,9 +62,9 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagOut, "output", "o", "table", `Output format. One of: table|json|yaml. 
-json output is not indented, use '| jq' for advanced json operations`)
+JSON output is not indented, use '| jq' for advanced JSON operations`)
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagTimeFormat, "time-format", "t", "relative", `Time formatting options. One of: relative|epoch|RFC3339. 
-This is only applicable when the output format is table. json and yaml outputs will have time in epoch seconds.`)
+This is only applicable when the output format is table. JSON and YAML outputs will have time in epoch seconds.`)
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagNamespace, "namespace", "n", "", "Override the default context set by `logiqctl set-context' command")
 	rootCmd.PersistentFlags().StringVarP(&utils.FlagCluster, "cluster", "c", "", "Override the default cluster set by `logiqctl set-cluster' command")
 	// Here you will define your flags and configuration settings.
