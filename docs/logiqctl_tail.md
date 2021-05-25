@@ -24,7 +24,9 @@ Tail logs
 ### Options
 
 ```
-  -h, --help   help for tail
+  -f, --file string         Path to file
+  -h, --help                help for tail
+  -m, --max-file-size int   Max output file size (default 10)
 ```
 
 ### Options inherited from parent commands

@@ -18,6 +18,9 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/logiqai/logiqctl/utils"
 
 	"github.com/logiqai/logiqctl/services"
 
@@ -58,9 +61,19 @@ The 'logiqctl tail' command is similar to the 'tail -f' command. It allows you t
 		} else {
 			appName = "*"
 		}
-		fmt.Println("Crunching data for you...")
+		if utils.FlagFile != "" {
+			if _, err := os.Stat(utils.FlagFile); err == nil {
+				fmt.Printf("File %s exists\n", utils.FlagFile)
+				os.Exit(1)
+			}
+			if f, err := os.Create(utils.FlagFile); err != nil {
+				fmt.Printf("Cannot create file: %s\n", utils.FlagFile)
+				os.Exit(1)
+			} else {
+				f.Close()
+			}
+		}
 		services.Tail(appName, procId, labelsArray)
-
 		return
 	},
 }
@@ -68,7 +81,8 @@ The 'logiqctl tail' command is similar to the 'tail -f' command. It allows you t
 func init() {
 
 	rootCmd.AddCommand(tailCmd)
+	tailCmd.Flags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
+	tailCmd.Flags().IntVarP(&utils.FlagMaxFileSize, "max-file-size", "m", 10, "Max output file size")
 	//tailCmd.Flags().StringVarP(&process, "process", "p", "", `Filter logs by process id`)
 	//tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by label`)
-
 }

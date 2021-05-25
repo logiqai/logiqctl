@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/manifoldco/promptui"
 
@@ -17,6 +18,7 @@ type templateType int
 
 var templateTypeProcess templateType = 0
 var templateTypeApplication templateType = 1
+var once sync.Once
 
 func GetTemplateForType(tType templateType) *promptui.SelectTemplates {
 	var template = &promptui.SelectTemplates{
@@ -41,11 +43,11 @@ type SelectDisplay struct {
 }
 
 const (
-	FMT = "%-24s | %-9s | %-16s | %-16s | %-16s | %-16s | %s\n"
+	FMT = "%-24s | %-9s | %-16s | %-16s | %-16s | %s\n"
 )
 
 func printSyslogHeader() {
-	fmt.Printf(FMT, "Timestamp", "Level", "Namespace", "Application", "Process/Pod", "Facility", "Log message")
+	fmt.Printf(FMT, "Timestamp", "Level", "Namespace", "Application", "Process/Pod", "Log message")
 }
 
 func printSyslogMessage(logMap map[string]interface{}, output string) {
@@ -57,11 +59,9 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 			logMap["namespace"],
 			logMap["app_name"],
 			logMap["proc_id"],
-			logMap["facility_string"],
 			logMap["message"],
 		)
 	} else if output == OUTPUT_JSON {
-
 		v, err := json.Marshal(logMap)
 		if err == nil {
 			fmt.Printf("%s\n", v)
@@ -70,13 +70,12 @@ func printSyslogMessage(logMap map[string]interface{}, output string) {
 			os.Exit(-1)
 		}
 	} else {
-		fmt.Printf("%s %9s %s %s %s %s %s",
+		fmt.Printf("%s %9s %s %s %s %s",
 			logMap["timestamp"],
 			logMap["severity_string"],
 			logMap["namespace"],
 			logMap["app_name"],
 			logMap["proc_id"],
-			logMap["facility_string"],
 			logMap["message"],
 		)
 		if !strings.HasSuffix(logMap["message"].(string), "\n") {

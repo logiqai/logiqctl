@@ -19,9 +19,11 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/logiqai/logiqctl/grpc_utils"
 	"io"
+	"os"
 	"strings"
+
+	"github.com/logiqai/logiqctl/grpc_utils"
 
 	"github.com/logiqai/logiqctl/utils"
 
@@ -129,6 +131,21 @@ func Tail(appName, procId string, tL []string) error {
 	if output == OUTPUT_COLUMNS {
 		printSyslogHeader()
 	}
+	var f *os.File
+	var writeToFile bool
+	if utils.FlagFile != "" {
+		once.Do(func() {
+			writeToFile = true
+			if fTmp, err := os.OpenFile(utils.FlagFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600); err != nil {
+				fmt.Printf("1 Unable to write to file: %s \n", err.Error())
+				os.Exit(1)
+			} else {
+				f = fTmp
+				fmt.Printf("Writing output to %s\n", utils.FlagFile)
+			}
+		})
+		defer f.Close()
+	}
 	for {
 		response, err := stream.Recv()
 		if err == io.EOF {
@@ -143,11 +160,35 @@ func Tail(appName, procId string, tL []string) error {
 		if err != nil {
 			log.Print("Cannot read payload, this should not happen!")
 		}
-
 		if isMatch(logMap) {
-			printSyslogMessage(logMap, output)
+			if writeToFile {
+				line := fmt.Sprintf("%s %s %s %s %s %s",
+					logMap["timestamp"],
+					logMap["severity_string"],
+					logMap["namespace"],
+					logMap["app_name"],
+					logMap["proc_id"],
+					logMap["message"],
+				)
+				if strings.HasSuffix(line, "\n") {
+					line = strings.ReplaceAll(line, "\n", "")
+				}
+				line = fmt.Sprintf("%s\n", line)
+				if _, err := f.WriteString(line); err != nil {
+					fmt.Printf("Cannot write file: %s\n", err.Error())
+					os.Exit(1)
+				}
+				if stat, err := os.Stat(utils.FlagFile); err == nil {
+					if stat.Size() > int64(utils.FlagMaxFileSize*1048576) {
+						fmt.Printf("Max file size reached. Control file size using -m\n")
+						_ = stream.CloseSend()
+						os.Exit(1)
+					}
+				}
+			} else {
+				printSyslogMessage(logMap, output)
+			}
 		}
-
 	}
 	return nil
 }
