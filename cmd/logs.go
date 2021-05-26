@@ -1,25 +1,23 @@
-/*
-Copyright © 2020 Logiq.ai <cli@logiq.ai>
+// Package cmd
+//Copyright © 2020 Logiq.ai <cli@logiq.ai>
+//
+//Licensed under the Apache License, Version 2.0 (the "License");
+//you may not use this file except in compliance with the License.
+//You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+//Unless required by applicable law or agreed to in writing, software
+//distributed under the License is distributed on an "AS IS" BASIS,
+//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//See the License for the specific language governing permissions and
+//limitations under the License.
+//
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package cmd
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/manifoldco/promptui"
 
 	"github.com/logiqai/logiqctl/utils"
 
@@ -72,37 +70,13 @@ var logsCmd = &cobra.Command{
 		if utils.FlagProcId != "" {
 			proc, err := services.GetProcessByApplicationAndProc(args[0], utils.FlagProcId)
 			handleError(err)
-			query(args[0], "", proc.ProcID, proc.LastSeen)
+			services.DoQuery(args[0], "", proc.ProcID, proc.LastSeen)
 			return
 		}
 		app, err := services.GetApplicationByName(args[0])
 		handleError(err)
-		query(args[0], "", "", app.LastSeen)
+		services.DoQuery(args[0], "", "", app.LastSeen)
 	},
-}
-
-func query(appName, searchTerm, procId string, lastSeen int64) {
-	queryId, err := services.Query(appName, searchTerm, procId, lastSeen)
-	handleError(err)
-	if queryId != "" {
-		for {
-			prompt := promptui.Prompt{
-				Label:     "View More ",
-				IsConfirm: true,
-			}
-
-			result, _ := prompt.Run()
-			if strings.ToLower(result) == "y" {
-				hasMoreData, err := services.GetDataNext(queryId)
-				handleError(err)
-				if !hasMoreData {
-					break
-				}
-			} else {
-				break
-			}
-		}
-	}
 }
 
 var interactiveCmd = &cobra.Command{
@@ -116,7 +90,7 @@ var interactiveCmd = &cobra.Command{
 		handleError(err)
 		fmt.Printf("You could also run this directly `logiqctl logs -p=%s %s`\n", proc.ProcID, app.Name)
 		fmt.Printf("Fetching logs for %s (namespace), %s (application) and %s (process)\n\n", utils.GetDefaultNamespace(), app.Name, proc.ProcID)
-		query(app.Name, "", proc.ProcID, proc.LastSeen)
+		services.DoQuery(app.Name, "", proc.ProcID, proc.LastSeen)
 	},
 }
 
@@ -133,7 +107,7 @@ var searchCmd = &cobra.Command{
 		}
 		app, err := services.RunSelectApplicationForNamespacePrompt(false)
 		handleError(err)
-		query(app.Name, args[0], "", -1)
+		services.DoQuery(app.Name, args[0], "", app.LastSeen)
 	},
 }
 
@@ -148,4 +122,6 @@ fraction and a unit suffix, such as "3h34m", "1.5h" or "24h". Valid time units a
 	rootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(interactiveCmd)
 	logsCmd.AddCommand(searchCmd)
+	logsCmd.PersistentFlags().StringVarP(&utils.FlagFile, "write-to-file", "w", "", "Path to file")
+	logsCmd.PersistentFlags().IntVarP(&utils.FlagMaxFileSize, "max-file-size", "m", 10, "Max output file size")
 }

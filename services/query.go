@@ -17,6 +17,9 @@ limitations under the License.
 package services
 
 import (
+	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/logiqai/logiqctl/grpc_utils"
@@ -32,10 +35,10 @@ const (
 	OUTPUT_JSON    = "json"
 )
 
-func Query(applicationName, searchTerm, procId string, lastSeen int64) (string, error) {
+func postQuery(applicationName, searchTerm, procId string, lastSeen int64) (string, query.QueryServiceClient, error) {
 	conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 	client := query.NewQueryServiceClient(conn)
 
@@ -44,8 +47,21 @@ func Query(applicationName, searchTerm, procId string, lastSeen int64) (string, 
 		PageSize:  utils.GetPageSize(),
 		QType:     query.QueryType_Fetch,
 	}
-
-	in.StartTime = utils.GetStartTime(lastSeen).Format(time.RFC3339)
+	var st time.Time
+	if lastSeen > 0 {
+		st = utils.GetStartTime(lastSeen)
+	} else {
+		st = time.Now().UTC()
+	}
+	in.StartTime = st.Format(time.RFC3339)
+	if utils.FlagLogsSince != "" {
+		d, err := time.ParseDuration(utils.FlagLogsSince)
+		if err != nil {
+			fmt.Printf("Unable to parse duration %s\n", utils.FlagLogsSince)
+			os.Exit(1)
+		}
+		in.EndTime = st.Add(-1 * d).Format(time.RFC3339)
+	}
 
 	if applicationName != "" {
 		in.ApplicationNames = []string{applicationName}
@@ -67,69 +83,79 @@ func Query(applicationName, searchTerm, procId string, lastSeen int64) (string, 
 
 	queryResponse, err := client.Query(grpc_utils.GetGrpcContext(), in)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
-	var hasData bool
-	for {
-		if !hasData {
-			time.Sleep(time.Second)
-		}
-		dataResponse, err := client.GetDataNext(grpc_utils.GetGrpcContext(), &query.GetDataRequest{
-			QueryId: queryResponse.QueryId,
-		})
-		if err != nil {
-			return "", err
-		}
-		if len(dataResponse.Data) > 0 {
-			hasData = true
-		}
-		for _, entry := range dataResponse.Data {
-			if utils.FlagOut == "json" {
-				printSyslogMessageForType(entry, OUTPUT_JSON)
-			} else {
-				printSyslogMessageForType(entry, OUTPUT_RAW)
-			}
-			time.Sleep(20 * time.Millisecond)
-		}
-		if dataResponse.Remaining <= 0 && dataResponse.Status == "COMPLETE" {
-			return "", err
-		}
-		if !utils.FlagLogsFollow {
-			return queryResponse.QueryId, err
-		}
-	}
-	return "", nil
+	return queryResponse.QueryId, client, nil
 }
 
-func GetDataNext(queryId string) (bool, error) {
-	conn, err := grpc.Dial(utils.GetClusterUrl(), grpc.WithInsecure())
+func handleError(err error) {
 	if err != nil {
-		return false, err
+		fmt.Printf("Error Occured: %s", err.Error())
+		os.Exit(-1)
 	}
-	client := query.NewQueryServiceClient(conn)
-	var hasData bool
-	for {
-		if !hasData {
-			time.Sleep(time.Second)
+}
+
+func DoQuery(appName, searchTerm, procId string, lastSeen int64) {
+	queryId, client, err := postQuery(appName, searchTerm, procId, lastSeen)
+	handleError(err)
+	if queryId != "" {
+		var f *os.File
+		var writeToFile bool
+		if utils.FlagFile != "" {
+			once.Do(func() {
+				writeToFile = true
+				if fTmp, err := os.OpenFile(utils.FlagFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600); err != nil {
+					fmt.Printf("1 Unable to write to file: %s \n", err.Error())
+					os.Exit(1)
+				} else {
+					f = fTmp
+					fmt.Printf("Writing output to %s\n", utils.FlagFile)
+				}
+			})
+			defer f.Close()
 		}
-		dataResponse, err := client.GetDataNext(grpc_utils.GetGrpcContext(), &query.GetDataRequest{
-			QueryId: queryId,
-		})
-		if err != nil {
-			return false, err
-		}
-		if len(dataResponse.Data) > 0 {
-			hasData = true
-		}
-		for _, entry := range dataResponse.Data {
-			printSyslogMessageForType(entry, "raw")
-			time.Sleep(20 * time.Millisecond)
-		}
-		if dataResponse.Remaining <= 0 && dataResponse.Status == "COMPLETE" {
-			return false, err
-		}
-		if !utils.FlagLogsFollow {
-			return true, err
+		for {
+			response, err := client.GetDataNext(grpc_utils.GetGrpcContext(), &query.GetDataRequest{
+				QueryId: queryId,
+			})
+			if err != nil {
+				handleError(err)
+			}
+			if len(response.Data) > 0 {
+				for _, entry := range response.Data {
+					if writeToFile {
+						line := fmt.Sprintf("%s %s %s %s - %s",
+							entry.Timestamp,
+							entry.SeverityString,
+							entry.FacilityString,
+							entry.ProcID,
+							entry.Message,
+						)
+						if strings.HasSuffix(line, "\n") {
+							line = strings.ReplaceAll(line, "\n", "")
+						}
+						line = fmt.Sprintf("%s\n", line)
+						if _, err := f.WriteString(line); err != nil {
+							fmt.Printf("Cannot write file: %s\n", err.Error())
+							os.Exit(1)
+						}
+						if stat, err := os.Stat(utils.FlagFile); err == nil {
+							if stat.Size() > int64(utils.FlagMaxFileSize*1048576) {
+								fmt.Printf("Max file size reached. Control file size using -m\n")
+								os.Exit(1)
+							}
+						}
+					} else {
+						PrintSyslogMessageForType(entry, "raw")
+						time.Sleep(20 * time.Millisecond)
+					}
+				}
+			} else {
+				if response.Remaining <= 0 && response.Status == "COMPLETE" {
+					os.Exit(0)
+				}
+				time.Sleep(2 * time.Second)
+			}
 		}
 	}
 }

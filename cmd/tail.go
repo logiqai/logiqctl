@@ -81,7 +81,7 @@ The 'logiqctl tail' command is similar to the 'tail -f' command. It allows you t
 func init() {
 
 	rootCmd.AddCommand(tailCmd)
-	tailCmd.Flags().StringVarP(&utils.FlagFile, "file", "f", "", "Path to file")
+	tailCmd.Flags().StringVarP(&utils.FlagFile, "write-to-file", "w", "", "Path to file")
 	tailCmd.Flags().IntVarP(&utils.FlagMaxFileSize, "max-file-size", "m", 10, "Max output file size")
 	//tailCmd.Flags().StringVarP(&process, "process", "p", "", `Filter logs by process id`)
 	//tailCmd.Flags().StringVarP(&labels, "labels", "l", "", `Filter logs by label`)
