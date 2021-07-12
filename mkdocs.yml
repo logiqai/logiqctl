@@ -53,6 +53,9 @@ extra_css:
 
 
 nav:
+  - Versions: 
+    - latest: https://logiqctl.netlify.app/
+    - 2.0.0: https://logiqctl.netlify.app/2.0.0/
   - logiqctl: index.md
   - config:
     - logiqctl config: config/logiqctl_config.md
