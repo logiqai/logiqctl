@@ -1,0 +1,97 @@
+site_name: logiqctl - Command-line tool for the LOGIQ Platform
+site_url: https://logiqctl.logiq.ai/
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: pink
+      accent: pink
+  logo: media/logiq-white.png
+  favicon: media/favicon.png
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.instant
+    - navigation.top 
+  static_templates:
+    - 404.html
+  include_search_page: false
+  search_index_only: true
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - attr_list
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+plugins:
+  - search:
+      separator: '[\s\-\.]+'
+      prebuild_index: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/logiqai
+      name: Fork LOGIQ on GitHub
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/logiq_ai
+      name: Follow LOGIQ on Twitter
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/channel/UCknndR4L6qUZdHq0L7H3Zlg
+      name: Watch LOGIQ videos on YouTube
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/logiq-ai/
+      name: Join LOGIQ on LinkedIn
+
+extra_css:
+  - extra/styles.css
+
+
+nav:
+  - logiqctl: index.md
+  - config:
+    - logiqctl config: config/logiqctl_config.md
+    - logiqctl config init: config/logiqctl_config_init.md
+    - logiqctl config set-cluster: config/logiqctl_config_set-cluster.md
+    - logiqctl config set-context: config/logiqctl_config_set-context.md
+    - logiqctl config set-context interactive: config/logiqctl_config_set-context_interactive.md
+    - logiqctl config set-credential: config/logiqctl_config_set-credential.md
+    - logiqctl config set-token: config/logiqctl_config_set-token.md
+    - logiqctl config view: config/logiqctl_config_view.md
+  - create:
+    - logiqctl create: create/logiqctl_create.md
+    - logiqctl create dashboard: create/logiqctl_create_dashboard.md
+    - logiqctl create eventrules: create/logiqctl_create_eventrules.md
+  - get:
+    - logiqctl get: get/logiqctl_get.md
+    - logiqctl get applications: get/logiqctl_get_applications.md
+    - logiqctl get applications_all: get/logiqctl_get_applications_all.md
+    - logiqctl get dashboard: get/logiqctl_get_dashboard.md
+    - logiqctl get dashboard all: get/logiqctl_get_dashboard_all.md
+    - logiqctl get datasource: get/logiqctl_get_datasource.md
+    - logiqctl get datasource all: get/logiqctl_get_datasource_all.md
+    - logiqctl get eventrules: get/logiqctl_get_eventrules.md
+    - logiqctl get eventrules all: get/logiqctl_get_eventrules_all.md
+    - logiqctl get eventrules groups: get/logiqctl_get_eventrules_groups.md
+    - logiqctl get events: get/logiqctl_get_events.md
+    - logiqctl get namespaces: get/logiqctl_get_namespaces.md
+    - logiqctl get processes: get/logiqctl_get_processes.md
+    - logiqctl get query: get/logiqctl_get_query.md
+    - logiqctl get query all: get/logiqctl_get_query_all.md
+  - license:
+    - logiqctl license: license/logiqctl_license.md
+    - logiqctl license get: license/logiqctl_license_get.md
+    - logiqctl license set: license/logiqctl_license_set.md
+  - logs: 
+    - logiqctl logs: logs/logiqctl_logs.md
+    - logiqctl logs interactive: logs/logiqctl_logs_interactive.md
+    - logiqctl logs search: logs/logiqctl_logs_search.md
+  - tail:
+    - logiqctl tail: tail/logiqctl_tail.md
+
+
