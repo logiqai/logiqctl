@@ -360,7 +360,7 @@ func create_tq(mode int) {
 
 	}
 
-	// fmt.Println("tq=", tq)
+	// fmt.Println("debug tq=", tq)
 
 }
 
@@ -531,20 +531,22 @@ func postQuery(ti int,
 			in.IsAdvanceQuery = false
 		}
 
-		if (ti!=-1) {
-			var sst string
-			if ti==(len(tq)-2) {
-				sst = timeFormat(tq[ti+1])
-			} else {
-				ttmp:=tq[ti+1]
-				sst = timeFormat( ttmp.Add(time.Duration(-1*1000000000)))
-			}
-			in.StartTime = sst
-			in.EndTime = timeFormat(tq[ti])
+	}
+	if (ti != -1) {
+		var sst string
+		if ti == (len(tq) - 2) {
+			sst = timeFormat(tq[ti+1])
+		} else {
+			ttmp := tq[ti+1]
+			sst = timeFormat(ttmp.Add(time.Duration(-1 * 1000000000)))
 		}
+
+		in.StartTime = sst
+		in.EndTime = timeFormat(tq[ti])
+		// fmt.Println("here 33 ti:", ti, "  sst=", sst, "   in.EndTime", in.EndTime)
 	}
 
-	// fmt.Println("here 34 st:", in.StartTime, " et:", in.EndTime, "  appName=", applicationName, "  ti=", ti)
+	// fmt.Println("here 34 st:", in.StartTime, " et:", in.EndTime, "  appName=", applicationName, "  ti=", ti, "searh=", in.KeyWord)
 
 	queryResponse, err := client.Query(grpc_utils.GetGrpcContext(), in)
 	if err != nil {
@@ -728,10 +730,11 @@ func DoQuery(ti int, appName, searchTerm, procId string, lastSeen int64) {
 					}
 
 					if utils.FlagFile != "" {
-						line := fmt.Sprintf("%s %s %s %s - %s",
+						line := fmt.Sprintf("%s %s %s %s %s :: %s",
 							entry.Timestamp,
 							pp,
 							entry.SeverityString,
+							entry.AppName,
 							entry.ProcID,
 							entry.Message,
 						)

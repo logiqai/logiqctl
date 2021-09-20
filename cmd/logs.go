@@ -17,12 +17,11 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
+	applications2 "github.com/logiqai/logiqctl/api/v1/applications"
 	"github.com/logiqai/logiqctl/loglerpart"
 	"github.com/logiqai/logiqctl/services"
 	"github.com/logiqai/logiqctl/utils"
-	applications2 "github.com/logiqai/logiqctl/api/v1/applications"
 	"github.com/spf13/cobra"
 )
 
@@ -80,19 +79,55 @@ var logsCmd = &cobra.Command{
 	Long:    logsLong,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		/* // the condition was removed because logs take similar
+	       // argument as search
 		if utils.FlagBegTime != "" ||
 			utils.FlagEndTime != "" ||
 			utils.FlagLogsSince != "" {
 			err := errors.New("Invalid arguments specified -b, -e, or -s is used\n     Default logs dump period is set at 1 hour from current\n")
 			utils.HandleError(err)
 			return
-		}
+		} */
+
 
 		if utils.FlagEnablePsmod {
 			loglerpart.CheckPsmod()
 			loglerpart.Init(currentReleaseVersion)
 		}
 
+	// use search gut
+
+		fmt.Println("   BegTime: ", utils.FlagBegTime)
+		fmt.Println("   EndTime: ", utils.FlagEndTime)
+		fmt.Println("     Since: ", utils.FlagLogsSince)
+
+		if utils.FlagEnablePsmod {
+			loglerpart.CheckPsmod()
+			loglerpart.Init(currentReleaseVersion)
+		}
+
+		var hasApp bool
+		var hasMultipleApps bool
+		var hasProc bool
+		var applicationV2s []*applications2.ApplicationV2
+
+		services.FindApps(&hasApp, &hasMultipleApps, &hasProc, &applicationV2s)
+
+		// output to file if any
+		go services.WriteFile()
+
+		// if !utils.FlagEnableSerial
+		if false {
+
+			// parallelize here
+			services.ParallelSearch(cmd.UsageString(), "",
+				&hasApp, &hasMultipleApps, &hasProc, &applicationV2s)
+		} else {
+			services.SerialSearch(cmd.UsageString(), "",
+				&hasApp, &hasMultipleApps, &hasProc, &applicationV2s)
+		}
+
+		/*
 		hasApp := false
 		hasProc := false
 		if utils.FlagProcId != "" {
@@ -115,7 +150,7 @@ var logsCmd = &cobra.Command{
 			return
 		}
 
-
+		*/
 
 		if utils.FlagEnablePsmod {
 			loglerpart.DumpCurrentPsStat("ps_stat")
@@ -178,7 +213,7 @@ var searchCmd = &cobra.Command{
 	Short:   `Search logs for specific keywords or terms.`,
 	Long:    `Search for specific keywords or terms in logs within a namespace, app, proc`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("SearchArgs: ", args)
+		fmt.Println("SearchArgs: ", args[0])
 		fmt.Println("   BegTime: ", utils.FlagBegTime)
 		fmt.Println("   EndTime: ", utils.FlagEndTime)
 		fmt.Println("     Since: ", utils.FlagLogsSince)
