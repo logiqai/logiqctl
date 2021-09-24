@@ -271,6 +271,7 @@ func SerialSearch(cmdusage string, args0 string, hasApp *bool, hasMultipleApps *
 				utils.HandleError(err)
 				DoQuery(0, (*applicationV2s)[0].Name, args0, proc.ProcID, proc.LastSeen)
 			} else if *hasApp {
+				fmt.Println("here 10")
 				DoQuery(0, (*applicationV2s)[0].Name, args0, "", (*applicationV2s)[0].LastSeen)
 			} else {
 				fmt.Println(cmdusage)
@@ -546,6 +547,18 @@ func postQuery(ti int,
 		// fmt.Println("here 33 ti:", ti, "  sst=", sst, "   in.EndTime", in.EndTime)
 	}
 
+	//in.StartTime = utils.GetTimeAsString(lastSeen)
+	//in.EndTime= utils.GetTimeAsString(lastSeen-60*60)
+	tm := time.Unix(lastSeen, 0)
+	in.StartTime = tm.Format(time.RFC3339)
+	//in.StartTime = fmt.Sprint(tm.UTC())
+	ttm := tm.Add(-1*1000000000*60*60*24)
+	in.EndTime = ttm.Format(time.RFC3339)
+	//in.EndTime = fmt.Sprint(ttm.UTC())
+	//in.StartTime= timeFormat(tm)
+	//in.EndTime= timeFormat(tm.Add(-1*1000000000*60*60))
+	fmt.Println("   BegTime: ", in.StartTime)
+	fmt.Println("   EndTime: ", in.EndTime)
 	// fmt.Println("here 34 st:", in.StartTime, " et:", in.EndTime, "  appName=", applicationName, "  ti=", ti, "searh=", in.KeyWord)
 
 	queryResponse, err := client.Query(grpc_utils.GetGrpcContext(), in)
