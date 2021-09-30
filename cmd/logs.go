@@ -213,6 +213,12 @@ var searchCmd = &cobra.Command{
 	Short:   `Search logs for specific keywords or terms.`,
 	Long:    `Search for specific keywords or terms in logs within a namespace, app, proc`,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		if len(args) != 1 {
+			fmt.Println(cmd.Usage())
+			return
+		}
+
 		fmt.Println("SearchArgs: ", args[0])
 		fmt.Println("   BegTime: ", utils.FlagBegTime)
 		fmt.Println("   EndTime: ", utils.FlagEndTime)
@@ -221,11 +227,6 @@ var searchCmd = &cobra.Command{
 		if utils.FlagEnablePsmod {
 			loglerpart.CheckPsmod()
 			loglerpart.Init(currentReleaseVersion)
-		}
-
-		if len(args) != 1 {
-			fmt.Println(cmd.Usage())
-			return
 		}
 
 		var hasApp bool
