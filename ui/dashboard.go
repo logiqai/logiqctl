@@ -89,18 +89,23 @@ func exportDashboard(args []string) {
 		dashboard := *dashboardPtr
 
 		/* json dump exercise
-		fmt.Println("dashboard=<", dashboard, ">")
+		// fmt.Println("dashboard=<", dashboard, ">")
 		v, err := json.Marshal(dashboard)
 		if (err!=nil) {
-			fmt.Println("error=", err)
+			fmt.Println("exportDashboard error=", err)
+			os.Exit(1)
 		} else {
 			fmt.Println("no error found")
 		}
 		fmt.Println("v=<", string(v), ">")
 		gg := map[string]interface{}{}
 		_ = json.Unmarshal(v, &gg)
-		fmt.Println("dashboard_json=<", gg, ">")
-		*/
+	    */
+
+		/* print all dashboard get
+		s, _ := json.MarshalIndent(dashboard, "", "    ")
+		fmt.Println("dashboard_json=<", string(s), ">")
+		 */
 
 		dashboardParams := map[string]interface{}{}
 		dashboardParams["name"] = dashboard["name"]
@@ -150,6 +155,7 @@ func exportDashboard(args []string) {
 							"description":    query["description"],
 							"data_source_id": query["data_source_id"],
 							"query":          query["query"],
+							"schedule":       query["schedule"],
 						},
 					}
 					widgetOut = append(widgetOut, wOutEntry)
@@ -176,7 +182,7 @@ func exportDashboard(args []string) {
 
 func GetDashboard(args []string) (*map[string]interface{}, error) {
 
-
+	// fmt.Println("enter GetDashboard()\n")
 
 	uri := GetUrlForResource(ResourceDashboardsGet, args...)
 	client := getHttpClient()
@@ -204,6 +210,7 @@ func GetDashboard(args []string) (*map[string]interface{}, error) {
 			if err != nil {
 				return nil, fmt.Errorf("Unable to decode dashboard, Error: %s", err.Error())
 			} else {
+				//fmt.Println("GetDashboard <", v, ">")
 				return &v, nil
 			}
 		} else {
@@ -427,6 +434,7 @@ func getDashboardByName(name string) map[string]interface{} {
 }
 
 func GetDashboards() (map[string]interface{}, error) {
+
 	uri := GetUrlForResource(ResourceDashboardsAll)
 	client := getHttpClient()
 
@@ -454,6 +462,7 @@ func GetDashboards() (map[string]interface{}, error) {
 			if err != nil {
 				return nil, fmt.Errorf("Unable to decode dashboards, Error: %s", err.Error())
 			} else {
+
 				return v, nil
 			}
 		} else {
