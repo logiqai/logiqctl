@@ -80,6 +80,8 @@ One can also export dashboards created using "logiqctl get dashboard" command an
 	return cmd
 }
 
+var print_all_json=false
+
 func exportDashboard(args []string) {
 	dashboardOut := map[string]interface{}{}
 
@@ -102,14 +104,22 @@ func exportDashboard(args []string) {
 		_ = json.Unmarshal(v, &gg)
 	    */
 
-		/* print all dashboard get
-		s, _ := json.MarshalIndent(dashboard, "", "    ")
-		fmt.Println("dashboard_json=<", string(s), ">")
-		 */
+		if print_all_json {
+			/* print all dashboard get */
+			s, _ := json.MarshalIndent(dashboard, "", "    ")
+			fmt.Println("dashboard_json=<", string(s), ">")
+		}
 
 		dashboardParams := map[string]interface{}{}
 		dashboardParams["name"] = dashboard["name"]
 		dashboardParams["tags"] = dashboard["tags"]
+		dashboardParams["layout"] = dashboard["layout"]
+		//dashboardParams["is_draft"] = dashboard["is_draft"]
+		//dashboardParams["can_edit"] = dashboard["can_edit"]
+		//dashboardParams["dashboard_filters_enabled"] = dashboard["dashboard_filters_enabled"]
+		//dashboardParams["is_archived"] = dashboard["is_archived"]
+		//dashboardParams["is_favorite"] = dashboard["is_favorite"]
+
 		dashboardOut["dashboard"] = dashboardParams
 
 		widgets := dashboard["widgets"].([]interface{})
@@ -156,6 +166,7 @@ func exportDashboard(args []string) {
 							"data_source_id": query["data_source_id"],
 							"query":          query["query"],
 							"schedule":       query["schedule"],
+							"tags":           query["tags"],
 						},
 					}
 					widgetOut = append(widgetOut, wOutEntry)
@@ -188,7 +199,7 @@ func GetDashboard(args []string) (*map[string]interface{}, error) {
 	client := getHttpClient()
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
-		fmt.Println("Unable to get dashboards ", err.Error())
+		fmt.Println("GetDashboard: Unable to get dashboards ", err.Error())
 		os.Exit(-1)
 	}
 
@@ -214,7 +225,7 @@ func GetDashboard(args []string) (*map[string]interface{}, error) {
 				return &v, nil
 			}
 		} else {
-			return nil, fmt.Errorf("Http response error, Error: %d", resp.StatusCode)
+			return nil, fmt.Errorf("GetDashboard: Http response error, Error: %d", resp.StatusCode)
 		}
 	} else {
 		return nil, fmt.Errorf("Unable to fetch dashboard, Error: %s", err.Error())
@@ -234,7 +245,7 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 		client := getHttpClient()
 		req, err := http.NewRequest("POST", uri, bytes.NewBuffer(payloadBytes))
 		if err != nil {
-			fmt.Println("Unable to get dashboards ", err.Error())
+			fmt.Println("createAndPublishDashboard: Unable to get dashboards ", err.Error())
 			os.Exit(-1)
 		}
 		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
@@ -400,7 +411,8 @@ func createAndPublishDashboardSpec(dashboardSpec map[string]interface{}) {
 						fmt.Println(err.Error())
 						os.Exit(-1)
 					}
-					fmt.Println("Added visualize widgets to dashboards ", visualization["name"])
+
+					// fmt.Println("Added visualize widgets to dashboards ", visualization["name"])
 
 				}
 			} else {
@@ -413,8 +425,9 @@ func createAndPublishDashboardSpec(dashboardSpec map[string]interface{}) {
 		}
 	}
 
-	//b, _ := json.MarshalIndent(dashboardSpec,"","    ")
-	//fmt.Println((string)(b))
+	fmt.Println("uploaded dashboardSpec")
+	b, _ := json.MarshalIndent(dashboardSpec,"","    ")
+	fmt.Println((string)(b))
 }
 
 func getDashboardByName(name string) map[string]interface{} {
@@ -440,7 +453,7 @@ func GetDashboards() (map[string]interface{}, error) {
 
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
-		fmt.Println("Unable to get dashboards ", err.Error())
+		fmt.Println("GetDashboards: Unable to get dashboards ", err.Error())
 		os.Exit(-1)
 	}
 
@@ -466,7 +479,7 @@ func GetDashboards() (map[string]interface{}, error) {
 				return v, nil
 			}
 		} else {
-			return nil, fmt.Errorf("Http response error with get dashboards, Error: %d", resp.StatusCode)
+			return nil, fmt.Errorf("Http response error with GetDashboards, Error: %d", resp.StatusCode)
 		}
 	} else {
 		return nil, fmt.Errorf("Unable to fetch dashboards, Error: %s", err.Error())

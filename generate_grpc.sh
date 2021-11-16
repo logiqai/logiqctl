@@ -1,5 +1,7 @@
 # #!/bin/sh
 
+# protoc -I ./proto --go-grpc_out=. --go_out=. --grpc-gateway_out=allow_delete_body=true:. --openapiv2_opt allow_delete_body=true --openapiv2_out=./openapi ./proto/myapp.proto 
+
 # set -x
 printf  "⚡ Enabling  GO111MODULE  support \n"
 export GO111MODULE=on
@@ -20,6 +22,6 @@ for filename in $(find ./api/proto -name '*.proto' );do \
     -I$(go list -f '{{ .Dir }}' -m github.com/grpc-ecosystem/grpc-gateway)/third_party/googleapis \
     -I${GOPATH}/src \
     --go_out=plugins=grpc:${GOPATH}/src \
-    --grpc-gateway_out=logtostderr=true:${GOPATH}/src \
-    --swagger_out=logtostderr=true:api/swagger/ \
+    --grpc-gateway_out=logtostderr=true,allow_delete_body=true:"${GOPATH}"/src \
+    --swagger_out=logtostderr=true,allow_delete_body=true:api/swagger/ \
 ${filename};done

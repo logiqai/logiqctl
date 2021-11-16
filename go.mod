@@ -30,7 +30,9 @@ require (
 	github.com/spf13/viper v1.4.0
 	github.com/tatsushid/go-prettytable v0.0.0-20141013043238-ed2d14c29939
 	github.com/zenthangplus/goccm v0.0.0-20200608171100-39e9e08b694a
-	google.golang.org/genproto v0.0.0-20210909211513-a8c4777a87af
+	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
+	golang.org/x/tools v0.1.5 // indirect
+	google.golang.org/genproto v0.0.0-20211112145013-271947fe86fd
 	google.golang.org/grpc v1.40.0
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect

@@ -40,6 +40,8 @@ func PreRunWithNs(cmd *cobra.Command, args []string) {
 	if ns == "" {
 		fmt.Println("Context is not set, run logiqctl config set-context")
 		os.Exit(1)
+	} else {
+		// fmt.Println("ns=", ns)
 	}
 }
 func HandleError(err error) {

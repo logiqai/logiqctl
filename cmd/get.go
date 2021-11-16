@@ -88,13 +88,13 @@ func init() {
 
 func getMappersCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "mappers",
-		Example: "logiqctl get mappers",
-		Aliases: []string{"mappers"},
-		Short:   "Get logflow log mappers",
+		Use:     "mappings",
+		Example: "logiqctl get mappings",
+		Aliases: []string{"mappings"},
+		Short:   "Get logflow log forward mappings",
 		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("getMappersCommand - coming soon")
+			services.ListMappings()
 		},
 	}
 	return cmd
@@ -107,7 +107,7 @@ func getForwardsCommand() *cobra.Command {
 		Short:   "Get logflow log forwards",
 		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("getforwardsCommand - comming soon")
+			services.ListForwards()
 		},
 	}
 	return cmd
@@ -220,7 +220,8 @@ func NewGetEventRulesCommand() *cobra.Command {
 		Example: "logiqctl get eventrule",
 		Aliases: []string{"eventrule", "er"},
 		Short:   "List event rules",
-		PreRun:  utils.PreRunWithNs,
+		//PreRun:  utils.PreRunWithNs,
+		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			help := `Usage:
 logiqctl get eventrules all
@@ -238,7 +239,8 @@ logiqctl get eventrules groups -g=group1,group2,... -w filename.json
 		Example: "logiqctl get eventrules all",
 		Aliases: []string{},
 		Short:   "List all event rules",
-		PreRun:  utils.PreRunWithNs,
+		//PreRun:  utils.PreRunWithNs,
+		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.GetEventRules(args, nil)
 		},
@@ -249,7 +251,8 @@ logiqctl get eventrules groups -g=group1,group2,... -w filename.json
 		Example: "logiqctl get eventrules all",
 		Aliases: []string{},
 		Short:   "List all event rules",
-		PreRun:  utils.PreRunWithNs,
+		//PreRun:  utils.PreRunWithNs,
+		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.GetEventRuleGroups(args)
 		},
