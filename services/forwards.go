@@ -138,6 +138,7 @@ func ListMappings() {
 	if response != nil && len(response.Mappings) > 0 {
 		if !utils.PrintResponse(response) {
 			tbl, err := prettytable.NewTable([]prettytable.Column{
+				{Header: "fwd_id"},
 				{Header: "name"},
 				{Header: "namespace"},
 				{Header: "application"},
@@ -159,7 +160,7 @@ func ListMappings() {
 				create := fwf["createts"]
 				update := fwf["updatets"]
 
-				tbl.AddRow(name, namespace.GetStringValue(), application.GetStringValue(),
+				tbl.AddRow(id, name, namespace.GetStringValue(), application.GetStringValue(),
 					utils.GetTimeAsString(int64(create.GetNumberValue())),
 					utils.GetTimeAsString(int64(update.GetNumberValue())))
 
