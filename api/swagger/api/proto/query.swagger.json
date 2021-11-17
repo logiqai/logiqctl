@@ -594,6 +594,10 @@
         },
         "size": {
           "$ref": "#/definitions/queryProgress"
+        },
+        "responsePageSize": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

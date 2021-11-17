@@ -98,6 +98,8 @@ message NamespaceRequest {
     uint64 page = 1;
     uint64 size = 2;
     string destination = 3;
+    uint64 lastSeenStartTime = 4;
+    uint64 lastSeenEndTime = 5;
 }
 
 

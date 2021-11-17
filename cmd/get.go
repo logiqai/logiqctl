@@ -101,10 +101,10 @@ func getMappersCommand() *cobra.Command {
 }
 func getForwardsCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "forwards",
-		Example: "logiqctl get forwards",
+		Use:     "forwarders",
+		Example: "logiqctl get forwarders",
 		Aliases: []string{"forwards"},
-		Short:   "Get logflow log forwards",
+		Short:   "Get logflow log forwarders",
 		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			services.ListForwards()

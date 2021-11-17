@@ -37,7 +37,7 @@ func ListForwards() {
 	if response != nil && len(response.Configs) > 0 {
 		if !utils.PrintResponse(response) {
 			tbl, err := prettytable.NewTable([]prettytable.Column{
-				{Header: "id"},
+				{Header: "fwd_id"},
 				{Header: "name"},
 				{Header: "schema"},
 				{Header: "config"},
@@ -155,12 +155,19 @@ func ListMappings() {
 				fwf := fw.Fields
 				id := fmt.Sprintf("%v", fwf["id"].GetNumberValue())
 				name := ffmap[id]
-				namespace := fwf["namespace"]
-				application:= fwf["application"]
+				namespace := fwf["namespace"].GetStringValue()
+				application:= fwf["application"].GetStringValue()
 				create := fwf["createts"]
 				update := fwf["updatets"]
 
-				tbl.AddRow(id, name, namespace.GetStringValue(), application.GetStringValue(),
+				if namespace=="-1"	{
+					namespace="*"
+				}
+				if application=="-1" {
+					application="*"
+				}
+
+				tbl.AddRow(id, name, namespace, application,
 					utils.GetTimeAsString(int64(create.GetNumberValue())),
 					utils.GetTimeAsString(int64(update.GetNumberValue())))
 

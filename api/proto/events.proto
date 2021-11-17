@@ -4,6 +4,7 @@ package events;
 
 import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "github.com/logiqai/logiqctl/api/v1/events;events";
 
@@ -52,6 +53,7 @@ message Event {
 	string procId = 11;
     string namespace = 12;
     string destination = 13;
+    string groupName = 14;
 }
 
 message EventsResponse {
@@ -71,6 +73,7 @@ message EventsFilter {
     repeated string appName = 7;
     repeated string procId = 8;
     repeated string namespace = 9;
+    repeated string groupNames = 10;
 }
 
 enum SortOrderEnums {
@@ -94,6 +97,13 @@ message EventsPostRequest {
     string destination = 7;
 }
 
+message EventGroupsResponse {
+    repeated string groupNames = 1;
+}
+
+
+
+
 service EventsService {
     rpc GetEvents(EventsPostRequest) returns (EventsResponse) {
         option (google.api.http) = {
@@ -105,4 +115,27 @@ service EventsService {
             tags : "events"
         };
     };
+
+    rpc CreateEvent(Event) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v1/events"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description : "Create events"
+            tags : "events"
+        };
+    };
+
+    rpc GetEventGroups(google.protobuf.Empty) returns (EventGroupsResponse) {
+        option (google.api.http) = {
+            get: "/v1/events/groups"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description : "Get event groups"
+            tags : "events"
+        };
+    };
+
+    
 }

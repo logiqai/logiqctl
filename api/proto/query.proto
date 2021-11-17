@@ -165,6 +165,7 @@ message GetDataResponse {
     repeated Facet facets = 4;
     Progress percent = 6;
     Progress size = 7;
+    int32 responsePageSize = 8;
 }
 
 message ReportGroupBy {

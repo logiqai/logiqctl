@@ -6,163 +6,315 @@ import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/empty.proto";
 
+
 option go_package = "github.com/logiqai/logiqctl/api/v1/eventRules;eventRules";
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-    info : {
-        title : "EventRules";
-        version: "1.0";
-};
+  info : {
+    title : "EventRules";
+    version: "1.0";
+  };
 
-schemes:HTTP;
-schemes:HTTPS;
-consumes:"application/json";
-produces:"application/json";
+  schemes:HTTP;
+  schemes:HTTPS;
+  consumes:"application/json";
+  produces:"application/json";
 
-responses:{
+  responses:{
     key:"400";
-        value:{
-            description:"Invalid Request."
-        }
+    value:{
+      description:"Invalid Request."
     }
-    responses:{
-        key:"403";
-        value:{
-            description:"Token Expired."
-        }
+  }
+  responses:{
+    key:"403";
+    value:{
+      description:"Token Expired."
     }
-    responses:{
-        key:"404";
-        value:{
-            description:"Returned when the resource does not exist."
-        }
+  }
+  responses:{
+    key:"404";
+    value:{
+      description:"Returned when the resource does not exist."
     }
+  }
 };
+
+
+enum MetricType {
+  NOVAL = 0;
+  GAUGE = 1;
+  COUNTER = 2;
+  HISTOGRAM = 3;
+}
+
+message EventMetric {
+  string name = 1;
+  MetricType type = 2;
+  string targetField = 3;
+  string fieldType = 4;
+  string plotType = 5;
+  bool regex = 6;
+  PatternLabel patternLabel = 7;
+  string uniqueHash = 8;
+}
+
+
+message PatternLabel {
+  string pattern = 1;
+  // string matchedPattern = 2;
+  repeated string matchedNames = 3;
+}
 
 message EventRule {
-    string name = 1;
-    string description = 2;
-    string level = 3;
-    string condition = 4;
-    // map<string,string> extract = 5;
-    string groupName = 6;
-    int32 active = 7; // used as boolean 0 to inactive and 1 to active
-    int32 immutable = 8; // used as boolean 0 for mutable and 1 to immutable
-    string ruleType = 9; // possible values {"REGEX", "EVALUATE"} Dectates how to apply rule to logline.
-    string applicationMatch = 10;
+  string name = 1;
+  string description = 2;
+  string level = 3;
+  string condition = 4;
+  string match = 20;
+  string rewrite = 21;
+  // map<string,string> extract = 5;
+  string groupName = 6;
+  int32 active = 7; // used as boolean 0 to inactive and 1 to active
+  int32 immutable = 8; // used as boolean 0 for mutable and 1 to immutable
+  string ruleType = 9; // possible values {"REGEX", "EVALUATE"} Dectates how to apply rule to logline.
+  string applicationMatch = 10;
+  int32 alertConfigured = 11;
+  int32 recordMetricsOnly = 12; // used as boolean, if 1 only record the event counter with prometheus and NOT store event in db
+  repeated EventMetric eventMetrics = 13;
+  repeated string additionalLabels = 14;
+  repeated PatternLabel patternLabels = 15;
+  repeated string tags = 16;
+  int64 createdAt = 17;
+  string createdBy = 18;
+  string extRuleType = 19;
+  // repeated string additionalAlerts = 15; // this is added to delete configured alerts on queries
+  // repeated string  queriesCreated = 16; // this is added to track all the queries created, so that we can delete them from prometheus later
+  // string dashboard = 17; // if there is graph ploted, get the dashboard name
 }
 
 message EventRulesResponse {
-    int64 offset = 1;
-    int64 count = 2;
-    int64 total_count = 3;
-    repeated EventRule eventRules = 4;
+  int64 offset = 1;
+  int64 count = 2;
+  int64 total_count = 3;
+  repeated EventRule eventRules = 4;
 }
 
 message EventRulesResponseResult {
-     string error = 1;
+  string error = 1;
 }
 
 message EventRulesFilter {
-    repeated string names = 1;
-    string search = 2;
-    repeated string level = 3;
-    repeated string groupNames = 4;
-    int32 active = 5; // used as boolean 0 to inactive and 1 to active 
-    int32 immutable = 6; // used as boolean 0 for mutable and 1 to immutable 
+  repeated string names = 1;
+  string search = 2;
+  repeated string level = 3;
+  repeated string groupNames = 4;
+  int32 active = 5; // used as boolean 0 to inactive and 1 to active
+  int32 immutable = 6; // used as boolean 0 for mutable and 1 to immutable
+  repeated string tags = 7;
+  repeated string createdBy = 8;
+  string extRuleType = 10;
+  string ruleType = 11;
+  bool customRules = 12;
 }
 
 enum SortOrderEnums {
-    UNKNOWN = 0;
-    ASC = 1;
-    DESC = 2;
+  UNKNOWN = 0;
+  ASC = 1;
+  DESC = 2;
 }
 
 message SortOrder {
-    string attribute = 1;
-    SortOrderEnums order = 2;
+  string attribute = 1;
+  SortOrderEnums order = 2;
 }
 
 message EventRulesQueryRequest {
-    uint64 offset = 1;
-    uint64 count = 2;
-    EventRulesFilter filter = 3;
-    SortOrder sort = 4;
+  uint64 offset = 1;
+  uint64 count = 2;
+  EventRulesFilter filter = 3;
+  SortOrder sort = 4;
 }
 
 message EventRulesGroupResponse {
-    repeated string groupNames = 1;
+  repeated string groupNames = 1;
+}
+
+message GetEventRuleByNameRequest{
+  string name = 1;
 }
 
 message ProcessEventRuleByNameRequest{
-    string name = 1;
+  string name = 1;
 }
 
 message EventRuleGroupActiveConfig{
-    string groupName = 1;
-    int32 active = 2; // used as boolean 0 to inactive and 1 to active 
+  string groupName = 1;
+  int32 active = 2; // used as boolean 0 to inactive and 1 to active
 }
 
+message TestEventRulePayload{
+  string ruleType = 1;
+  string condition = 2;
+  map<string, string> params = 3;
+}
+
+message TestEventRuleResponse{
+  string result = 1;
+}
+
+
+message Sequence {
+  uint64 id = 1;
+}
+
+
+message EventRuleExistsRequest {
+  string name = 1;
+}
+
+message EventRuleExistsResponse {
+  bool exists = 1;
+
+}
+
+
+message EventSequenceResponse {
+  Sequence sequence = 1;
+}
+
+
+message CheckDuplicateConditionRequest {
+  // string condition = 1;
+  map<string, string> rule_object = 2;
+}
+
+
+message CheckDuplicateConditionResponse {
+  bool exists = 1;
+  string hash = 2;
+  string name = 3;
+}
+
+
 service EventRulesService {
-    rpc GetEventRuleGroups(google.protobuf.Empty) returns (EventRulesGroupResponse) {
-        option (google.api.http) = {
-            get: "/v1/eventRules/groups"
-        };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-            description : "Get event rule groups"
-            tags : "eventRules"
-        };
+  rpc GetEventRuleGroups(google.protobuf.Empty) returns (EventRulesGroupResponse) {
+    option (google.api.http) = {
+      get: "/v1/eventRules/groups"
     };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Get event rule groups"
+      tags : "eventRules"
+    };
+  };
 
-    rpc SetEventRuleGroupsActive(EventRuleGroupActiveConfig) returns (EventRulesResponseResult) {
-        option (google.api.http) = {
-            post: "/v1/eventRules/groups"
-        };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-            description : "Activate or Deactivate all eventRules for a group"
-            tags : "eventRules"
-        };
+  rpc SetEventRuleGroupsActive(EventRuleGroupActiveConfig) returns (EventRulesResponseResult) {
+    option (google.api.http) = {
+      post: "/v1/eventRules/groups"
     };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Activate or Deactivate all eventRules for a group"
+      tags : "eventRules"
+    };
+  };
 
-    rpc GetEventRules(EventRulesQueryRequest) returns (EventRulesResponse) {
-        option (google.api.http) = {
-            post: "/v1/eventRules/query"
-            body: "*"
-        };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-            description : "Get event rules"
-            tags : "eventRules"
-        };
+  rpc GetEventRules(EventRulesQueryRequest) returns (EventRulesResponse) {
+    option (google.api.http) = {
+      post: "/v1/eventRules/query"
+      body: "*"
     };
-    rpc CreateEventRule(EventRule) returns (EventRulesResponseResult) {
-        option (google.api.http) = {
-            post: "/v1/eventRules"
-            body: "*"
-        };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-            description : "Create event rule"
-            tags : "eventRules"
-        };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Get event rules"
+      tags : "eventRules"
     };
+  };
+  rpc CreateEventRule(EventRule) returns (EventRulesResponseResult) {
+    option (google.api.http) = {
+      post: "/v1/eventRules"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Create event rule"
+      tags : "eventRules"
+    };
+  };
 
-    rpc UpdateEventRule(EventRule) returns (EventRulesResponseResult) {
-        option (google.api.http) = {
-            put: "/v1/eventRules/{name}"
-            body: "*"
-        };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-            description : "Update event rule"
-            tags : "eventRules"
-        };
+  rpc UpdateEventRule(EventRule) returns (EventRulesResponseResult) {
+    option (google.api.http) = {
+      put: "/v1/eventRules/{name}"
+      body: "*"
     };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Update event rule"
+      tags : "eventRules"
+    };
+  };
 
-    rpc DeleteEventRule(ProcessEventRuleByNameRequest) returns (google.protobuf.Empty) {
-        option (google.api.http) = {
-            delete: "/v1/eventRules/{name}"
-        };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-            description : "Delete event rule"
-            tags : "eventRules"
-        };
+  rpc DeleteEventRule(ProcessEventRuleByNameRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/eventRules/{name}"
     };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Delete event rule"
+      tags : "eventRules"
+    };
+  };
+  rpc GetEventRuleByName(GetEventRuleByNameRequest) returns (EventRule) {
+    option (google.api.http) = {
+      get: "/v1/eventRules/{name}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Get event rule"
+      tags : "eventRules"
+    };
+  };
+
+  rpc TestEventRule(TestEventRulePayload) returns (TestEventRuleResponse) {
+    option (google.api.http) = {
+      post: "/v1/eventRuleTest"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Test event rule for given parameters"
+      tags : "eventRuleTest"
+    };
+  };
+
+
+  rpc CheckEventRuleExists(EventRuleExistsRequest) returns (EventRuleExistsResponse) {
+    option (google.api.http) = {
+      get: "/v1/eventRules/exists/{name}"
+
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Check if the event rule exists or not, also returns a sequence to next if name doesn't exists"
+      tags : "eventRules"
+    };
+  };
+
+
+  rpc ValidateRuleForDuplicate(CheckDuplicateConditionRequest) returns (CheckDuplicateConditionResponse) {
+    option (google.api.http) = {
+      post: "/v1/eventRules/condition/unique"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Test event rule for given parameters"
+      tags : "eventRules"
+    };
+  };
+
+
+
+  rpc GenerateEventSequence(google.protobuf.Empty) returns (EventSequenceResponse) {
+    option (google.api.http) = {
+      get: "/v1/eventRules/sequence/next"
+
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      description : "Generate a sequence id to be used as a suffix for all event related operations, this will ensure index creation"
+      tags : "eventRules"
+    };
+  };
+
 }

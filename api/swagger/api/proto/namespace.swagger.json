@@ -64,6 +64,20 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "lastSeenStartTime",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "lastSeenEndTime",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
           }
         ],
         "tags": [

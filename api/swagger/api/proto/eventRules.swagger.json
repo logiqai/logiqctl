@@ -15,6 +15,51 @@
     "application/json"
   ],
   "paths": {
+    "/v1/eventRuleTest": {
+      "post": {
+        "description": "Test event rule for given parameters",
+        "operationId": "EventRulesService_TestEventRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventRulesTestEventRuleResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/eventRulesTestEventRulePayload"
+            }
+          }
+        ],
+        "tags": [
+          "eventRuleTest"
+        ]
+      }
+    },
     "/v1/eventRules": {
       "post": {
         "description": "Create event rule",
@@ -53,6 +98,94 @@
             "schema": {
               "$ref": "#/definitions/eventRulesEventRule"
             }
+          }
+        ],
+        "tags": [
+          "eventRules"
+        ]
+      }
+    },
+    "/v1/eventRules/condition/unique": {
+      "post": {
+        "description": "Test event rule for given parameters",
+        "operationId": "EventRulesService_ValidateRuleForDuplicate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventRulesCheckDuplicateConditionResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/eventRulesCheckDuplicateConditionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "eventRules"
+        ]
+      }
+    },
+    "/v1/eventRules/exists/{name}": {
+      "get": {
+        "description": "Check if the event rule exists or not, also returns a sequence to next if name doesn't exists",
+        "operationId": "EventRulesService_CheckEventRuleExists",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventRulesEventRuleExistsResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -173,7 +306,83 @@
         ]
       }
     },
+    "/v1/eventRules/sequence/next": {
+      "get": {
+        "description": "Generate a sequence id to be used as a suffix for all event related operations, this will ensure index creation",
+        "operationId": "EventRulesService_GenerateEventSequence",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventRulesEventSequenceResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "eventRules"
+        ]
+      }
+    },
     "/v1/eventRules/{name}": {
+      "get": {
+        "description": "Get event rule",
+        "operationId": "EventRulesService_GetEventRuleByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventRulesEventRule"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "eventRules"
+        ]
+      },
       "delete": {
         "description": "Delete event rule",
         "operationId": "EventRulesService_DeleteEventRule",
@@ -267,6 +476,61 @@
     }
   },
   "definitions": {
+    "eventRulesCheckDuplicateConditionRequest": {
+      "type": "object",
+      "properties": {
+        "rule_object": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "string condition = 1;"
+        }
+      }
+    },
+    "eventRulesCheckDuplicateConditionResponse": {
+      "type": "object",
+      "properties": {
+        "exists": {
+          "type": "boolean"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "eventRulesEventMetric": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/eventRulesMetricType"
+        },
+        "targetField": {
+          "type": "string"
+        },
+        "fieldType": {
+          "type": "string"
+        },
+        "plotType": {
+          "type": "string"
+        },
+        "regex": {
+          "type": "boolean"
+        },
+        "patternLabel": {
+          "$ref": "#/definitions/eventRulesPatternLabel"
+        },
+        "uniqueHash": {
+          "type": "string"
+        }
+      }
+    },
     "eventRulesEventRule": {
       "type": "object",
       "properties": {
@@ -280,6 +544,12 @@
           "type": "string"
         },
         "condition": {
+          "type": "string"
+        },
+        "match": {
+          "type": "string"
+        },
+        "rewrite": {
           "type": "string"
         },
         "groupName": {
@@ -299,6 +569,56 @@
         },
         "applicationMatch": {
           "type": "string"
+        },
+        "alertConfigured": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "recordMetricsOnly": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "eventMetrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/eventRulesEventMetric"
+          }
+        },
+        "additionalLabels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "patternLabels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/eventRulesPatternLabel"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "extRuleType": {
+          "type": "string"
+        }
+      }
+    },
+    "eventRulesEventRuleExistsResponse": {
+      "type": "object",
+      "properties": {
+        "exists": {
+          "type": "boolean"
         }
       }
     },
@@ -333,6 +653,27 @@
         "immutable": {
           "type": "integer",
           "format": "int32"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdBy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extRuleType": {
+          "type": "string"
+        },
+        "ruleType": {
+          "type": "string"
+        },
+        "customRules": {
+          "type": "boolean"
         }
       }
     },
@@ -397,6 +738,48 @@
         }
       }
     },
+    "eventRulesEventSequenceResponse": {
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "$ref": "#/definitions/eventRulesSequence"
+        }
+      }
+    },
+    "eventRulesMetricType": {
+      "type": "string",
+      "enum": [
+        "NOVAL",
+        "GAUGE",
+        "COUNTER",
+        "HISTOGRAM"
+      ],
+      "default": "NOVAL"
+    },
+    "eventRulesPatternLabel": {
+      "type": "object",
+      "properties": {
+        "pattern": {
+          "type": "string"
+        },
+        "matchedNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "string matchedPattern = 2;"
+        }
+      }
+    },
+    "eventRulesSequence": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
     "eventRulesSortOrder": {
       "type": "object",
       "properties": {
@@ -416,6 +799,31 @@
         "DESC"
       ],
       "default": "UNKNOWN"
+    },
+    "eventRulesTestEventRulePayload": {
+      "type": "object",
+      "properties": {
+        "ruleType": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "eventRulesTestEventRuleResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      }
     },
     "protobufAny": {
       "type": "object",

@@ -15,6 +15,86 @@
     "application/json"
   ],
   "paths": {
+    "/v1/events": {
+      "post": {
+        "description": "Create events",
+        "operationId": "EventsService_CreateEvent",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/eventsEvent"
+            }
+          }
+        ],
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/v1/events/groups": {
+      "get": {
+        "description": "Get event groups",
+        "operationId": "EventsService_GetEventGroups",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/eventsEventGroupsResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid Request.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Token Expired.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "events"
+        ]
+      }
+    },
     "/v1/events/query": {
       "post": {
         "description": "Get events",
@@ -107,6 +187,20 @@
         },
         "destination": {
           "type": "string"
+        },
+        "groupName": {
+          "type": "string"
+        }
+      }
+    },
+    "eventsEventGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "groupNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -153,6 +247,12 @@
           }
         },
         "namespace": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "groupNames": {
           "type": "array",
           "items": {
             "type": "string"
