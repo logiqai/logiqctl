@@ -19,7 +19,8 @@ const (
 	ResourceWidget           Resource = iota
 	ResourceWidgetAll        Resource = iota
 	ResourceJWTToken         Resource = iota
-	ResourceQueryResult Resource = iota
+	ResourceQueryResult      Resource = iota
+	ResourcePrometheusProxy  Resource = iota
 )
 
 type UriProtocol int

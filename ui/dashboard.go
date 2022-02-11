@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 
 	"github.com/spf13/viper"
 
@@ -15,7 +16,6 @@ import (
 
 	"net/http"
 )
-
 
 func NewListDashboardsCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -176,8 +176,6 @@ func exportDashboard(args []string) {
 
 func GetDashboard(args []string) (*map[string]interface{}, error) {
 
-
-
 	uri := GetUrlForResource(ResourceDashboardsGet, args...)
 	client := getHttpClient()
 	req, err := http.NewRequest("GET", uri, nil)
@@ -243,10 +241,10 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 		}
 		defer resp.Body.Close()
 		/*
-		var v = map[string]interface{}{}
-		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("createAndPublishDashboard2, Http response error while creating dashboard, Error: %d", resp.StatusCode)
-		}
+			var v = map[string]interface{}{}
+			if resp.StatusCode != http.StatusOK {
+				return nil, fmt.Errorf("createAndPublishDashboard2, Http response error while creating dashboard, Error: %d", resp.StatusCode)
+			}
 		*/
 
 		// Decode create response
@@ -263,7 +261,6 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 		// check for server error
 
 		utils.CheckMesgErr(v, "createAndPublishDashboard")
-
 
 		// Create publish payload
 		payloadPublish := map[string]interface{}{
@@ -486,4 +483,82 @@ func listDashboards() {
 		fmt.Println("Unable to get dashboards ", err.Error())
 		os.Exit(-1)
 	}
+}
+
+func GetLogEvents(numDays int) error {
+	response, err := ExecutePrometheusQuery(fmt.Sprintf("round(sum(increase(logiq_message_count[%dh])))", numDays))
+	if err != nil {
+		return err
+	}
+	if data, ok := response["data"]; ok {
+		if data, ok := data.(map[string]interface{}); ok {
+			if result, ok := data["result"]; ok {
+				if result, ok := result.([]interface{}); ok {
+					for _, v := range result {
+						if v, ok := v.(map[string]interface{}); ok {
+							for k, vv := range v {
+								if k == "value" {
+									if vv, ok := vv.([]interface{}); ok {
+										fmt.Printf("Total Log Events for %d days in %s: %s\n", numDays, viper.GetString(utils.KeyCluster), vv[1])
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func ExecutePrometheusQuery(query string) (map[string]interface{}, error) {
+	uri := GetUrlForResource(ResourcePrometheusProxy)
+	client := getHttpClient()
+	payload := fmt.Sprintf(`{"query":"%s","type":"query"}`, query)
+	req, err := http.NewRequest("POST", uri, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		fmt.Println("Unable to create widget", err.Error())
+		os.Exit(-1)
+	}
+	if api_key := viper.GetString(utils.AuthToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
+	}
+	if resp, err := client.Do(req); err == nil {
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("unable to execute Query %s", err.Error())
+		}
+		respDict := map[string]interface{}{}
+		if errUnmarshall := json.Unmarshal(bodyBytes, &respDict); errUnmarshall != nil {
+			return nil, fmt.Errorf("unable to decode response")
+		}
+		return respDict, nil
+	} else {
+		fmt.Println("ExecutePrometheusQuery err=<", err, ">")
+		return nil, err
+	}
+}
+
+func NewGetLogEvents() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "log-events",
+		Example: "logiqctl get log-events 7",
+		Aliases: []string{"t"},
+		Short:   "Get total log events for the duration in days",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			var days int = 1
+			if len(args) == 1 {
+				d, err := strconv.ParseInt(args[0], 10, 64)
+				if err != nil {
+					fmt.Printf("Unable to parse input, [%v], expects an integer\n", args[0])
+					os.Exit(-1)
+				}
+				days = int(d)
+			}
+			GetLogEvents(days)
+		},
+	}
+	return cmd
 }

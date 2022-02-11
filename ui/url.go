@@ -75,6 +75,8 @@ func GetUrlForResource(r Resource, args ...string) string {
 		uri = fmt.Sprintf("%s://%s/login", protocolString, ipOrDns)
 	case ResourceJWTToken:
 		uri = fmt.Sprintf("%s://%s/token", protocolString, ipOrDns)
+	case ResourcePrometheusProxy:
+		uri = fmt.Sprintf("%s://%s/api/logiq_proxy", protocolString, ipOrDns)
 	}
 
 	return uri
