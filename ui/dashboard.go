@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -512,6 +513,42 @@ func GetLogEvents(numDays int) error {
 	return nil
 }
 
+func GetLogVolume(numDays int) error {
+	response, err := ExecutePrometheusQuery(fmt.Sprintf("round(sum(increase(logiq_data_received_bytes[%dd])))", numDays))
+	if err != nil {
+		return err
+	}
+	if data, ok := response["data"]; ok {
+		if data, ok := data.(map[string]interface{}); ok {
+			if result, ok := data["result"]; ok {
+				if result, ok := result.([]interface{}); ok {
+					for _, v := range result {
+						if v, ok := v.(map[string]interface{}); ok {
+							for k, vv := range v {
+								if k == "value" {
+									if vv, ok := vv.([]interface{}); ok {
+										if len(vv) > 1 {
+											if vvv, ok := vv[1].(string); ok {
+												vInt, err := strconv.ParseInt(vvv, 10, 64)
+												if err != nil {
+													fmt.Println(err)
+												} else {
+													fmt.Printf("Total Log volume for %d day(s) in %s: %s\n", numDays, viper.GetString(utils.KeyCluster), humanize.Bytes(uint64(vInt)))
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func ExecutePrometheusQuery(query string) (map[string]interface{}, error) {
 	uri := GetUrlForResource(ResourcePrometheusProxy)
 	client := getHttpClient()
@@ -558,6 +595,29 @@ func NewGetLogEvents() *cobra.Command {
 				days = int(d)
 			}
 			GetLogEvents(days)
+		},
+	}
+	return cmd
+}
+
+func NewGetLogVolume() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "log-volume",
+		Example: "logiqctl get log-volume 7",
+		Aliases: []string{"v"},
+		Short:   "Get total log volume for the duration in days",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			var days int = 1
+			if len(args) == 1 {
+				d, err := strconv.ParseInt(args[0], 10, 64)
+				if err != nil {
+					fmt.Printf("Unable to parse input, [%v], expects an integer\n", args[0])
+					os.Exit(-1)
+				}
+				days = int(d)
+			}
+			GetLogVolume(days)
 		},
 	}
 	return cmd

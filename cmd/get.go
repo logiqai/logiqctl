@@ -85,6 +85,7 @@ func init() {
 	getCmd.AddCommand(getMappersCommand())
 	getCmd.AddCommand(getHttpingestkeyCommand())
 	getCmd.AddCommand(ui.NewGetLogEvents())
+	getCmd.AddCommand(ui.NewGetLogVolume())
 }
 
 func getMappersCommand() *cobra.Command {
