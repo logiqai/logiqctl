@@ -645,8 +645,8 @@ func NewGetLogVolume() *cobra.Command {
 		PreRun:  utils.PreRun,
 		Run: func(cmd *cobra.Command, args []string) {
 			var days int = 1
-			if len(args) == 2 {
-				d, err := strconv.ParseInt(args[1], 10, 64)
+			if len(args) == 1 {
+				d, err := strconv.ParseInt(args[0], 10, 64)
 				if err != nil {
 					fmt.Printf("Unable to parse input, [%v], expects an integer\n", args[0])
 					os.Exit(-1)
