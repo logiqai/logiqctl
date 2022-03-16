@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/dustin/go-humanize"
 	"io/ioutil"
+	"math"
 	"os"
 	"strconv"
 
@@ -513,7 +514,7 @@ func GetLogEvents(numDays int) error {
 	return nil
 }
 
-func GetLogVolume(numDays int) error {
+func GetLogVolume(numDays int, raw bool) error {
 	response, err := ExecutePrometheusQuery(fmt.Sprintf("round(sum(increase(logiq_data_received_bytes[%dd])))", numDays))
 	if err != nil {
 		return err
@@ -522,6 +523,14 @@ func GetLogVolume(numDays int) error {
 		if data, ok := data.(map[string]interface{}); ok {
 			if result, ok := data["result"]; ok {
 				if result, ok := result.([]interface{}); ok {
+					if len(result) == 0 {
+						if raw {
+							fmt.Println(0)
+						} else {
+							fmt.Printf("Total Log volume for %d day(s) in %s: 0B\n", numDays, viper.GetString(utils.KeyCluster))
+							return nil
+						}
+					}
 					for _, v := range result {
 						if v, ok := v.(map[string]interface{}); ok {
 							for k, vv := range v {
@@ -529,11 +538,20 @@ func GetLogVolume(numDays int) error {
 									if vv, ok := vv.([]interface{}); ok {
 										if len(vv) > 1 {
 											if vvv, ok := vv[1].(string); ok {
-												vInt, err := strconv.ParseInt(vvv, 10, 64)
-												if err != nil {
-													fmt.Println(err)
+												if raw {
+													vInt, err := strconv.ParseFloat(vvv, 64)
+													if err != nil {
+														fmt.Println(err)
+													} else {
+														fmt.Println(math.Round(vInt / (1 << 20)))
+													}
 												} else {
-													fmt.Printf("Total Log volume for %d day(s) in %s: %s\n", numDays, viper.GetString(utils.KeyCluster), humanize.Bytes(uint64(vInt)))
+													vInt, err := strconv.ParseInt(vvv, 10, 64)
+													if err != nil {
+														fmt.Println(err)
+													} else {
+														fmt.Printf("Total Log volume for %d day(s) in %s: %s\n", numDays, viper.GetString(utils.KeyCluster), humanize.Bytes(uint64(vInt)))
+													}
 												}
 											}
 										}
@@ -617,8 +635,26 @@ func NewGetLogVolume() *cobra.Command {
 				}
 				days = int(d)
 			}
-			GetLogVolume(days)
+			GetLogVolume(days, false)
 		},
 	}
+	cmd.AddCommand(&cobra.Command{
+		Use:     "raw",
+		Example: "logiqctl get log-volume raw",
+		Short:   "Get volume in MB",
+		PreRun:  utils.PreRun,
+		Run: func(cmd *cobra.Command, args []string) {
+			var days int = 1
+			if len(args) == 2 {
+				d, err := strconv.ParseInt(args[1], 10, 64)
+				if err != nil {
+					fmt.Printf("Unable to parse input, [%v], expects an integer\n", args[0])
+					os.Exit(-1)
+				}
+				days = int(d)
+			}
+			GetLogVolume(days, true)
+		},
+	})
 	return cmd
 }
