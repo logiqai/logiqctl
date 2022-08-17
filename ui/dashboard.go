@@ -223,14 +223,10 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 		// Create dashboard
 		uri := GetUrlForResource(ResourceDashboardsAll)
 		client := getHttpClient()
-		req, err := http.NewRequest("POST", uri, bytes.NewBuffer(payloadBytes))
+		req, err := utils.CreateHttpRequest("POST", uri, bytes.NewBuffer(payloadBytes))
 		if err != nil {
 			fmt.Println("Unable to get dashboards ", err.Error())
 			os.Exit(-1)
-		}
-		if api_key := viper.GetString(utils.AuthToken); api_key != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
-			req.Header.Add("Content-Type", "application/json")
 		}
 		resp, err := client.Do(req)
 		if err != nil {
@@ -274,7 +270,12 @@ func createAndPublishDashboard(name string) (map[string]interface{}, error) {
 
 		// Publish dashboard
 		uri = GetUrlForResource(ResourceDashboardsGet, args...)
-		resp, err = client.Post(uri, "application/json", bytes.NewBuffer(payloadBytes))
+		req, err = utils.CreateHttpRequest("POST", uri, bytes.NewBuffer(payloadBytes))
+		if err != nil {
+			fmt.Println("Unable to get dashboards ", err.Error())
+			os.Exit(-1)
+		}
+		resp, err = client.Do(req)
 		if err != nil {
 			return nil, err
 		}

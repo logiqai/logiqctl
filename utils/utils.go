@@ -17,6 +17,7 @@ limitations under the License.
 package utils
 
 import (
+	"bytes"
 	"crypto/tls"
 	b64 "encoding/base64"
 	"fmt"
@@ -24,6 +25,7 @@ import (
 	"net/http/httptrace"
 	"net/textproto"
 	"os"
+
 	"github.com/spf13/viper"
 )
 
@@ -37,7 +39,7 @@ const (
 	KeyUiPassword = "uipassword"
 )
 
-var trace = &httptrace.ClientTrace {
+var trace = &httptrace.ClientTrace{
 	/*
 		GetConn: func(hostPort string) {
 			fmt.Printf("GetConne(%s)\n", hostPort)
@@ -151,11 +153,7 @@ var trace = &httptrace.ClientTrace {
 	WroteRequest: func(info httptrace.WroteRequestInfo) {
 		fmt.Printf("WroteRequest: %+v\n", info)
 	},
-
-
 }
-
-
 
 func GetClusterUrl() string {
 	var cluster string
@@ -190,14 +188,13 @@ func GetUIPass() string {
 
 func CheckMesgErr(resp map[string]interface{}, orgi string) {
 	errMesg := "Internal Server Error"
-	if mesg,ok := resp["message"]; ok {
+	if mesg, ok := resp["message"]; ok {
 		if mesg == errMesg {
 			fmt.Println("ERR> From", orgi, ", mesg:", errMesg, ", exit()")
 			os.Exit(-1)
 		}
 	}
 }
-
 
 func AddNetTrace(req *http.Request) *http.Request {
 
@@ -206,4 +203,16 @@ func AddNetTrace(req *http.Request) *http.Request {
 		req = req.WithContext(ctx)
 	}
 	return req
+}
+
+func CreateHttpRequest(method string, uri string, payload *bytes.Buffer) (*http.Request, error) {
+	req, err := http.NewRequest(method, uri, payload)
+	if err != nil {
+		return nil, err
+	}
+	if api_key := viper.GetString(AuthToken); api_key != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Key %s", api_key))
+		req.Header.Add("Content-Type", "application/json")
+	}
+	return req, err
 }
