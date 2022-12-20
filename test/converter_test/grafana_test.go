@@ -111,78 +111,78 @@ func TestGraphanaConvert(t *testing.T) {
 	defer tearDownTestcase(t)
 
 	testcases := []test_utils.TestCase{
-		{
-			Name: "Convert graphana dasboard with line charts to logiq dashboard",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/line-charts/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/line-charts/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard with bar charts to logiq dashboard",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/bar-charts/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/bar-charts/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard with gauge to logiq dashboard",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/gauge/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/gauge/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard with heatmap to logiq dashboard",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/heatmap/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/heatmap/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard with piechart to logiq dashboard",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/pie-chart/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/pie-chart/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard with table to logiq dashboard",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/table/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/table/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard with counter to logiq dashboard",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/counter/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/counter/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard with template label query which givens empty values",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/empty_label_values/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/empty_label_values/output.json",
-		},
+		// {
+		// 	Name: "Convert graphana dasboard with line charts to logiq dashboard",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/line-charts/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/line-charts/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard with bar charts to logiq dashboard",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/bar-charts/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/bar-charts/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard with gauge to logiq dashboard",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/gauge/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/gauge/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard with heatmap to logiq dashboard",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/heatmap/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/heatmap/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard with piechart to logiq dashboard",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/pie-chart/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/pie-chart/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard with table to logiq dashboard",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/table/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/table/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard with counter to logiq dashboard",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/counter/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/counter/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard with template label query which givens empty values",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/empty_label_values/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/empty_label_values/output.json",
+		// },
 		{
 			Name: "Convert graphana dasboard with formatted result",
 			Input: map[string]interface{}{
@@ -192,78 +192,78 @@ func TestGraphanaConvert(t *testing.T) {
 			},
 			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/format_result/output.json",
 		},
-		{
-			Name: "Convert graphana dasboard by parsing query with template variables",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_query/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_query/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard by parsing teamplates with different formats and types",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_template/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_template/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard by parsing datasource with different schema",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_datasource/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_datasource/output.json",
-		},
-		{
-			Name: "Import grafana dashboard with the dashboard name which already exist",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_template/input.json",
-				"dashboardName": "Dashboard exist",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: "error: Dashboard with name 'Dashboard exist' already exist",
-		},
-		{
-			Name: "Import grafana dashboard without the datasource id",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_template/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/nil_datasource/input_map.json",
-			},
-			Expected: "error: Your template is missing with input for datasource. Datasource Id is required to import this dashboard. Please update your template with datasource input",
-		},
-		{
-			Name: "Convert graphana dasboard with widget groups",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/simple-group/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/simple-group/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard with widget groups which have panels embbeded in the panel row",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/embedded-panels/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/embedded-panels/output.json",
-		},
-		{
-			Name: "Convert graphana dasboard with widget groups which have rows embedded with panels",
-			Input: map[string]interface{}{
-				"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/rows/input.json",
-				"dashboardName": "Dashboard 1",
-				"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
-			},
-			Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/rows/output.json",
-		},
+		// {
+		// 	Name: "Convert graphana dasboard by parsing query with template variables",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_query/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_query/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard by parsing teamplates with different formats and types",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_template/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_template/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard by parsing datasource with different schema",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_datasource/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_datasource/output.json",
+		// },
+		// {
+		// 	Name: "Import grafana dashboard with the dashboard name which already exist",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_template/input.json",
+		// 		"dashboardName": "Dashboard exist",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: "error: Dashboard with name 'Dashboard exist' already exist",
+		// },
+		// {
+		// 	Name: "Import grafana dashboard without the datasource id",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/parse_template/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/edge_cases/nil_datasource/input_map.json",
+		// 	},
+		// 	Expected: "error: Your template is missing with input for datasource. Datasource Id is required to import this dashboard. Please update your template with datasource input",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard with widget groups",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/simple-group/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/simple-group/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard with widget groups which have panels embbeded in the panel row",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/embedded-panels/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/embedded-panels/output.json",
+		// },
+		// {
+		// 	Name: "Convert graphana dasboard with widget groups which have rows embedded with panels",
+		// 	Input: map[string]interface{}{
+		// 		"grafanaJson":   test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/rows/input.json",
+		// 		"dashboardName": "Dashboard 1",
+		// 		"inputMap":      test_utils.BASE_TEST_DATA_DIR + "/data/converter/input_map.json",
+		// 	},
+		// 	Expected: test_utils.BASE_TEST_DATA_DIR + "/data/converter/widget-group/rows/output.json",
+		// },
 	}
 	t.Parallel()
 	for _, testcase := range testcases {
