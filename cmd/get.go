@@ -19,6 +19,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/logiqai/logiqctl/grpc_utils"
 	"github.com/logiqai/logiqctl/services"
@@ -110,17 +111,47 @@ func getMappersCommand() *cobra.Command {
 	return cmd
 }
 func getForwardsCommand() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:     "forwards",
-		Example: "logiqctl get forwards",
+		Example: "logiqctl get forwards id",
 		Aliases: []string{"forwards"},
-		Short:   "Get logflow log forwards",
-		PreRun:  utils.PreRun,
+		Short:   "Get logflow forwards by ID",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("getforwardsCommand - comming soon")
+			forwards, err := ui.GetForwarders()
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			// Just checking if there's and ID or Name specified
+			if len(os.Args) < 4 || os.Args[3] == "all" {
+				res := make([]types.Resource, 0)
+				for _, f := range forwards {
+					res = append(res, f)
+				}
+
+				utils.PrintResult(res, true)
+				return
+			}
+
+			slug := os.Args[3]
+
+			for _, f := range forwards {
+				if strconv.Itoa(f.Id) == slug || f.Name == slug {
+					if utils.FlagOut == "table" {
+						fmt.Println("Please specify output as json or yaml")
+						os.Exit(1)
+					}
+
+					utils.PrintResponse(f)
+					return
+				}
+			}
+
+			fmt.Println("Invalid Forwarder Id/Name")
 		},
 	}
-	return cmd
 }
 
 func getHttpingestkeyCommand() *cobra.Command {
