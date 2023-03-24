@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -331,6 +332,31 @@ func ListDashboards() {
 		fmt.Println("Unable to get dashboards ", err.Error())
 		os.Exit(-1)
 	}
+}
+
+func DeleteDashboard(slug string) error {
+	uri := utils.GetUrlForResource(defines.ResourceDashboardsGet, slug)
+	client := utils.GetApiClient()
+
+	res, err := client.MakeApiCall(http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	responseData, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		var errorResponse map[string]string
+		json.Unmarshal(responseData, &errorResponse)
+
+		return fmt.Errorf("Error: %s", errorResponse["message"])
+	}
+
+	return nil
 }
 
 func GetLogEvents(numDays int) error {
