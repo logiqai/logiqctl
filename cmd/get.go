@@ -66,6 +66,12 @@ logiqctl get processes
 List all queries
 logiqctl get queries all
 
+List all forwarders
+logiqctl get forwards, logiqctl get forwards all
+
+List config of a specific forwarder
+logiqctl get forwards <id,name> --output <json,yaml>
+
 List all alerts
 logiqclt get alert all
 
