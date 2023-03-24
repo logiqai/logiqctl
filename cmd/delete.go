@@ -6,6 +6,7 @@ import (
 
 	"github.com/logiqai/logiqctl/ui"
 	"github.com/logiqai/logiqctl/utils"
+	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
 
@@ -37,6 +38,17 @@ func deleteDashboardsCommand() *cobra.Command {
 			}
 
 			slug := os.Args[3]
+
+			prompt := promptui.Prompt{
+				Label:     fmt.Sprintf("Do you really want to delete dashboard: %s", slug),
+				IsConfirm: true,
+			}
+
+			_, err := prompt.Run()
+			if err != nil {
+				fmt.Println("Exited without deleting dashboard")
+				os.Exit(1)
+			}
 
 			if err := ui.DeleteDashboard(slug); err != nil {
 				fmt.Println(err)
