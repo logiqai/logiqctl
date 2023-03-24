@@ -22,6 +22,7 @@ logiqctl delete dashboard slug
 func init() {
 	rootCmd.AddCommand(deleteCmd)
 	deleteCmd.AddCommand(deleteDashboardsCommand())
+	deleteCmd.AddCommand(deleteQueriesCommand())
 }
 
 func deleteDashboardsCommand() *cobra.Command {
@@ -56,6 +57,40 @@ func deleteDashboardsCommand() *cobra.Command {
 			}
 
 			fmt.Printf("Successfully deleted dashboard: %s\n", slug)
+		},
+	}
+}
+
+func deleteQueriesCommand() *cobra.Command {
+	return &cobra.Command{
+		Use:     "query",
+		Example: "logiqctl delete query id",
+		Aliases: []string{"query"},
+		Short:   "Delete LOGIQ Queries",
+		PreRun:  utils.PreRunUiTokenOrCredentials,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(os.Args) < 4 {
+				fmt.Println("ID was not provided")
+			}
+
+			ID := os.Args[3]
+			prompt := promptui.Prompt{
+				Label:     fmt.Sprintf("Do you really want to delete query: %s", ID),
+				IsConfirm: true,
+			}
+
+			_, err := prompt.Run()
+			if err != nil {
+				fmt.Println("Exited without deleting the query")
+				os.Exit(1)
+			}
+
+			if err := ui.DeleteQuery(ID); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			fmt.Printf("Successfully delete the query: %s", ID)
 		},
 	}
 }

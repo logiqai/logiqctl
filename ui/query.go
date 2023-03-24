@@ -4,13 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/logiqai/logiqctl/defines"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/logiqai/logiqctl/defines"
 
 	"github.com/ghodss/yaml"
 	"github.com/logiqai/easymap"
@@ -85,6 +87,28 @@ func CreateQuery(query types.CreateQueryPayload) (types.Query, error) {
 	} else {
 		return types.Query{}, err
 	}
+}
+
+func DeleteQuery(id string) error {
+	uri := utils.GetUrlForResource(defines.ResourceQuery, id)
+	client := utils.GetApiClient()
+
+	resp, err := client.MakeApiCall(http.MethodDelete, uri, nil)
+	if err != nil {
+		return err
+	}
+
+	responseData, err := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		var errorResponse map[string]string
+		json.Unmarshal(responseData, &errorResponse)
+
+		return fmt.Errorf("Err: %s", errorResponse["message"])
+	}
+
+	return nil
 }
 
 func printQuery(args []string) {
