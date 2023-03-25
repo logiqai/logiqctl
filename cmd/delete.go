@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
+	"github.com/logiqai/logiqctl/types"
 	"github.com/logiqai/logiqctl/ui"
 	"github.com/logiqai/logiqctl/utils"
 	"github.com/manifoldco/promptui"
@@ -56,7 +59,33 @@ func deleteDashboardsCommand() *cobra.Command {
 				os.Exit(1)
 			}
 
-			fmt.Printf("Successfully deleted dashboard: %s\n", slug)
+			res, err := ui.GetDashboard([]string{slug})
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			var dashboard types.DashboardSpec
+			if err = json.Unmarshal([]byte(res), &dashboard); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			prompt.Label = fmt.Sprintf("Do you want to delete all the queries related to dashboard : %s", slug)
+			_, err = prompt.Run()
+			if err != nil {
+				fmt.Println("Deleted dashboard but kept queries as-is")
+				os.Exit(1)
+			}
+
+			for _, w := range dashboard.Widgets {
+				if err := ui.DeleteQuery(strconv.Itoa(w.Visualization.Query.Id)); err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
+			}
+
+			fmt.Printf("Successfully deleted dashboard: %s and it's related queries\n", slug)
 		},
 	}
 }
