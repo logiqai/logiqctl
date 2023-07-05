@@ -83,7 +83,7 @@ github.com/mattn/go-isatty
 github.com/mattn/go-runewidth
 # github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir
-# github.com/mitchellh/mapstructure v1.1.2
+# github.com/mitchellh/mapstructure v1.5.0
 github.com/mitchellh/mapstructure
 # github.com/nicksnyder/go-i18n v1.10.1
 github.com/nicksnyder/go-i18n/i18n
@@ -102,8 +102,9 @@ github.com/pmezard/go-difflib/difflib
 github.com/rivo/uniseg
 # github.com/sirupsen/logrus v1.4.2
 github.com/sirupsen/logrus
-# github.com/spf13/afero v1.2.2
+# github.com/spf13/afero v1.9.2
 github.com/spf13/afero
+github.com/spf13/afero/internal/common
 github.com/spf13/afero/mem
 # github.com/spf13/cast v1.3.0
 github.com/spf13/cast
@@ -115,7 +116,7 @@ github.com/spf13/jwalterweatherman
 github.com/spf13/pflag
 # github.com/spf13/viper v1.4.0
 github.com/spf13/viper
-# github.com/stretchr/testify v1.8.0
+# github.com/stretchr/testify v1.8.1
 github.com/stretchr/testify/assert
 # github.com/tatsushid/go-prettytable v0.0.0-20141013043238-ed2d14c29939
 github.com/tatsushid/go-prettytable
@@ -125,32 +126,35 @@ github.com/tsenart/deadcode
 github.com/zenthangplus/goccm
 # golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 golang.org/x/lint
-# golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+# golang.org/x/net v0.5.0
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/sys v0.0.0-20210510120138-977fb7262007
-golang.org/x/sys/internal/unsafeheader
+# golang.org/x/sys v0.4.0
 golang.org/x/sys/unix
-# golang.org/x/text v0.3.5
+# golang.org/x/text v0.6.0
+golang.org/x/text/runes
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/tools v0.1.5
+# golang.org/x/tools v0.3.0
 golang.org/x/tools/go/ast/astutil
 golang.org/x/tools/go/gcexportdata
-golang.org/x/tools/go/internal/gcimporter
+golang.org/x/tools/internal/gcimporter
+golang.org/x/tools/internal/goroot
+golang.org/x/tools/internal/pkgbits
 golang.org/x/tools/internal/typeparams
-# google.golang.org/genproto v0.0.0-20220829175752-36a9c930ecbf
+# google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
+google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status
 google.golang.org/genproto/protobuf/field_mask
-# google.golang.org/grpc v1.48.0
+# google.golang.org/grpc v1.53.0
 google.golang.org/grpc
 google.golang.org/grpc/attributes
 google.golang.org/grpc/backoff
